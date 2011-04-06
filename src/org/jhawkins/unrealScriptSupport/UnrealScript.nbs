@@ -1,0 +1,668 @@
+
+# Reference:
+# http://wiki.netbeans.org/GLFTutorial#Creating_New_NetBeans_Module_with_Languages_Support
+# http://wiki.netbeans.org/SchliemannNBSLanguageDescription#section-SchliemannNBSLanguageDescription-TokensDefinition.
+# http://netbeans.dzone.com/tips/quickstart-guide-language-supp
+# http://wiki.netbeans.org/How_to_create_support_for_a_new_language
+# http://www.koders.com/noncode/fidC2ADFACA94C24CD1F994B131AB8DE75367D15179.aspx
+
+# definition of tokens
+TOKEN:keyword:(
+"auto" |
+"break" |
+"case" |
+"continue" |
+"default" |
+"do" |
+"else" |
+"enum" |
+"extends" |
+"false" |
+"for" |
+"goto" |
+"if" |
+"struct" |
+"switch" |
+"true" |
+"until" |
+"while"
+)
+
+TOKEN:variablestart:(
+"local" |
+"var"
+)
+
+TOKEN:variabletype:(
+"bool" |
+"byte" |
+"float" |
+"int" |
+"string" |
+"name"
+)
+
+TOKEN:objecttype:(
+"actor" |
+"color" |
+"pawn" |
+"material" |
+"texture" |
+"None" |
+"Super"
+)
+
+TOKEN:variablekeyword:(
+"config" |
+"const" |
+"editconst" |
+"editconstarray" |
+"editconstfindable" |
+"editinline" |
+"export" |
+"globalconfig" |
+"input" |
+"localized" |
+"native" |
+"private" |
+"protected" |
+"skip" |
+"transient" |
+"travel"
+)
+
+TOKEN:functionstart:("function")
+
+TOKEN:functionkeyword:(
+"static" |
+"singular" |
+"native" |
+"latent" |
+"iterator" |
+"final" |
+"simulated" |
+"operator" |
+"preOperator" |
+"postOperator" |
+"event"
+)
+
+TOKEN:functionparamkeys:(
+"out" |
+"optional" |
+"coerce"
+)
+
+TOKEN:functionreturn:("return")
+
+TOKEN:defaultpropertiesstart:("defaultproperties")
+TOKEN:eventstart:("event")
+TOKEN:statestart:("state")
+
+TOKEN:classstart:("class")
+
+TOKEN:classkeyword:(
+"nativereplication" |
+"abstract" |
+"guid" |
+"config" |
+"placeable" |
+"notplaceable" |
+"hidecategories"
+)
+
+TOKEN:operator: (
+"@" | "@=" | "$" | "$=" |
+"*=" | "/=" | "+=" | "-=" |
+"||" | "&&" | "&" | "|" | "^" |
+"!=" | "==" | "<" | ">" | "<=" | ">=" | "~=" |
+"<<" | ">>" |
+"+" | "-" | "%" | "*" | "/" |
+"Dot" | "Cross" | "**" | "ClockwiseFrom" |
+":" | "?" |
+"[" | "]" | "{" | "}" | "(" | ")" |
+"," | "=" | ";" | "."
+)
+
+TOKEN:identifier: ( ["a"-"z" "A"-"Z"]["a"-"z" "A"-"Z" "0"-"9" "_"]* )
+
+TOKEN:number: (["0"-"9"] ["0"-"9" "."]*)
+
+TOKEN:whitespace:( [" " "\t" "\n" "\r"]+ )
+
+TOKEN:string1:(
+"\""
+(
+[^ "\"" "\\" "\r" "\n"] |
+("\\" ["r" "n" "t" "\\" "\'" "\""]) |
+("\\" "u" ["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"])
+)*
+"\""
+)
+
+TOKEN:string2:(
+"\'"
+(
+[^ "\"" "\\" "\r" "\n"] |
+("\\" ["r" "n" "t" "\\" "\'" "\""]) |
+("\\" "u" ["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"])
+)*
+"\'"
+)
+
+TOKEN:char: (
+    "\'"
+	( [^"\'" "\n" "\r"] |
+	  ("\\" ["r" "n" "t" "\\" "\'" "\""])
+	)
+    "\'"
+)
+
+#<DEFAULT>:TOKEN:comment_start:("/*"):<IN_COMMENT_STATE>
+#<IN_COMMENT_STATE>:TOKEN:comment_end:( "*/" ):<DEFAULT>
+
+TOKEN:comment:("/*"):<IN_COMMENT>
+
+<IN_COMMENT> {
+
+    TOKEN:comment_keyword: (
+	"@author" |
+	"@code" |
+	"@docRoot" |
+	"@deprecated" |
+	"@exception" |
+	"@inheritDoc" |
+	"@link" |
+	"@linkplain" |
+	"@literal" |
+	"@param" |
+	"@return" |
+	"@see" |
+	"@serial" |
+	"@serialData" |
+	"@serialField" |
+	"@since" |
+	"@throws" |
+	"@value" |
+	"@version"
+    )
+	
+    TOKEN:comment: ([^"@""*"]+)
+    TOKEN:comment: ("*"[^"/"])
+    TOKEN:comment: ("*/"):<DEFAULT>
+}
+
+TOKEN:line_comment: ( "//"[^ "\n" "\r"]* )
+
+# colours
+COLOR:keyword:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:variablestart:{
+foreground_color:"#6370C7";
+background_color:"white";
+}
+
+COLOR:variabletype:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:objecttype:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:variablekeyword:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:functionstart:{
+foreground_color:"#73A892";
+background_color:"white";
+}
+
+COLOR:functionkeyword:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:functionparamkeys:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:functionreturn:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:defaultpropertiesstart:{
+foreground_color:"#73A892";
+background_color:"white";
+}
+
+COLOR:eventstart:{
+foreground_color:"#73A892";
+background_color:"white";
+}
+
+COLOR:statestart:{
+foreground_color:"#73A892";
+background_color:"white";
+}
+
+COLOR:classstart:{
+foreground_color:"magenta";
+background_color:"white";
+}
+
+COLOR:classkeyword:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+#COLOR:comment_start:{
+#foreground_color:"#969696";
+#}
+
+#COLOR:comment_end:{
+#foreground_color:"#969696";
+#}
+
+COLOR:comment:{
+foreground_color:"#969696";
+}
+
+
+COLOR:line_comment:{
+foreground_color:"#969696";
+}
+
+COLOR:comment_keyword:{
+    color_name: "comment_keyword";
+    default_coloring: "comment";
+    font_type: "bold+italic";
+    underline_color:"gray";
+}
+
+COLOR:string1:{
+foreground_color:"red";
+background_color:"white";
+}
+
+COLOR:string2:{
+foreground_color:"red";
+background_color:"white";
+}
+
+COLOR:char:{
+foreground_color:"red";
+background_color:"white";
+}
+
+# parser should ignore whitespaces
+SKIP:whitespace
+#SKIP:comment_start
+#SKIP:comment_end
+SKIP:comment
+SKIP:comment_keyword
+SKIP:line_comment
+
+# definition of grammar
+#S = (Statement)*;
+
+#Statement = WhileStatement | IfStatement | ExpressionStatement | Whatever;
+
+#WhileStatement = "while" "(" ConditionalExpression ")" Block;
+#IfStatement = "if" "(" ConditionalExpression ")" Block;
+#Block = "{" (Statement)* "}";
+#ConditionalExpression = <identifier>;
+#ExpressionStatement = <identifier>;
+
+#ClassStatement = "class" ClassName ("extends" ClassName)? ";";
+#ClassName = <identifier>;
+
+#FunctionStatement = "function" ( <variabletype> | <objecttype> | ClassName ) FunctionName "(" (VariableStatement)+ ")" Block;
+#FunctionName = <identifier>;
+
+#DefaultProperties = "defaultproperties" Block;
+
+#ReturnStatement = "return" ExpressionStatement;
+
+#VariableStatement = "var" (<variablekeyword>)* <variabletype> VariableName ";";
+#VariableName = <identifier>
+
+#additiveExpression = multiplicativeExpression "+" additiveExpression;
+#additiveExpression = multiplicativeExpression;
+#multiplicativeExpression = operand "*" multiplicativeExpression;
+#multiplicativeExpression = operand;
+#operand = <number>;
+
+#S = (Whatever)*;
+
+#Whatever = (
+#<keyword> |
+#<variabletype> |
+#<objecttype> |
+#<variablekeyword> |
+#<functionkeyword> |
+#<functionparamkeys> |
+#<classkeyword> |
+#<functionreturn> |
+#<operator> |
+#<identifier> |
+#<number> |
+#<string>);
+
+S = (ClassDeclaration)* (ClassBody)*;
+
+ClassDeclaration = UnmodifiedClassDeclaration (ClassDeclarationModifiers)* ";";
+UnmodifiedClassDeclaration = "class" <identifier> ["extends" Name];
+ClassDeclarationModifiers = <classkeyword>;
+
+ClassBody = ( Initializer | 
+              ConstructorDeclaration |
+              MethodDeclaration |
+              StateDeclaration |
+              FieldDeclaration )*;
+
+#FieldDeclaration = VariableModifiers Type VariableDeclarator ("," VariableDeclarator)* ";";
+
+FieldDeclaration = VariableStart VariableModifiers Type VariableDeclarator ("," VariableDeclarator)* ";";
+
+#VariableStart = ( ( "var" ("(" (<identifier>)? ")")? ) |
+#                  "local" );
+VariableStart = "var";
+VariableStart = "var" "(" ")";
+VariableStart = "var" "(" <identifier> ")";
+VariableStart = "local";
+VariableModifiers = (<variablekeyword>)*;
+VariableDeclarator = VariableDeclaratorId "=" VariableInitializer;
+VariableDeclarator = VariableDeclaratorId;
+VariableDeclaratorId = <identifier> Brackets;
+
+VariableInitializer = ArrayInitializer;
+VariableInitializer = Expression;
+ArrayInitializer = "{" VariableInitializers ArrayInitializer1 "}";
+ArrayInitializer1 = ",";
+ArrayInitializer1 = ;
+VariableInitializers = VariableInitializer VariableInitializers1;
+VariableInitializers = ;
+VariableInitializers1 = "," VariableInitializers VariableInitializers1;
+VariableInitializers1 = ;
+
+ConstructorDeclaration = "defaultproperties" "{" (ConstructorStatements)* "}";
+ConstructorStatements = Name "=" Literal;
+
+MethodDeclaration = (MethodModifiers)* MethodStart MethodDeclarator MethodDeclaration1;
+MethodDeclaration = (MethodModifiers)* MethodStart ResultType MethodDeclarator MethodDeclaration1;
+
+MethodStart = "function";
+MethodStart = "event";
+MethodDeclaration1 = Block;
+MethodDeclaration1 = ";";
+MethodModifiers = <functionkeyword>;
+MethodDeclarator = <identifier> "(" FormalParameters ")" Brackets;
+
+FormalParameters = FormalParameter FormalParameters1;
+FormalParameters = ;
+FormalParameters1 = "," FormalParameter FormalParameters1;
+FormalParameters1 = ;
+FormalParameter = Type VariableDeclaratorId;
+FormalParameter = <functionparamkeys> Type VariableDeclaratorId;
+
+EventDeclaration = EventStart <identifier> EventDeclaration1;
+EventStart = "event";
+#EventDeclaration1 = MethodDeclaration;
+EventDeclaration1 = Block;
+EventDeclaration1 = ";";
+
+StateDeclaration = StateStart <identifier> StateDeclaration1;
+StateStart = "state";
+StateStart = "state" "(" ")";
+StateStart = "state" "(" <identifier> ")";
+StateDeclaration1 = MethodDeclaration;
+StateDeclaration1 = Block;
+StateDeclaration1 = ";";
+
+Initializer = Block;
+Type = PrimitiveType Brackets;
+Type = Name Brackets;
+Brackets = "[" "]" Brackets;
+Brackets = ;
+PrimitiveType = (<variabletype> | <objecttype>);
+ResultType = Type;
+Name = <identifier> Name1;
+Name = "Super" "." <identifier> Name1;
+Name1 = "." <identifier> Name1;
+Name1 = ;
+NameList = Name "," NameList;
+NameList = Name;
+
+MethodCall = Name "(" (MethodArguments)* ")";
+MethodArguments = Expression ("," Expression)*;
+
+Expression = ConditionalExpression;
+# Name?
+Expression = Name;
+Expression = MethodCall;
+Expression = Name Expression1;
+Expression1 = "=" Expression;
+Expression1 = "*=" Expression;
+Expression1 = "/=" Expression;
+Expression1 = "%=" Expression;
+Expression1 = "+=" Expression;
+Expression1 = "-=" Expression;
+Expression1 = "<<=" Expression;
+Expression1 = ">>=" Expression;
+Expression1 = ">>>=" Expression;
+Expression1 = "&=" Expression;
+Expression1 = "^=" Expression;
+Expression1 = "|=" Expression;
+#ConditionalExpression = ConditionalOrExpression ["?" Expression ":" ConditionalExpression];
+ConditionalExpression = ConditionalOrExpression ConditionalExpression1;
+ConditionalExpression1 = "?" Expression ":" ConditionalExpression;
+ConditionalExpression1 = ;
+ConditionalOrExpression = ConditionalAndExpression ConditionalOrExpression1;
+ConditionalOrExpression1 = "||" ConditionalOrExpression;
+ConditionalOrExpression1 = ;
+ConditionalAndExpression = InclusiveOrExpression ConditionalAndExpression1;
+ConditionalAndExpression1 = "&&" ConditionalAndExpression;
+ConditionalAndExpression1 = ;
+InclusiveOrExpression = ExclusiveOrExpression InclusiveOrExpression1;
+InclusiveOrExpression1 = "|" InclusiveOrExpression;
+InclusiveOrExpression1 = ;
+ExclusiveOrExpression = AndExpression ExclusiveOrExpression1;
+ExclusiveOrExpression1 = "^" ExclusiveOrExpression;
+ExclusiveOrExpression1 = ;
+AndExpression = EqualityExpression AndExpression1;
+AndExpression1 = "&" AndExpression;
+AndExpression1 = ;
+EqualityExpression = InstanceOfExpression EqualityExpression1;
+EqualityExpression1 = "==" InstanceOfExpression EqualityExpression1;
+EqualityExpression1 = "!=" InstanceOfExpression EqualityExpression1;
+EqualityExpression1 = ;
+InstanceOfExpression = RelationalExpression InstanceOfExpression1;
+InstanceOfExpression1 = "instanceof" Type;
+InstanceOfExpression1 = ;
+RelationalExpression = ShiftExpression RelationalExpression1;
+RelationalExpression1 = "<" RelationalExpression;
+RelationalExpression1 = ">" RelationalExpression;
+RelationalExpression1 = "<=" RelationalExpression;
+RelationalExpression1 = ">=" RelationalExpression;
+RelationalExpression1 = ;
+ShiftExpression = AdditiveExpression ShiftExpression1;
+ShiftExpression1 = "<<" ShiftExpression;
+ShiftExpression1 = ">>" ShiftExpression;
+ShiftExpression1 = ">>>" ShiftExpression;
+ShiftExpression1 = ;
+AdditiveExpression = MultiplicativeExpression "+" AdditiveExpression;
+AdditiveExpression = MultiplicativeExpression "-" AdditiveExpression;
+AdditiveExpression = MultiplicativeExpression;
+MultiplicativeExpression = UnaryExpression MultiplicativeExpression1;
+MultiplicativeExpression1 = "*" UnaryExpression MultiplicativeExpression1;
+MultiplicativeExpression1 = "/" UnaryExpression MultiplicativeExpression1;
+MultiplicativeExpression1 = "%" UnaryExpression MultiplicativeExpression1;
+MultiplicativeExpression1 = ;
+UnaryExpression = "+" UnaryExpression;
+UnaryExpression = "-" UnaryExpression;
+UnaryExpression = PreIncrementExpression;
+UnaryExpression = PreDecrementExpression;
+UnaryExpression = UnaryExpressionNotPlusMinus;
+PreIncrementExpression = "++" PrimaryExpression;
+PreDecrementExpression = "--" PrimaryExpression;
+UnaryExpressionNotPlusMinus = "~" UnaryExpression;
+UnaryExpressionNotPlusMinus = "!" UnaryExpression;
+UnaryExpressionNotPlusMinus = CastExpression;
+UnaryExpressionNotPlusMinus = PostfixExpression;
+PostfixExpression = PrimaryExpression PostfixExpression1;
+PostfixExpression1 = "++";
+PostfixExpression1 = "--";
+PostfixExpression1 = ;
+CastExpression = "(" Type ")" UnaryExpression;
+CastExpression = "(" Type ")" UnaryExpressionNotPlusMinus;
+PrimaryExpression = PrimaryPrefix PrimaryExpression1;
+PrimaryExpression1 = PrimarySuffix PrimaryExpression1;
+PrimaryExpression1 = ;
+PrimaryPrefix = Literal;
+PrimaryPrefix = "this";
+PrimaryPrefix = "super" "." <identifier>;
+PrimaryPrefix = "(" Expression ")";
+PrimaryPrefix = AllocationExpression;
+PrimaryPrefix = ResultType "." "class";
+PrimaryPrefix = Name;
+PrimarySuffix = "." PrimarySuffix1;
+PrimarySuffix1 = "this";
+PrimarySuffix1 = AllocationExpression;
+PrimarySuffix1 = <identifier>;
+PrimarySuffix = "[" Expression "]";
+PrimarySuffix = Arguments;
+Literal = <number>;
+#Literal = <FLOATING_POINT_LITERAL>;
+Literal = <char>;
+Literal = <string1>;
+Literal = <string2>;
+Literal = "true";
+Literal = "false";
+Literal = "null";
+
+Arguments = "(" ArgumentList ")";
+ArgumentList = Expression ArgumentList1;
+ArgumentList = ;
+ArgumentList1 = "," ArgumentList;
+ArgumentList1 = ;
+AllocationExpression = "new" AllocationExpression1;
+AllocationExpression1 = PrimitiveType ArrayDimsAndInits;
+AllocationExpression1 = Name AllocationExpression2;
+AllocationExpression2 = ArrayDimsAndInits;
+AllocationExpression2 = Arguments AllocationExpression3;
+AllocationExpression3 = "{" ClassBody "}";
+AllocationExpression3 = ;
+ 
+ArrayDimsAndInits = "[" Expression "]" ArrayDimsAndInits1;
+ArrayDimsAndInits = "[" "]" ArrayDimsAndInits2 ArrayInitializer;
+ArrayDimsAndInits1 = "[" Expression "]" ArrayDimsAndInits1;
+ArrayDimsAndInits1 = ;
+ArrayDimsAndInits1 = "[" "]" ArrayDimsAndInits2;
+ArrayDimsAndInits2 = "[" "]" ArrayDimsAndInits2;
+ArrayDimsAndInits2 = ;
+
+Statement = LabeledStatement;
+Statement = Block;
+Statement = EmptyStatement;
+Statement = StatementExpression ";";
+Statement = SwitchStatement;
+Statement = IfStatement;
+Statement = WhileStatement;
+Statement = DoStatement;
+Statement = ForStatement;
+Statement = BreakStatement;
+Statement = ContinueStatement;
+Statement = ReturnStatement;
+LabeledStatement = <identifier> ":" Statement;
+Block = "{" BlockStatements "}";
+BlockStatements = BlockStatement BlockStatements;
+BlockStatements = ;
+BlockStatement = LocalVariableDeclaration ";";
+BlockStatement = Statement;
+BlockStatement = UnmodifiedClassDeclaration;
+LocalVariableDeclaration = FieldDeclaration;
+EmptyStatement = ";";
+StatementExpression = PreIncrementExpression;
+StatementExpression = PreDecrementExpression;
+StatementExpression = PrimaryExpression StatementExpression1;
+StatementExpression1 = "++";
+StatementExpression1 = "--";
+StatementExpression1 = ;
+StatementExpression1 = "=" Expression;
+StatementExpression1 = "*=" Expression;
+StatementExpression1 = "/=" Expression;
+StatementExpression1 = "%=" Expression;
+StatementExpression1 = "+=" Expression;
+StatementExpression1 = "-=" Expression;
+StatementExpression1 = "<<=" Expression;
+StatementExpression1 = ">>=" Expression;
+StatementExpression1 = ">>>=" Expression;
+StatementExpression1 = "&=" Expression;
+StatementExpression1 = "^=" Expression;
+StatementExpression1 = "|=" Expression;
+
+SwitchStatement = "switch" "(" Expression ")" "{" SwitchBody "}";
+SwitchBody = SwitchLabel BlockStatements SwitchBody;
+SwitchBody = ;
+BlockStatements = BlockStatement BlockStatements;
+BlockStatements = ;
+SwitchLabel = "case" Expression ":";
+SwitchLabel = "default" ":";
+IfStatement = "if" "(" Expression ")" Statement IfStatement1;
+IfStatement1 = "else" Statement;
+IfStatement1 = ;
+WhileStatement = "while" "(" Expression ")" Statement;
+DoStatement = "do" Statement "while" "(" Expression ")" ";";
+ForStatement = "for" "(" ForInit ";" ForExpression ";" ForUpdate ")" Statement;
+ForInit = LocalVariableDeclaration;
+ForInit = StatementExpressionList;
+ForInit = ;
+ForExpression = Expression;
+ForExpression = ;
+StatementExpressionList = StatementExpression StatementExpressionList1;
+StatementExpressionList1 = "," StatementExpression StatementExpressionList1;
+StatementExpressionList1 = ;
+ForUpdate = StatementExpressionList;
+ForUpdate = ;
+BreakStatement = "break" BreakStatement1;
+BreakStatement1 = ";";
+BreakStatement1 = <identifier> ";";
+ContinueStatement = "continue" ContinueStatement1;
+ContinueStatement1 = ";";
+ContinueStatement1 = <identifier> ";";
+ReturnStatement = "return" ReturnStatement1;
+ReturnStatement1 = ";";
+ReturnStatement1 = Expression ";";
+
+# code folding
+FOLD:Block
+
+# navigator support
+#NAVIGATOR:WhileStatement:"{$ConditionalExpression}"
+
+# brace completion
+COMPLETE "{:}"
+COMPLETE "(:)"
+COMPLETE "\":\""
+COMPLETE "\':\'"
+
+# indentation support
+INDENT "{:}"
+INDENT "(:)"
+INDENT "\\s*(((if|while)\\s*\\(|else\\s*|else\\s+if\\s*\\(|for\\s*\\(.*\\))[^{;]*)"
