@@ -47,10 +47,12 @@ TOKEN:objecttype:(
 "color" |
 "pawn" |
 "material" |
-"texture" |
-"None" |
-"Super"
+"texture"
 )
+
+TOKEN:supertype:("Super")
+
+TOKEN:nonetype:("None")
 
 TOKEN:variablekeyword:(
 "config" |
@@ -83,8 +85,7 @@ TOKEN:functionkeyword:(
 "simulated" |
 "operator" |
 "preOperator" |
-"postOperator" |
-"event"
+"postOperator"
 )
 
 TOKEN:functionparamkeys:(
@@ -124,9 +125,9 @@ TOKEN:operator: (
 "," | "=" | ";" | "."
 )
 
-TOKEN:identifier: ( ["a"-"z" "A"-"Z"]["a"-"z" "A"-"Z" "0"-"9" "_"]* )
+TOKEN:identifier:( ["a"-"z" "A"-"Z"]["a"-"z" "A"-"Z" "0"-"9" "_"]* )
 
-TOKEN:number: (["0"-"9"] ["0"-"9" "."]*)
+TOKEN:number:(["0"-"9"] ["0"-"9" "."]*)
 
 TOKEN:whitespace:( [" " "\t" "\n" "\r"]+ )
 
@@ -163,9 +164,6 @@ TOKEN:char: (
 	)
     "\'"
 )
-
-#<DEFAULT>:TOKEN:comment_start:("/*"):<IN_COMMENT_STATE>
-#<IN_COMMENT_STATE>:TOKEN:comment_end:( "*/" ):<DEFAULT>
 
 TOKEN:comment:("/*"):<IN_COMMENT>
 
@@ -221,6 +219,16 @@ foreground_color:"blue";
 background_color:"white";
 }
 
+COLOR:supertype:{
+foreground_color:"magenta";
+background_color:"white";
+}
+
+COLOR:nonetype:{
+foreground_color:"blue";
+background_color:"white";
+}
+
 COLOR:variablekeyword:{
 foreground_color:"blue";
 background_color:"white";
@@ -271,14 +279,6 @@ foreground_color:"blue";
 background_color:"white";
 }
 
-#COLOR:comment_start:{
-#foreground_color:"#969696";
-#}
-
-#COLOR:comment_end:{
-#foreground_color:"#969696";
-#}
-
 COLOR:comment:{
 foreground_color:"#969696";
 }
@@ -312,42 +312,11 @@ background_color:"white";
 
 # parser should ignore whitespaces
 SKIP:whitespace
-#SKIP:comment_start
-#SKIP:comment_end
 SKIP:comment
 SKIP:comment_keyword
 SKIP:line_comment
 
 # definition of grammar
-#S = (Statement)*;
-
-#Statement = WhileStatement | IfStatement | ExpressionStatement | Whatever;
-
-#WhileStatement = "while" "(" ConditionalExpression ")" Block;
-#IfStatement = "if" "(" ConditionalExpression ")" Block;
-#Block = "{" (Statement)* "}";
-#ConditionalExpression = <identifier>;
-#ExpressionStatement = <identifier>;
-
-#ClassStatement = "class" ClassName ("extends" ClassName)? ";";
-#ClassName = <identifier>;
-
-#FunctionStatement = "function" ( <variabletype> | <objecttype> | ClassName ) FunctionName "(" (VariableStatement)+ ")" Block;
-#FunctionName = <identifier>;
-
-#DefaultProperties = "defaultproperties" Block;
-
-#ReturnStatement = "return" ExpressionStatement;
-
-#VariableStatement = "var" (<variablekeyword>)* <variabletype> VariableName ";";
-#VariableName = <identifier>
-
-#additiveExpression = multiplicativeExpression "+" additiveExpression;
-#additiveExpression = multiplicativeExpression;
-#multiplicativeExpression = operand "*" multiplicativeExpression;
-#multiplicativeExpression = operand;
-#operand = <number>;
-
 #S = (Whatever)*;
 
 #Whatever = (
@@ -364,29 +333,36 @@ SKIP:line_comment
 #<number> |
 #<string>);
 
-S = (ClassDeclaration)* (ClassBody)*;
+S = ClassDeclaration (ClassBody)*;
 
-ClassDeclaration = UnmodifiedClassDeclaration (ClassDeclarationModifiers)* ";";
-UnmodifiedClassDeclaration = "class" <identifier> ["extends" Name];
-ClassDeclarationModifiers = <classkeyword>;
+ClassDeclaration = ClassStart <identifier> (ClassDeclarationModifiers)* ";";
+ClassDeclaration = ClassStart <identifier> ClassExtends (ClassDeclarationModifiers)* ";";
+ClassStart = "class";
+ClassExtends = "extends" Name;
+ClassDeclarationModifiers = <classkeyword> | "config"; #FIXME
+#ClassDeclaration = UnmodifiedClassDeclaration (ClassDeclarationModifiers)* ";";
+#UnmodifiedClassDeclaration = "class" <identifier> ["extends" Name];
+#ClassDeclarationModifiers = <classkeyword>;
 
-ClassBody = ( Initializer | 
-              ConstructorDeclaration |
+ClassBody = ( ConstructorDeclaration |
+              FieldDeclaration |
               MethodDeclaration |
-              StateDeclaration |
-              FieldDeclaration )*;
+              EventDeclaration |
+              StateDeclaration )*;
 
-#FieldDeclaration = VariableModifiers Type VariableDeclarator ("," VariableDeclarator)* ";";
+# defaultproperties { str="hello" }
+ConstructorDeclaration = "defaultproperties" "{" (ConstructorStatements)* "}";
+ConstructorStatements = Name "=" Name;
 
-FieldDeclaration = VariableStart VariableModifiers Type VariableDeclarator ("," VariableDeclarator)* ";";
+# var int i;
+# local int i = 5;
+FieldDeclaration = VariableStart (VariableModifiers)* Type VariableDeclarator ("," VariableDeclarator)* ";";
 
-#VariableStart = ( ( "var" ("(" (<identifier>)? ")")? ) |
-#                  "local" );
 VariableStart = "var";
 VariableStart = "var" "(" ")";
 VariableStart = "var" "(" <identifier> ")";
 VariableStart = "local";
-VariableModifiers = (<variablekeyword>)*;
+VariableModifiers = <variablekeyword>;
 VariableDeclarator = VariableDeclaratorId "=" VariableInitializer;
 VariableDeclarator = VariableDeclaratorId;
 VariableDeclaratorId = <identifier> Brackets;
@@ -401,29 +377,30 @@ VariableInitializers = ;
 VariableInitializers1 = "," VariableInitializers VariableInitializers1;
 VariableInitializers1 = ;
 
-ConstructorDeclaration = "defaultproperties" "{" (ConstructorStatements)* "}";
-ConstructorStatements = Name "=" Literal;
-
+# function Trigger( actor Other, pawn EventInstigator ) { /* code */ }
 MethodDeclaration = (MethodModifiers)* MethodStart MethodDeclarator MethodDeclaration1;
 MethodDeclaration = (MethodModifiers)* MethodStart ResultType MethodDeclarator MethodDeclaration1;
 
+MethodModifiers = <functionkeyword>;
+
 MethodStart = "function";
-MethodStart = "event";
+
+ResultType = Type;
+
+MethodDeclarator = <identifier> "(" FormalParameters ")" Brackets;
 MethodDeclaration1 = Block;
 MethodDeclaration1 = ";";
-MethodModifiers = <functionkeyword>;
-MethodDeclarator = <identifier> "(" FormalParameters ")" Brackets;
 
 FormalParameters = FormalParameter FormalParameters1;
 FormalParameters = ;
-FormalParameters1 = "," FormalParameter FormalParameters1;
-FormalParameters1 = ;
 FormalParameter = Type VariableDeclaratorId;
 FormalParameter = <functionparamkeys> Type VariableDeclaratorId;
+FormalParameters1 = "," FormalParameter FormalParameters1;
+FormalParameters1 = ;
 
-EventDeclaration = EventStart <identifier> EventDeclaration1;
+EventDeclaration = EventStart EventDeclarator EventDeclaration1;
 EventStart = "event";
-#EventDeclaration1 = MethodDeclaration;
+EventDeclarator = <identifier> "(" FormalParameters ")" Brackets;
 EventDeclaration1 = Block;
 EventDeclaration1 = ";";
 
@@ -435,16 +412,21 @@ StateDeclaration1 = MethodDeclaration;
 StateDeclaration1 = Block;
 StateDeclaration1 = ";";
 
-Initializer = Block;
 Type = PrimitiveType Brackets;
+#Type = <objecttype> Brackets;
 Type = Name Brackets;
 Brackets = "[" "]" Brackets;
 Brackets = ;
-PrimitiveType = (<variabletype> | <objecttype>);
-ResultType = Type;
+
+PrimitiveType = <variabletype>;
+
+# class'Canvas'.Static.MakeColor(255, 255, 255)
+Name = "class" String Name1;
 Name = <identifier> Name1;
-Name = "Super" "." <identifier> Name1;
+Name = <objecttype> Name1;
+Name = <supertype> Name1;
 Name1 = "." <identifier> Name1;
+Name1 = "." <objecttype> Name1;
 Name1 = ;
 NameList = Name "," NameList;
 NameList = Name;
@@ -454,7 +436,7 @@ MethodArguments = Expression ("," Expression)*;
 
 Expression = ConditionalExpression;
 # Name?
-Expression = Name;
+#Expression = Name;
 Expression = MethodCall;
 Expression = Name Expression1;
 Expression1 = "=" Expression;
@@ -537,6 +519,7 @@ PrimaryExpression1 = ;
 PrimaryPrefix = Literal;
 PrimaryPrefix = "this";
 PrimaryPrefix = "super" "." <identifier>;
+PrimaryPrefix = "Super" "." <identifier>;
 PrimaryPrefix = "(" Expression ")";
 PrimaryPrefix = AllocationExpression;
 PrimaryPrefix = ResultType "." "class";
@@ -547,14 +530,14 @@ PrimarySuffix1 = AllocationExpression;
 PrimarySuffix1 = <identifier>;
 PrimarySuffix = "[" Expression "]";
 PrimarySuffix = Arguments;
+String = (<string1> | <string2>);
 Literal = <number>;
 #Literal = <FLOATING_POINT_LITERAL>;
 Literal = <char>;
-Literal = <string1>;
-Literal = <string2>;
+Literal = String;
 Literal = "true";
 Literal = "false";
-Literal = "null";
+Literal = <nonetype>;
 
 Arguments = "(" ArgumentList ")";
 ArgumentList = Expression ArgumentList1;
@@ -595,7 +578,7 @@ BlockStatements = BlockStatement BlockStatements;
 BlockStatements = ;
 BlockStatement = LocalVariableDeclaration ";";
 BlockStatement = Statement;
-BlockStatement = UnmodifiedClassDeclaration;
+#BlockStatement = UnmodifiedClassDeclaration;
 LocalVariableDeclaration = FieldDeclaration;
 EmptyStatement = ";";
 StatementExpression = PreIncrementExpression;
