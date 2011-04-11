@@ -1,5 +1,13 @@
+/**
+ * @author Jacqui Hawkins
+ * @date 2011
+ * @licence CDDL Licence, Version 1.0
+ *
+ * Reference:
+ * http://platform.netbeans.org/tutorials/nbm-projecttype.html
+ */
 
-package org.jhawkins.unrealScriptSupport;
+package org.unrealscriptsupport;
 
 import java.io.IOException;
 import org.netbeans.api.project.Project;

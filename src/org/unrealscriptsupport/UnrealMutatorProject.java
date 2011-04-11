@@ -1,5 +1,13 @@
+/**
+ * @author Jacqui Hawkins
+ * @date 2011
+ * @licence CDDL Licence, Version 1.0
+ *
+ * Reference:
+ * http://platform.netbeans.org/tutorials/nbm-projecttype.html
+ */
 
-package org.jhawkins.unrealScriptSupport;
+package org.unrealscriptsupport;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -149,8 +157,7 @@ class UnrealMutatorProject implements Project {
 
         @Override
         public Icon getIcon() {
-            return new ImageIcon(ImageUtilities.loadImage(
-                    "org/jhawkins/unrealScriptSupport/icon-unreal_16x16.gif"));
+            return new ImageIcon(ImageUtilities.loadImage("icon-unreal_16x16.gif"));
         }
 
         @Override

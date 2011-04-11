@@ -64,8 +64,8 @@
                 </folder>
                 <folder name="Factories">
                     <file name="UnrealScriptDataLoader.instance">
-                        <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/jhawkins/unrealScriptSupport/icon-unreal_16x16.gif"/>
-                        <attr name="dataObjectClass" stringvalue="org.jhawkins.unrealScriptSupport.UnrealScriptDataObject"/>
+                        <attr name="SystemFileSystem.icon" urlvalue="nbresloc:icon-unreal_16x16.gif"/>
+                        <attr name="dataObjectClass" stringvalue="org.unrealscriptsupport.UnrealScriptDataObject"/>
                         <attr name="instanceCreate" methodvalue="org.openide.loaders.DataLoaderPool.factory"/>
                         <attr name="mimeType" stringvalue="text/x-uc"/>
                     </file>
@@ -76,23 +76,23 @@
     <folder name="Services">
         <folder name="MIMEResolver">
             <file name="UnrealScriptResolver.xml" url="UnrealScriptResolver.xml">
-                <attr name="displayName" bundlevalue="org.jhawkins.unrealScriptSupport.Bundle#Services/MIMEResolver/UnrealScriptResolver.xml"/>
+                <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Services/MIMEResolver/UnrealScriptResolver.xml"/>
             </file>
         </folder>
     </folder>
     <folder name="Templates">
         <folder name="Unreal Script">
             <file name="UnrealScriptEmptyTemplate.uc" url="UnrealScriptEmptyTemplate.uc">
-                <attr name="displayName" bundlevalue="org.jhawkins.unrealScriptSupport.Bundle#Templates/UnrealScript/UnrealScriptEmptyTemplate.uc"/>
+                <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/UnrealScript/UnrealScriptEmptyTemplate.uc"/>
                 <attr name="template" boolvalue="true"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/jhawkins/unrealScriptSupport/UnrealScriptEmptyTemplateDescription.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/UnrealScriptEmptyTemplateDescription.html"/>
                 <!--Use this line only if your template makes use of the FreeMarker template language:-->
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
             </file>
             <file name="UnrealScriptMutatorTemplate.uc" url="UnrealScriptMutatorTemplate.uc">
-                <attr name="displayName" bundlevalue="org.jhawkins.unrealScriptSupport.Bundle#Templates/UnrealScript/UnrealScriptMutatorTemplate.uc"/>
+                <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/UnrealScript/UnrealScriptMutatorTemplate.uc"/>
                 <attr name="template" boolvalue="true"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/jhawkins/unrealScriptSupport/UnrealScriptMutatorTemplateDescription.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/UnrealScriptMutatorTemplateDescription.html"/>
                 <!--Use this line only if your template makes use of the FreeMarker template language:-->
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
             </file>
@@ -102,7 +102,7 @@
         <folder name="text">
             <folder name="x-uc">
                 <file name="language.nbs" url="UnrealScript.nbs">
-                    <attr name ="icon" stringvalue="org/jhawkins/unrealScriptSupport/icon-unreal_16x16.gif"/>
+                    <attr name ="icon" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
                 </file>
             </folder>
         </folder>

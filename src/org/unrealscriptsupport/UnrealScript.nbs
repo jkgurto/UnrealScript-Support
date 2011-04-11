@@ -1,0 +1,546 @@
+# Copyright Jacqui Hawkins, 2011
+# CDDL Licence, Version 1.0
+#
+# Reference:
+# http://wiki.netbeans.org/GLFTutorial#Creating_New_NetBeans_Module_with_Languages_Support
+# http://wiki.netbeans.org/SchliemannNBSLanguageDescription#section-SchliemannNBSLanguageDescription-TokensDefinition.
+# http://netbeans.dzone.com/tips/quickstart-guide-language-supp
+# http://wiki.netbeans.org/How_to_create_support_for_a_new_language
+#
+# Created from:
+# http://www.koders.com/noncode/fidC2ADFACA94C24CD1F994B131AB8DE75367D15179.aspx
+#
+# The contents of this file are subject to the terms of the Common Development
+# and Distribution License (the License). You may not use this file except in
+# compliance with the License.
+#
+# You can obtain a copy of the License at http://www.netbeans.org/cddl.html
+# or http://www.netbeans.org/cddl.txt.
+#
+# When distributing Covered Code, include this CDDL Header Notice in each file
+# and include the License file at http://www.netbeans.org/cddl.txt.
+# If applicable, add the following below the CDDL Header, with the fields
+# enclosed by brackets [] replaced by your own identifying information:
+# "Portions Copyrighted [year] [name of copyright owner]"
+#
+# The Original Software is NetBeans. The Initial Developer of the Original
+# Software is Sun Microsystems, Inc. Portions Copyright 1997-2006 Sun
+# Microsystems, Inc. All Rights Reserved.
+
+# definition of tokens
+TOKEN:keyword:(
+"auto" |
+"break" |
+"case" |
+"continue" |
+"default" |
+"do" |
+"else" |
+"enum" |
+"extends" |
+"for" |
+"ForEach" |
+"goto" |
+"if" |
+"struct" |
+"switch" |
+"until" |
+"while"
+)
+
+TOKEN:boolean:(
+"false" |
+"False" |
+"true" |
+"True"
+)
+
+TOKEN:variablestart:(
+"local" |
+"var"
+)
+
+TOKEN:variabletype:(
+"bool" |
+"byte" |
+"float" |
+"int" |
+"string" |
+"name"
+)
+
+TOKEN:objecttype:(
+"actor" |
+"color" |
+"pawn" |
+"material" |
+"texture"
+)
+
+TOKEN:supertype:("Super" | "super")
+
+TOKEN:nonetype:("None" | "none")
+
+TOKEN:variablekeyword:(
+"config" |
+"const" |
+"editconst" |
+"editconstarray" |
+"editconstfindable" |
+"editinline" |
+"export" |
+"globalconfig" |
+"input" |
+"localized" |
+"native" |
+"private" |
+"protected" |
+"skip" |
+"transient" |
+"travel"
+)
+
+TOKEN:functionstart:("function")
+
+TOKEN:functionkeyword:(
+"static" |
+"singular" |
+"native" |
+"latent" |
+"iterator" |
+"final" |
+"simulated" |
+"operator" |
+"preOperator" |
+"postOperator"
+)
+
+TOKEN:functionparamkeys:(
+"out" |
+"optional" |
+"coerce"
+)
+
+TOKEN:functionreturn:("return")
+
+TOKEN:defaultpropertiesstart:("defaultproperties")
+TOKEN:eventstart:("event")
+TOKEN:statestart:("state")
+
+TOKEN:classstart:("class" | "Class")
+
+TOKEN:classkeyword:(
+"nativereplication" |
+"abstract" |
+"guid" |
+"config" |
+"placeable" |
+"notplaceable" |
+"hidecategories"
+)
+
+TOKEN:operator: (
+"@" | "@=" | "$" | "$=" |
+"*" | "*=" | "/" | "/=" | "+" | "+=" | "-" | "-=" | "%" |
+"||" | "&&" | "!" |
+"&" | "|" | "^" |
+"!=" | "==" | "<" | ">" | "<=" | ">=" | "~=" |
+"<<" | ">>" |  
+"Dot" | "Cross" | "**" | "ClockwiseFrom" |
+":" | "?" |
+"[" | "]" | "{" | "}" | "(" | ")" |
+"," | "=" | ";" | "."
+)
+
+TOKEN:identifier:( ["a"-"z" "A"-"Z"]["a"-"z" "A"-"Z" "0"-"9" "_"]* )
+
+TOKEN:integer:(["0"-"9"]+)
+TOKEN:number:(["0"-"9"] ["0"-"9" "."]*)
+
+TOKEN:whitespace:( [" " "\t" "\n" "\r"]+ )
+
+TOKEN:string:(
+"\""
+(
+[^ "\"" "\\" "\r" "\n"] |
+("\\" ["r" "n" "t" "\\" "\'" "\""]) |
+("\\" "u" ["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"])
+)*
+"\""
+)
+
+TOKEN:name:(
+"\'"
+(
+[^ "\"" "\\" "\r" "\n"] |
+("\\" ["r" "n" "t" "\\" "\'" "\""]) |
+("\\" "u" ["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"]
+["0"-"9" "a"-"f" "A"-"F"])
+)*
+"\'"
+)
+
+TOKEN:char: (
+    "\'"
+	( [^"\'" "\n" "\r"] |
+	  ("\\" ["r" "n" "t" "\\" "\'" "\""])
+	)
+    "\'"
+)
+
+TOKEN:comment:("/*"):<IN_COMMENT>
+
+<IN_COMMENT> {
+
+    TOKEN:comment_keyword: (
+	"@author" |
+	"@code" |
+	"@docRoot" |
+	"@deprecated" |
+	"@exception" |
+	"@inheritDoc" |
+	"@link" |
+	"@linkplain" |
+	"@literal" |
+	"@param" |
+	"@return" |
+	"@see" |
+	"@serial" |
+	"@serialData" |
+	"@serialField" |
+	"@since" |
+	"@throws" |
+	"@value" |
+	"@version"
+    )
+	
+    TOKEN:comment: ([^"@""*"]+)
+    TOKEN:comment: ("*"[^"/"])
+    TOKEN:comment: ("*/"):<DEFAULT>
+}
+
+TOKEN:line_comment: ( "//"[^ "\n" "\r"]* )
+
+# colours
+COLOR:keyword:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:boolean:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:variablestart:{
+foreground_color:"#6370C7";
+background_color:"white";
+}
+
+COLOR:variabletype:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:objecttype:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:supertype:{
+foreground_color:"magenta";
+background_color:"white";
+}
+
+COLOR:nonetype:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:variablekeyword:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:functionstart:{
+foreground_color:"#73A892";
+background_color:"white";
+}
+
+COLOR:functionkeyword:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:functionparamkeys:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:functionreturn:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:defaultpropertiesstart:{
+foreground_color:"#73A892";
+background_color:"white";
+}
+
+COLOR:eventstart:{
+foreground_color:"#73A892";
+background_color:"white";
+}
+
+COLOR:statestart:{
+foreground_color:"#73A892";
+background_color:"white";
+}
+
+COLOR:classstart:{
+foreground_color:"magenta";
+background_color:"white";
+}
+
+COLOR:classkeyword:{
+foreground_color:"blue";
+background_color:"white";
+}
+
+COLOR:comment:{
+foreground_color:"#969696";
+}
+
+COLOR:line_comment:{
+foreground_color:"#969696";
+}
+
+COLOR:comment_keyword:{
+    color_name: "comment_keyword";
+    default_coloring: "comment";
+    font_type: "bold+italic";
+    underline_color:"gray";
+}
+
+COLOR:integer:{
+foreground_color:"black";
+background_color:"white";
+}
+
+COLOR:number:{
+foreground_color:"black";
+background_color:"white";
+}
+
+COLOR:string:{
+foreground_color:"#CE7B00";
+background_color:"white";
+}
+
+COLOR:name:{
+foreground_color:"#F26721";
+background_color:"white";
+}
+
+COLOR:char:{
+foreground_color:"#F26721";
+background_color:"white";
+}
+
+# parser should ignore whitespaces
+SKIP:whitespace
+SKIP:comment
+SKIP:comment_keyword
+SKIP:line_comment
+
+# definition of grammar
+#S = (Whatever)*;
+
+#Whatever = (
+#<keyword> |
+#<variablestart> |
+#<variabletype> |
+#<objecttype> |
+#<supertype> |
+#<nonetype> |
+#<variablekeyword> |
+#<functionstart> |
+#<functionkeyword> |
+#<functionparamkeys> |
+#<defaultpropertiesstart> |
+#<eventstart> |
+#<statestart> |
+#<classstart> |
+#<classkeyword> |
+#<functionreturn> |
+#<operator> |
+#<identifier> |
+#<number> |
+#<string> |
+#<name> |
+#WhileStatement |
+#DeclarationStatement |
+#Assignment);
+
+S = ClassDeclaration (InstanceVariableDeclaration ";")* (Body)*;
+
+Body = (Statement);
+
+Identifier = <identifier>;
+Type = <variabletype>;
+Type = <objecttype>;
+Literal = <number>;
+Literal = <char>;
+Literal = <string>;
+Literal = <name>;
+Literal = <boolean>;
+Literal = <nonetype>;
+
+#"@" | "@=" | "$" | "$=" |
+#"*" | "*=" | "/" | "/=" | "+" | "+=" | "-" | "-=" | "%" |
+#"||" | "&&" | "!" |
+#"&" | "|" | "^" |
+#"!=" | "==" | "<" | ">" | "<=" | ">=" | "~=" |
+#"<<" | ">>" |
+#"Dot" | "Cross" | "**" | "ClockwiseFrom" |
+#":" | "?" |
+#"[" | "]" | "{" | "}" | "(" | ")" |
+#"," | "=" | ";" | "."
+Expression = Expression1;
+Expression1 = <string> ["@" <string>];
+Expression1 = <string> ["$" <string>];
+Expression1 = (Identifier | Literal) ["*" Expression];
+Expression1 = (Identifier | Literal) ["/" Expression];
+Expression1 = (Identifier | Literal) ["+" Expression];
+Expression1 = (Identifier | Literal) ["-" Expression];
+Expression1 = (Identifier | Literal) ["%" Expression];
+Expression1 = (Identifier | Literal) ["&" Expression];
+Expression1 = (Identifier | Literal) ["|" Expression];
+Expression1 = (Identifier | Literal) ["^" Expression];
+Expression1 = (Identifier | Literal) [">>" Expression];
+Expression1 = (Identifier | Literal) ["<<" Expression];
+Expression1 = (Identifier | Literal) ["Dot" Expression];
+Expression1 = (Identifier | Literal) ["Cross" Expression];
+Expression1 = (Identifier | Literal) ["**" Expression];
+Expression1 = (Identifier | Literal) ["ClockwiseFrom" Expression];
+
+Assignment = Identifier Assignment1;
+Assignment = <string> "@=" <string>;
+Assignment = <string> "$=" <string>;
+Assignment1 = "=" Expression;
+Assignment1 = "*=" Expression;
+Assignment1 = "/=" Expression;
+Assignment1 = "+=" Expression;
+Assignment1 = "-=" Expression;
+Assignment1 = "%=" Expression;
+Assignment1 = "&=" Expression;
+Assignment1 = "|=" Expression;
+Assignment1 = "^=" Expression;
+
+BlockStatement = "{" (Statement)* "}";
+Statement = LocalVariableDeclaration ";";
+Statement = Assignment ";";
+Statement = WhileStatement;
+Statement = IfStatement;
+Statement = FunctionStatement;
+
+EmptyStatement = ";";
+
+ClassDeclaration = <classstart> Identifier ["extends" Identifier] (ClassDeclarationModifiers)* ";";
+ClassDeclarationModifiers = <classkeyword>;
+
+InstanceVariableDeclaration = "var" Type Identifier;
+InstanceVariableDeclaration = "var" "(" ")" Type Identifier;
+LocalVariableDeclaration = "local" Type Identifier;
+
+WhileStatement = "while" "(" Expression ")" WhileStatement1;
+WhileStatement1 = Statement;
+WhileStatement1 = BlockStatement;
+
+ForStatement = "for" "(" ForInit ";" ForExpression ";" ForUpdate ")" BlockStatement;
+ForInit = LocalVariableDeclaration;
+ForInit = Assignment;
+ForInit = ;
+ForExpression = Expression;
+ForExpression = ;
+ForUpdate = ;
+ForStatement1 = Statement;
+ForStatement1 = BlockStatement;
+
+IfStatement = "if" "(" Expression ")" IfStatement1 [ElseStatement];
+IfStatement1 = Statement;
+IfStatement1 = BlockStatement;
+IfStatement1 = ElseIfStatement;
+ElseIfStatement = "else" "if" "(" Expression ")" ElseIfStatement1;
+ElseIfStatement1 = Statement;
+ElseIfStatement1 = BlockStatement;
+ElseStatement = "else" Statement;
+ElseStatement = "else" BlockStatement;
+
+FunctionStatement =
+(<functionkeyword>)* "function" [Type] Identifier "(" (FunctionArguments)* ")"
+BlockStatement;
+FunctionArguments = FunctionArgument1 ("," FunctionArgument1)*;
+FunctionArgument1 = (FunctionParam)* Type Identifier;
+FunctionParam = (
+"static" |
+"singular" |
+"latent" |
+"iterator" |
+"final" |
+"simulated" |
+"operator" |
+"preOperator" |
+"postOperator" |
+NativeParam
+);
+NativeParam = "native" "(" <integer> ")";
+
+DefaultPropertiesStatement = "defaultproperties" "{" (DefaultPropertiesStatement1)* "}";
+DefaultPropertiesStatement1 = Assignment;
+
+INDENT "{:}"
+INDENT "(:)"
+#INDENT "<br>s*(((if|while)<br>s*<br>(|else<br>s*|else<br>s+if<br>s*<br>(|for<br>s*<br>(.*<br>))[^{;]*)"
+
+COMPLETE "{:}"
+COMPLETE "(:)"
+COMPLETE "\":\""
+COMPLETE "\':\'"
+
+FOLD:WhileStatement: {
+    expand_type_action_name:"Expand While";
+    collapse_type_action_name:"Collapse While";
+}
+
+NAVIGATOR:DeclarationStatement: {
+    display_name: "variable $Identifier$";
+    icon: "/org/netbeans/modules/languages/resources/variable.gif";
+}
+
+NAVIGATOR:InstanceVariableDeclaration: {
+    display_name: "var $Identifier$";
+    icon: "/org/netbeans/modules/languages/resources/variable.gif";
+}
+
+NAVIGATOR:LocalVariableDeclaration: {
+    display_name: "local $Identifier$";
+    icon: "/org/netbeans/modules/languages/resources/variable.gif";
+}
+
+NAVIGATOR:ClassDeclaration: {
+    display_name: "class $Identifier$";
+    icon: "/org/netbeans/modules/languages/resources/class.gif";
+}
+
+NAVIGATOR:FunctionDeclaration: {
+    display_name: "function $Identifier$";
+    icon: "/org/netbeans/modules/languages/resources/method.gif";
+}
+
+FOLD:block:"{...}"
