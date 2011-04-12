@@ -394,6 +394,7 @@ Body = (Statement);
 Identifier = <identifier>;
 Type = <variabletype>;
 Type = <objecttype>;
+Literal = <integer>;
 Literal = <number>;
 Literal = <char>;
 Literal = <string>;
@@ -411,43 +412,82 @@ Literal = <nonetype>;
 #":" | "?" |
 #"[" | "]" | "{" | "}" | "(" | ")" |
 #"," | "=" | ";" | "."
-Expression = Expression1;
-Expression1 = <string> ["@" <string>];
-Expression1 = <string> ["$" <string>];
-Expression1 = (Identifier | Literal) ["*" Expression];
-Expression1 = (Identifier | Literal) ["/" Expression];
-Expression1 = (Identifier | Literal) ["+" Expression];
-Expression1 = (Identifier | Literal) ["-" Expression];
-Expression1 = (Identifier | Literal) ["%" Expression];
-Expression1 = (Identifier | Literal) ["&" Expression];
-Expression1 = (Identifier | Literal) ["|" Expression];
-Expression1 = (Identifier | Literal) ["^" Expression];
-Expression1 = (Identifier | Literal) [">>" Expression];
-Expression1 = (Identifier | Literal) ["<<" Expression];
-Expression1 = (Identifier | Literal) ["Dot" Expression];
-Expression1 = (Identifier | Literal) ["Cross" Expression];
-Expression1 = (Identifier | Literal) ["**" Expression];
-Expression1 = (Identifier | Literal) ["ClockwiseFrom" Expression];
+#Expression = Literal;
+#Expression = Identifier;
+#Expression = Identifier Expression2;
+#Expression = Literal Expression2;
+#Expression = <string> ["@" <string>];
+#Expression = <string> ["$" <string>];
+#Expression2 = "*" Expression;
+#Expression2 = "/" Expression;
+#Expression2 = "+" Expression;
+#Expression2 = "-" Expression;
+#Expression2 = "%" Expression;
+#Expression2 = "&" Expression;
+#Expression2 = "|" Expression;
+#Expression2 = "^" Expression;
+#Expression2 = ">>" Expression;
+#Expression2 = "<<" Expression;
+#Expression2 = "Dot" Expression;
+#Expression2 = "Cross" Expression;
+#Expression2 = "**" Expression;
+#Expression2 = "ClockwiseFrom" Expression;
 
-Assignment = Identifier Assignment1;
-Assignment = <string> "@=" <string>;
-Assignment = <string> "$=" <string>;
-Assignment1 = "=" Expression;
-Assignment1 = "*=" Expression;
-Assignment1 = "/=" Expression;
-Assignment1 = "+=" Expression;
-Assignment1 = "-=" Expression;
-Assignment1 = "%=" Expression;
-Assignment1 = "&=" Expression;
-Assignment1 = "|=" Expression;
-Assignment1 = "^=" Expression;
+Value = (Identifier | Literal);
+#Expression = StringExpression;
+Expression = Value ["*" Expression];
+Expression = Value ["/" Expression];
+Expression = Value ["+" Expression];
+Expression = Value ["-" Expression];
+Expression = Value ["%" Expression];
+Expression = Value ["&" Expression];
+Expression = Value ["|" Expression];
+Expression = Value ["^" Expression];
+Expression = Value [">>" Expression];
+Expression = Value ["<<" Expression];
+Expression = Value ["Dot" Expression];
+Expression = Value ["Cross" Expression];
+Expression = Value ["**" Expression];
+Expression = Value ["ClockwiseFrom" Expression];
+
+StringValue = (Identifier | <string>);
+StringExpression = StringValue ["@" StringValue];
+StringExpression = StringValue ["$" StringValue];
+
+#Assignment = Identifier Assignment1;
+#Assignment = <string> "@=" <string>;
+#Assignment = <string> "$=" <string>;
+#Assignment1 = "=" Expression;
+#Assignment1 = "*=" Expression;
+#Assignment1 = "/=" Expression;
+#Assignment1 = "+=" Expression;
+#Assignment1 = "-=" Expression;
+#Assignment1 = "%=" Expression;
+#Assignment1 = "&=" Expression;
+#Assignment1 = "|=" Expression;
+#Assignment1 = "^=" Expression;
+Assignment = Identifier "=" Expression;
+Assignment = Identifier "=" StringExpression;
+Assignment = Identifier "@=" StringExpression;
+Assignment = Identifier "$=" StringExpression;
+Assignment = Identifier "*=" Expression;
+Assignment = Identifier "/=" Expression;
+Assignment = Identifier "+=" Expression;
+Assignment = Identifier "-=" Expression;
+Assignment = Identifier "%=" Expression;
+Assignment = Identifier "&=" Expression;
+Assignment = Identifier "|=" Expression;
+Assignment = Identifier "^=" Expression;
 
 BlockStatement = "{" (Statement)* "}";
 Statement = LocalVariableDeclaration ";";
 Statement = Assignment ";";
 Statement = WhileStatement;
+Statement = ForStatement;
 Statement = IfStatement;
 Statement = FunctionStatement;
+Statement = DefaultPropertiesStatement;
+Statement = EmptyStatement;
 
 EmptyStatement = ";";
 
@@ -462,7 +502,7 @@ WhileStatement = "while" "(" Expression ")" WhileStatement1;
 WhileStatement1 = Statement;
 WhileStatement1 = BlockStatement;
 
-ForStatement = "for" "(" ForInit ";" ForExpression ";" ForUpdate ")" BlockStatement;
+ForStatement = "for" "(" ForInit ";" ForExpression ";" ForUpdate ")" ForStatement1;
 ForInit = LocalVariableDeclaration;
 ForInit = Assignment;
 ForInit = ;
@@ -501,8 +541,8 @@ NativeParam
 );
 NativeParam = "native" "(" <integer> ")";
 
-DefaultPropertiesStatement = "defaultproperties" "{" (DefaultPropertiesStatement1)* "}";
-DefaultPropertiesStatement1 = Assignment;
+DefaultPropertiesStatement = <defaultpropertiesstart> "{" (DefaultPropertiesStatement1)* "}";
+DefaultPropertiesStatement1 = Identifier "=" Expression;
 
 INDENT "{:}"
 INDENT "(:)"
