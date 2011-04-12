@@ -2,3 +2,4 @@ build.xml
 build/*
 manifest.mf
 nbproject/*
+doc/*

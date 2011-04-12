@@ -137,7 +137,9 @@
     <folder name="Editors">
         <folder name="text">
             <folder name="x-uc">
+
                 <attr name="SystemFileSystem.localizingBundle" stringvalue="org.unrealscriptsupport.Bundle"/>
+
                 <folder name="FontsColors">
                     <folder name="NetBeans">
                         <folder name="Defaults">
@@ -147,6 +149,7 @@
                         </folder>
                     </folder>
                 </folder>
+                
                 <file name="org-unrealscriptsupport-parser-UnrealScriptParserFactory.instance"/>
                 <file name="org-unrealscriptsupport-parser-SyntaxErrorsHighlightingTaskFactory.instance"/>
                 <file name="org-unrealscriptsupport-parser-UnrealScriptIndentTaskFactory.instance"/>

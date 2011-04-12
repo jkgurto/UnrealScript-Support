@@ -14,20 +14,19 @@ import org.netbeans.modules.parsing.api.Snapshot;
 import org.netbeans.modules.parsing.api.Task;
 import org.netbeans.modules.parsing.spi.Parser;
 import org.netbeans.modules.parsing.spi.SourceModificationEvent;
-import org.unrealscriptsupport.jccparser.JavaParser;
 
 public class UnrealScriptParser extends Parser {
 
     private Snapshot snapshot;
-    private JavaParser javaParser;
+    private org.unrealscriptsupport.jccparser.UnrealScriptParser unrealScriptParser;
 
     @Override
     public void parse (Snapshot snapshot, Task task, SourceModificationEvent event) {
         this.snapshot = snapshot;
         Reader reader = new StringReader (snapshot.getText ().toString ());
-        javaParser = new JavaParser (reader);
+        unrealScriptParser = new org.unrealscriptsupport.jccparser.UnrealScriptParser (reader);
         try {
-            javaParser.CompilationUnit ();
+            unrealScriptParser.CompilationUnit ();
         } catch (org.unrealscriptsupport.jccparser.ParseException ex) {
             Logger.getLogger (UnrealScriptParser.class.getName()).log (Level.WARNING, null, ex);
         }
@@ -35,7 +34,7 @@ public class UnrealScriptParser extends Parser {
 
     @Override
     public Result getResult (Task task) {
-        return new UnrealScriptParserResult (snapshot, javaParser);
+        return new UnrealScriptParserResult (snapshot, unrealScriptParser);
     }
 
     @Override
@@ -53,17 +52,17 @@ public class UnrealScriptParser extends Parser {
 
     public static class UnrealScriptParserResult extends Result {
 
-        private JavaParser javaParser;
+        private org.unrealscriptsupport.jccparser.UnrealScriptParser unrealScriptParser;
         private boolean valid = true;
 
-        UnrealScriptParserResult (Snapshot snapshot, JavaParser javaParser) {
+        UnrealScriptParserResult (Snapshot snapshot, org.unrealscriptsupport.jccparser.UnrealScriptParser unrealScriptParser) {
             super (snapshot);
-            this.javaParser = javaParser;
+            this.unrealScriptParser = unrealScriptParser;
         }
 
-        public JavaParser getJavaParser () throws org.netbeans.modules.parsing.spi.ParseException {
+        public org.unrealscriptsupport.jccparser.UnrealScriptParser getUnrealScriptParser () throws org.netbeans.modules.parsing.spi.ParseException {
             if (!valid) throw new org.netbeans.modules.parsing.spi.ParseException ();
-            return javaParser;
+            return unrealScriptParser;
         }
 
         @Override

@@ -9,9 +9,10 @@ public class UnrealScriptTokenId implements TokenId {
     private final String primaryCategory;
     private final int id;
 
-    private static final Language<UnrealScriptTokenId> language = new UnrealScriptLanguageHierarchy().language();
+    private static final Language<UnrealScriptTokenId> language =
+            new UnrealScriptLanguageHierarchy().language();
 
-    public static final Language<UnrealScriptTokenId> getLanguage() {
+    public static Language<UnrealScriptTokenId> getLanguage() {
         return language;
     }
 

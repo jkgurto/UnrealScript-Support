@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.unrealscriptsupport.parser;
 
 import java.util.ArrayList;
@@ -30,48 +29,82 @@ import org.unrealscriptsupport.parser.UnrealScriptParser.UnrealScriptParserResul
  */
 class SyntaxErrorsHighlightingTask extends ParserResultTask {
 
-    public SyntaxErrorsHighlightingTask () {
+    public SyntaxErrorsHighlightingTask() {
     }
 
     @Override
-    public void run (Result result, SchedulerEvent event) {
+    public void run(Result result, SchedulerEvent event) {
         try {
-            UnrealScriptParserResult unrealScriptResult = (UnrealScriptParserResult) result;
-            List<ParseException> syntaxErrors = unrealScriptResult.getJavaParser ().syntaxErrors;
-            Document document = result.getSnapshot ().getSource ().getDocument (false);
-            List<ErrorDescription> errors = new ArrayList<ErrorDescription> ();
+            UnrealScriptParserResult unrealScriptResult =
+                    (UnrealScriptParserResult) result;
+
+            List<ParseException> syntaxErrors =
+                    unrealScriptResult.getUnrealScriptParser().syntaxErrors;
+
+            Document document =
+                    result.getSnapshot().getSource().getDocument(false);
+
+            List<ErrorDescription> errors = new ArrayList<ErrorDescription>();
+
             for (ParseException syntaxError : syntaxErrors) {
+
                 Token token = syntaxError.currentToken;
-                int start = NbDocument.findLineOffset ((StyledDocument) document, token.beginLine - 1) + token.beginColumn - 1;
-                int end = NbDocument.findLineOffset ((StyledDocument) document, token.endLine - 1) + token.endColumn;
-                ErrorDescription errorDescription = ErrorDescriptionFactory.createErrorDescription (
-                    Severity.ERROR,
-                    syntaxError.getMessage (),
-                    document,
-                    document.createPosition (start),
-                    document.createPosition (end)
-                );
-                errors.add (errorDescription);
+
+                if (token != null) {
+                    int start =
+                            NbDocument.findLineOffset((StyledDocument) document,
+                                                       token.beginLine - 1)
+                            + token.beginColumn - 1;
+                    int end = NbDocument.findLineOffset((StyledDocument) document,
+                                                        token.endLine - 1)
+                            + token.endColumn;
+
+                    ErrorDescription errorDescription =
+                            ErrorDescriptionFactory.createErrorDescription(
+                                Severity.ERROR,
+                                syntaxError.getMessage(),
+                                document,
+                                document.createPosition(start),
+                                document.createPosition(end));
+
+                    errors.add(errorDescription);
+                }
+                else {
+                    ErrorDescription errorDescription =
+                            ErrorDescriptionFactory.createErrorDescription(
+                                Severity.ERROR,
+                                "UnrealScript parser error" +
+                                "- bug loading parser",
+                                document,
+                                document.createPosition(0),
+                                document.createPosition(0));
+
+                    errors.add(errorDescription);
+                }
             }
-            HintsController.setErrors (document, "simple-java", errors);
-        } catch (BadLocationException ex1) {
-            Exceptions.printStackTrace (ex1);
-        } catch (org.netbeans.modules.parsing.spi.ParseException ex1) {
-            Exceptions.printStackTrace (ex1);
+
+            HintsController.setErrors(document, "unrealscript", errors);
+
+        }
+        catch (BadLocationException ex1) {
+            Exceptions.printStackTrace(ex1);
+        }
+        catch (org.netbeans.modules.parsing.spi.ParseException ex1) {
+            Exceptions.printStackTrace(ex1);
         }
     }
 
     @Override
-    public int getPriority () {
+    public int getPriority() {
         return 100;
     }
 
     @Override
-    public Class<? extends Scheduler> getSchedulerClass () {
+    public Class<? extends Scheduler> getSchedulerClass() {
         return Scheduler.EDITOR_SENSITIVE_TASK_SCHEDULER;
     }
 
     @Override
-    public void cancel () {
+    public void cancel() {
     }
 }

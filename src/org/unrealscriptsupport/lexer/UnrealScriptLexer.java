@@ -8,23 +8,23 @@ package org.unrealscriptsupport.lexer;
 import org.netbeans.spi.lexer.Lexer;
 import org.netbeans.spi.lexer.LexerRestartInfo;
 import org.unrealscriptsupport.jcclexer.JavaCharStream;
-import org.unrealscriptsupport.jcclexer.JavaParserTokenManager;
+import org.unrealscriptsupport.jcclexer.UnrealScriptParserTokenManager;
 import org.unrealscriptsupport.jcclexer.Token;
 
 class UnrealScriptLexer implements Lexer<UnrealScriptTokenId> {
 
     private LexerRestartInfo<UnrealScriptTokenId> info;
-    private JavaParserTokenManager javaParserTokenManager;
+    private UnrealScriptParserTokenManager unrealScriptParserTokenManager;
 
 
     UnrealScriptLexer (LexerRestartInfo<UnrealScriptTokenId> info) {
         this.info = info;
         JavaCharStream stream = new JavaCharStream (info.input ());
-        javaParserTokenManager = new JavaParserTokenManager (stream);
+        unrealScriptParserTokenManager = new UnrealScriptParserTokenManager (stream);
     }
 
     public org.netbeans.api.lexer.Token<UnrealScriptTokenId> nextToken () {
-        Token token = javaParserTokenManager.getNextToken ();
+        Token token = unrealScriptParserTokenManager.getNextToken ();
         if (info.input ().readLength () < 1) return null;
         return info.tokenFactory ().createToken (UnrealScriptLanguageHierarchy.getToken (token.kind));
     }
