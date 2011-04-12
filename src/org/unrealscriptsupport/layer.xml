@@ -81,9 +81,32 @@
         </folder>
     </folder>
     <folder name="Templates">
+        <folder name="Project">
+            <folder name="UnrealScript">
+                <file name="NewUnrealScriptProjectProject.zip" url="NewUnrealScriptProjectProject.zip">
+                    <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/Project/Samples/UnrealScript/NewUnrealScriptProjectProject.zip"/>
+                    <attr name="iconBase" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
+                    <attr name="instantiatingIterator" methodvalue="org.unrealscriptsupport.samples.newunrealscriptproject.NewUnrealScriptProjectWizardIterator.createIterator"/>
+                    <attr name="instantiatingWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/samples/newunrealscriptproject/NewUnrealScriptProjectDescription.html"/>
+                    <attr name="template" boolvalue="true"/>
+                </file>
+            </folder>
+            <folder name="Samples">
+                <folder name="UnrealScript">
+                    <file name="LightTriggerProject.zip" url="LightTriggerProject.zip">
+                        <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/Project/Samples/LightTriggerProject.zip"/>
+                        <attr name="iconBase" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
+                        <attr name="instantiatingIterator" methodvalue="org.unrealscriptsupport.samples.lighttrigger.LightTriggerWizardIterator.createIterator"/>
+                        <attr name="instantiatingWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/samples/lighttrigger/LightTriggerDescription.html"/>
+                        <attr name="template" boolvalue="true"/>
+                    </file>
+                </folder>
+            </folder>
+        </folder>
         <folder name="Unreal Script">
             <file name="UnrealScriptEmptyTemplate.uc" url="UnrealScriptEmptyTemplate.uc">
                 <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/UnrealScript/UnrealScriptEmptyTemplate.uc"/>
+                <attr name="iconBase" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
                 <attr name="template" boolvalue="true"/>
                 <attr name="templateWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/UnrealScriptEmptyTemplateDescription.html"/>
                 <!--Use this line only if your template makes use of the FreeMarker template language:-->
@@ -91,6 +114,7 @@
             </file>
             <file name="UnrealScriptMutatorTemplate.uc" url="UnrealScriptMutatorTemplate.uc">
                 <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/UnrealScript/UnrealScriptMutatorTemplate.uc"/>
+                <attr name="iconBase" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
                 <attr name="template" boolvalue="true"/>
                 <attr name="templateWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/UnrealScriptMutatorTemplateDescription.html"/>
                 <!--Use this line only if your template makes use of the FreeMarker template language:-->
@@ -104,33 +128,6 @@
                 <file name="language.nbs" url="UnrealScript.nbs">
                     <attr name ="icon" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
                 </file>
-            </folder>
-        </folder>
-    </folder>-->
-    <!--<folder name="Editors">
-        <folder name="text">
-            <folder name="x-uc">
-
-                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.unrealscriptsupport.Bundle"/>
-                <folder name="FontsColors">
-                    <folder name="NetBeans">
-                        <folder name="Defaults">
-                            <file name="FontAndColors.xml" url="FontAndColors.xml">
-                                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.unrealscriptsupport.Bundle"/>
-                            </file>
-                        </folder>
-                    </folder>
-                </folder>
-
-                <file name="org-netbeans-modules-editor-NbEditorKit.instance"/>
-                
-                <file name="language.instance">
-                    <attr name="instanceCreate" methodvalue="org.unrealscriptsupport.lexer.UnrealScriptTokenId.getLanguage"/>
-                    <attr name="instanceOf" stringvalue="org.netbeans.api.lexer.Language"/>
-                </file>
-
-                
-
             </folder>
         </folder>
     </folder>-->
