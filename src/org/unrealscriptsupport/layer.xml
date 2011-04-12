@@ -64,7 +64,7 @@
                 </folder>
                 <folder name="Factories">
                     <file name="UnrealScriptDataLoader.instance">
-                        <attr name="SystemFileSystem.icon" urlvalue="nbresloc:icon-unreal_16x16.gif"/>
+                        <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/unrealscriptsupport/icon-unreal_16x16.gif"/>
                         <attr name="dataObjectClass" stringvalue="org.unrealscriptsupport.UnrealScriptDataObject"/>
                         <attr name="instanceCreate" methodvalue="org.openide.loaders.DataLoaderPool.factory"/>
                         <attr name="mimeType" stringvalue="text/x-uc"/>
@@ -98,7 +98,7 @@
             </file>
         </folder>
     </folder>
-    <folder name="Editors">
+    <!--<folder name="Editors">
         <folder name="text">
             <folder name="x-uc">
                 <file name="language.nbs" url="UnrealScript.nbs">
@@ -106,6 +106,65 @@
                 </file>
             </folder>
         </folder>
+    </folder>-->
+    <!--<folder name="Editors">
+        <folder name="text">
+            <folder name="x-uc">
+
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.unrealscriptsupport.Bundle"/>
+                <folder name="FontsColors">
+                    <folder name="NetBeans">
+                        <folder name="Defaults">
+                            <file name="FontAndColors.xml" url="FontAndColors.xml">
+                                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.unrealscriptsupport.Bundle"/>
+                            </file>
+                        </folder>
+                    </folder>
+                </folder>
+
+                <file name="org-netbeans-modules-editor-NbEditorKit.instance"/>
+                
+                <file name="language.instance">
+                    <attr name="instanceCreate" methodvalue="org.unrealscriptsupport.lexer.UnrealScriptTokenId.getLanguage"/>
+                    <attr name="instanceOf" stringvalue="org.netbeans.api.lexer.Language"/>
+                </file>
+
+                
+
+            </folder>
+        </folder>
+    </folder>-->
+    <folder name="Editors">
+        <folder name="text">
+            <folder name="x-uc">
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.unrealscriptsupport.Bundle"/>
+                <folder name="FontsColors">
+                    <folder name="NetBeans">
+                        <folder name="Defaults">
+                            <file name="FontAndColors.xml" url="FontAndColors.xml">
+                                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.unrealscriptsupport.Bundle"/>
+                            </file>
+                        </folder>
+                    </folder>
+                </folder>
+                <file name="org-unrealscriptsupport-parser-UnrealScriptParserFactory.instance"/>
+                <file name="org-unrealscriptsupport-parser-SyntaxErrorsHighlightingTaskFactory.instance"/>
+                <file name="org-unrealscriptsupport-parser-UnrealScriptIndentTaskFactory.instance"/>
+                <file name="language.instance">
+                    <attr name="instanceCreate" methodvalue="org.unrealscriptsupport.lexer.UnrealScriptTokenId.getLanguage"/>
+                    <attr name="instanceOf" stringvalue="org.netbeans.api.lexer.Language"/>
+                </file>
+            </folder>
+        </folder>
     </folder>
+
+    <folder name="OptionsDialog">
+        <folder name="PreviewExamples">
+            <folder name="text">
+                <file name="x-uc" url="UnrealScriptExample.uc"/>
+            </folder>
+        </folder>
+    </folder>
+
 
 </filesystem>

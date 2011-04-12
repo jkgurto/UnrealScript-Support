@@ -157,7 +157,7 @@ class UnrealMutatorProject implements Project {
 
         @Override
         public Icon getIcon() {
-            return new ImageIcon(ImageUtilities.loadImage("icon-unreal_16x16.gif"));
+            return new ImageIcon(ImageUtilities.loadImage("org/unrealscriptsupport/icon-unreal_16x16.gif"));
         }
 
         @Override
