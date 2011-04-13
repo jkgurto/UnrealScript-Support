@@ -149,7 +149,7 @@
                 
                 <file name="org-unrealscriptsupport-parser-UnrealScriptParserFactory.instance"/>
                 <file name="org-unrealscriptsupport-parser-SyntaxErrorsHighlightingTaskFactory.instance"/>
-                <file name="org-unrealscriptsupport-parser-UnrealScriptIndentTaskFactory.instance"/>
+                <!--<file name="org-unrealscriptsupport-parser-UnrealScriptIndentTaskFactory.instance"/>-->
                 <file name="language.instance">
                     <attr name="instanceCreate" methodvalue="org.unrealscriptsupport.lexer.UnrealScriptTokenId.getLanguage"/>
                     <attr name="instanceOf" stringvalue="org.netbeans.api.lexer.Language"/>
