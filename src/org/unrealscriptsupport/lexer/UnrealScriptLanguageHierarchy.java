@@ -121,6 +121,7 @@ public class UnrealScriptLanguageHierarchy extends LanguageHierarchy<UnrealScrip
                 new UnrealScriptTokenId("SINGULAR", "keyword", UnrealScriptParserConstants.SINGULAR),
                 new UnrealScriptTokenId("STATE", "keyword", UnrealScriptParserConstants.STATE),
                 new UnrealScriptTokenId("STATIC", "keyword", UnrealScriptParserConstants.STATIC),
+                new UnrealScriptTokenId("STRING", "keyword", UnrealScriptParserConstants.STRING),
                 new UnrealScriptTokenId("STRUCT", "keyword", UnrealScriptParserConstants.STRUCT),
                 new UnrealScriptTokenId("SUPER", "keyword", UnrealScriptParserConstants.SUPER),
                 new UnrealScriptTokenId("SWITCH", "keyword", UnrealScriptParserConstants.SWITCH),

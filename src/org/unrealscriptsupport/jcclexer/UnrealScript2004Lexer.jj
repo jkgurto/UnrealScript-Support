@@ -1057,3 +1057,12 @@ TOKEN :
   }
 | < GT: ">" >
 }
+
+// Match anything that has not been matched already
+// For error checking purposes
+// Keep as last token in file
+// http://netbeans-org.1045718.n5.nabble.com/New-Language-Support-Tutorial-td3290238.html
+/*TOKEN :
+{
+    < ALL: ( ~[" ", "\t", "\n","\r", "\f"] ) >
+}*/
