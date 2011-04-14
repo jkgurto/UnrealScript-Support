@@ -5,6 +5,16 @@
 // Source:
 // http://udn.epicgames.com/Two/UnrealScriptReference.html#Example%20program%20structure
 class TriggerLight extends Light;
+
+/**
+ * Formal comment.
+ * @author x
+ * @date y
+ * @licence z
+ * @ssddfd
+ */
+ /* Comment */
+ // Comment
  
 //---------------------------------------------------------------------
 // Variables.

@@ -15,18 +15,26 @@
     "-//NetBeans//DTD Editor Fonts and Colors settings 1.1//EN"
     "http://www.netbeans.org/dtds/EditorFontsColors-1_1.dtd">
 <fontscolors>
-    <fontcolor name="character" default="char"/>
-    <fontcolor name="errors" default="error"/>
-    <fontcolor name="identifier" default="identifier"/>
-    <fontcolor name="keyword" default="keyword"/>
-    <fontcolor name="literal" default="keyword" />
+    <fontcolor name="name" default="string"/>
+    <fontcolor name="class" default="keyword" foreColor="magenta"/>
     <fontcolor name="comment" default="comment"/>
-    <fontcolor name="number" default="number"/>
-    <fontcolor name="operator" default="operator"/>
-    <fontcolor name="string" default="string"/>
-    <fontcolor name="separator" default="separator"/>
-    <fontcolor name="whitespace" default="whitespace"/>
-    <fontcolor name="method-declaration" default="method">
+    <fontcolor name="error" default="error"/>
+    <fontcolor name="javadoc-comment" default="comment" foreColor="006633"/>
+    <fontcolor name="identifier" default="identifier"/>
+    <fontcolor name="javadoc-tag" default="comment" foreColor="006633">
         <font style="bold" />
     </fontcolor>
+    <fontcolor name="keyword" default="keyword"/>
+    <fontcolor name="literal" default="number" />
+    <fontcolor name="local-declaration" default="keyword" foreColor="9999FF"/>
+    <fontcolor name="method-declaration" default="method" foreColor="73A892">
+        <font style="bold" />
+    </fontcolor>
+    <fontcolor name="number" default="number"/>
+    <fontcolor name="operator" default="operator"/>
+    <fontcolor name="separator" default="separator"/>
+    <fontcolor name="string" default="string"/>
+    <fontcolor name="var-declaration" default="keyword" foreColor="9999FF"/>
+    <fontcolor name="whitespace" default="whitespace"/>
+    
 </fontscolors>

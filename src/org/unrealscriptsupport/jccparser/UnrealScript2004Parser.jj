@@ -35,17 +35,162 @@
 
 options {
   JAVA_UNICODE_ESCAPE = true;
-  ERROR_REPORTING = false;
+  ERROR_REPORTING = true;
   STATIC = false;
-  BUILD_PARSER = false;
+  SANITY_CHECK = true;
+  BUILD_PARSER = true;
   IGNORE_CASE = true;
 }
 
 PARSER_BEGIN(UnrealScriptParser)
 
-package org.unrealscriptsupport.jcclexer;
+package org.unrealscriptsupport.jccparser;
+import java.io.*;
+import java.util.*;
+/**
+ * Grammar to parse UnrealScript from Unreal Tournament 2004.
+ * Based on:
+ * Grammar to parse Java version 1.5
+ * by Sreenivasa Viswanadha - Simplified and enhanced for 1.5
+ */
+public class UnrealScriptParser
+{
+    public static final String PARSER_NAME = "UnrealScript Parser";
+    public static final float VERSION = 1.0f;
+    public static final String PARSER_INFO =
+        PARSER_NAME + " Version " + VERSION + ": ";
 
-public class UnrealScriptParser {}
+    public List<ParseException> syntaxErrors = new ArrayList<ParseException> ();
+
+    void recover (ParseException ex, int recoveryPoint) {
+        syntaxErrors.add (ex);
+        Token t;
+        do {
+            t = getNextToken ();
+        } while (t.kind != recoveryPoint);
+    }
+
+    /**
+     * Class to hold modifiers.
+     */
+    static public final class ModifierSet
+    {
+        /* Definitions of the bits in the modifiers field.  */
+        public static final int PUBLIC = 0x0001;
+        public static final int PROTECTED = 0x0002;
+        public static final int PRIVATE = 0x0004;
+        public static final int ABSTRACT = 0x0008;
+        public static final int STATIC = 0x0010;
+        public static final int FINAL = 0x0020;
+        public static final int NATIVE = 0x0080;
+        public static final int TRANSIENT = 0x0100;
+
+        /** A set of accessors that indicate whether the specified modifier
+         is in the set. */
+
+        public boolean isPublic(int modifiers)
+        {
+            return (modifiers & PUBLIC) != 0;
+        }
+
+        public boolean isProtected(int modifiers)
+        {
+            return (modifiers & PROTECTED) != 0;
+        }
+
+        public boolean isPrivate(int modifiers)
+        {
+            return (modifiers & PRIVATE) != 0;
+        }
+
+        public boolean isStatic(int modifiers)
+        {
+            return (modifiers & STATIC) != 0;
+        }
+
+        public boolean isAbstract(int modifiers)
+        {
+            return (modifiers & ABSTRACT) != 0;
+        }
+
+        public boolean isFinal(int modifiers)
+        {
+            return (modifiers & FINAL) != 0;
+        }
+
+        public boolean isNative(int modifiers)
+        {
+            return (modifiers & NATIVE) != 0;
+        }
+
+        public boolean isTransient(int modifiers)
+        {
+            return (modifiers & TRANSIENT) != 0;
+        }
+
+        /**
+         * Removes the given modifier.
+         */
+        static int removeModifier(int modifiers, int mod)
+        {
+            return modifiers & ~mod;
+        }
+    }
+
+    public UnrealScriptParser(String fileName)
+    {
+        this(System.in);
+        try {
+            ReInit(new FileInputStream(new File(fileName)));
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String args[]) {
+
+        UnrealScriptParser parser;
+
+        if (args.length == 0) {
+
+            System.out.println(PARSER_INFO +
+                               "Reading from standard input . . .");
+            parser = new UnrealScriptParser(System.in);
+        }
+        else if (args.length == 1) {
+            System.out.println(PARSER_INFO +
+                               "Reading from file " + args[0] + " . . .");
+
+            try {
+                parser = new UnrealScriptParser(new java.io.FileInputStream(args[0]));
+            }
+            catch (java.io.FileNotFoundException e) {
+                System.out.println(PARSER_INFO +
+                                   "File " + args[0] + " not found.");
+                return;
+            }
+        }
+        else {
+            System.out.println(PARSER_INFO + "Usage is one of:");
+            System.out.println("         java UnrealScriptParser < inputfile");
+            System.out.println("OR");
+            System.out.println("         java UnrealScriptParser inputfile");
+            return;
+        }
+        try {
+            parser.CompilationUnit();
+            System.out.println(PARSER_INFO +
+                               "UnrealScript program parsed successfully.");
+        }
+        catch (ParseException e) {
+            System.out.println(e.getMessage());
+            System.out.println(PARSER_INFO +
+                               "Encountered errors during parse.");
+        }
+    }
+
+}
 
 PARSER_END(UnrealScriptParser)
 
@@ -161,17 +306,19 @@ TOKEN :
 | < NOEXPORT: "noexport">
 | < NONE: "none" >
 | < NOTPLACEABLE: "notplaceable">
+| < OPERATOR: "operator">
 | < OPTIONAL: "optional">
 | < OUT: "out">
 | < PACKAGE: "package">
 | < PEROBJECTCONFIG: "perobjectconfig">
 | < PLACEABLE: "placeable">
-| < POSTOPERATOR: "postoperator" >
-| < PREOPERATOR: "preoperator" >
+| < POSTOPERATOR: "postOperator" >
+| < PREOPERATOR: "preOperator" >
 | < PRIVATE: "private" >
 | < PROTECTED: "protected" >
 | < PUBLIC: "public" >
 | < RELIABLE: "reliable" >
+| < REPLICATION: "replication" >
 | < RETURN: "return" >
 | < SAFEREPLACE: "safereplace" >
 | < SHOWCATEGORIES: "showcategories" >
@@ -231,7 +378,7 @@ TOKEN :
 |
   < #HEXADECIMAL_EXPONENT: ["p","P"] (["+","-"])? (["0"-"9"])+ >
 |
-  < CHARACTER_LITERAL:
+  < NAME_LITERAL:
       "'"
       (   (~["'","\\","\n","\r"])
         | ("\\"
@@ -240,7 +387,7 @@ TOKEN :
             | ["0"-"3"] ["0"-"7"] ["0"-"7"]
             )
           )
-      )
+      )*
       "'"
   >
 |
@@ -986,4 +1133,1023 @@ TOKEN :
      matchedToken.image = ">";
   }
 | < GT: ">" >
+}
+
+/*************************************************
+ * THE UNREALSCRIPT LANGUAGE GRAMMAR STARTS HERE *
+ *************************************************/
+
+/*
+ * Program structuring syntax follows.
+ */
+
+void CompilationUnit():
+{
+    //int modifiers;
+}
+{
+    //modifiers = Modifiers()
+try {
+  ClassDeclaration(/*modifiers*/)
+  ( Declarations() )*
+  ( ReplicationBlock() )?
+  Body()
+  ( DefaultPropertiesBlock() )?
+  ( < "\u001a" > )?
+  ( <STUFF_TO_IGNORE: ~[]> )?
+  <EOF>
+} catch (ParseException ex) {
+        recover (ex, SEMICOLON);
+    }
+}
+
+/*
+ * Modifiers. We match all modifiers in a single rule to reduce the chances of
+ * syntax errors for simple modifier mistakes. It will also enable us to give
+ * better error messages.
+ */
+
+/*int Modifiers():
+{
+   int modifiers = 0;
+}
+{
+ (
+  LOOKAHEAD(2)
+  (
+   "public" { modifiers |= ModifierSet.PUBLIC; }
+  |
+   "static" { modifiers |= ModifierSet.STATIC; }
+  |
+   "protected" { modifiers |= ModifierSet.PROTECTED; }
+  |
+   "private" { modifiers |= ModifierSet.PRIVATE; }
+  |
+   "final" { modifiers |= ModifierSet.FINAL; }
+  |
+   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
+  |
+   "native" { modifiers |= ModifierSet.NATIVE; }
+  |
+   "transient" { modifiers |= ModifierSet.TRANSIENT; }
+  )
+ )*
+
+ {
+    return modifiers;
+ }
+}*/
+
+void ClassDeclaration(/*int modifiers*/):
+{
+}
+{
+    "class" <IDENTIFIER> ("extends" PackageIdentifier())? (ClassParams())* ";"
+}
+
+void ClassParams():
+{}
+{
+    (
+    (ConstClassParams()) |
+    ("within" PackageIdentifier()) |
+    ("dependsOn" "(" PackageIdentifier() ")") |
+    ("config" ( "(" PackageIdentifier() ")" )?) |
+    ("hidecategories" "(" IdentifierList() ")") |
+    ("showcategories" "(" IdentifierList() ")")
+    )
+}
+
+void PackageIdentifier():
+{}
+{
+    ( (<IDENTIFIER> ".")? <IDENTIFIER> )
+}
+
+void QualifiedIdentifier():
+{}
+{
+    (
+    ( "class" "'" PackageIdentifier() "'" "." "default" "." <IDENTIFIER> ) |
+    ( ( <IDENTIFIER> "." )* <IDENTIFIER> )
+    )
+}
+
+void IdentifierList():
+{}
+{
+    ( <IDENTIFIER> ( "," <IDENTIFIER> )* )
+}
+
+/*
+ * Declaration parts
+ */
+void Declarations():
+{}
+{
+    (ConstDecl() | VarDecl() | EnumDecl() | StructDecl()) ";"
+}
+
+void ConstDecl():
+{}
+{
+    ("const" <IDENTIFIER> "=" ConstValue())
+}
+
+void ConstValue():
+{}
+{
+    (
+    <STRING_LITERAL> |
+    <INTEGER_LITERAL> |
+    <FLOATING_POINT_LITERAL> |
+    BooleanLiteral()
+    )
+}
+
+void VarDecl():
+{}
+{
+    "var" ( ConfigGroup() )? ( VarParams() )*
+    VarType() <IDENTIFIER> ( "," <IDENTIFIER> )*
+}
+
+void ConfigGroup():
+{}
+{
+    "(" (<IDENTIFIER>)? ")"
+}
+
+void VarType():
+{}
+{
+    (
+    PackageIdentifier() |
+    EnumDecl() |
+    StructDecl() |
+    ArrayDecl() |
+    ClassType() |
+    BasicType()
+    )
+}
+
+void ArrayDecl():
+{}
+{
+    <IDENTIFIER> "[" <INTEGER_LITERAL> "]"
+}
+
+void DynArrayDecl():
+{}
+{
+    "array" "<" (PackageIdentifier() | ClassType() | BasicType()) ">"
+}
+
+void ClassType():
+{}
+{
+    "class" "<" PackageIdentifier() ">"
+}
+
+void EnumDecl():
+{}
+{
+    "enum" <IDENTIFIER> "{" EnumOptions() "}"
+}
+
+void EnumOptions():
+{}
+{
+    <IDENTIFIER> ( "," <IDENTIFIER> )*
+}
+
+void StructDecl():
+{}
+{
+    "struct" (StructParams())* <IDENTIFIER> ("extends" PackageIdentifier())?
+                           "{" StructBody() "}"
+}
+
+void StructParams():
+{}
+{
+    ("native" | "export")
+}
+
+void StructBody():
+{}
+{
+    (VarDecl() ";")+
+}
+
+/**
+ * Replication parts
+ */
+
+void ReplicationBlock():
+{}
+{
+    "replication" "{" (ReplicationBody())* "}"
+}
+
+void ReplicationBody():
+{}
+{
+    ("reliable" | "unreliable") "if" "(" Expression() ")"
+                           <IDENTIFIER> ("," <IDENTIFIER>)* ";"
+}
+
+/**
+ * Body parts
+ */
+
+void Body():
+{}
+{
+    ( StateDecl() | FunctionDecl() )*
+}
+
+/**
+ * State parts
+ */
+
+void StateDecl():
+{}
+{
+    (StateParams())* "state" <IDENTIFIER>
+        (ConfigGroup())? ("extends" <IDENTIFIER>)? StateBody()
+}
+
+
+void StateBody():
+{}
+{
+    "{" (StateIgnore())? (FunctionDecl())* StateLabels() "}"
+}
+
+void StateIgnore():
+{}
+{
+    "ignores" <IDENTIFIER> ("," <IDENTIFIER>)* ";"
+}
+
+void StateLabels():
+{}
+{
+    ( <IDENTIFIER> ":" (CodeLine())* )*
+}
+
+
+/**
+ * Function  parts
+ */
+
+void FunctionDecl():
+{}
+{
+    ( NormalFunc() | OperatorFunc() )
+}
+
+void NormalFunc():
+{}
+{
+    (FunctionParams())* FunctionType() ( LocalType() )?
+        <IDENTIFIER> "(" ( FunctionArgs() ("," FunctionArgs())* )? ")"
+        FunctionBody()
+}
+
+void FunctionParams():
+{}
+{
+    ( ConstFuncParams() | ( "native" ("(" <INTEGER_LITERAL> ")")? ) )
+}
+
+void OperatorFunc():
+{}
+{
+    (FunctionParams())* OperatorType() FunctionBody()
+}
+
+void OperatorType():
+{}
+{
+    ( BinaryOperator() | UnaryOperator() )
+}
+
+// requires two arguments
+void BinaryOperator():
+{}
+{
+    "operator" "(" <INTEGER_LITERAL> ")" PackageIdentifier() OpIdentifier()
+                           "(" FunctionArgs() "," FunctionArgs() ")"
+}
+
+// requires one argument
+void UnaryOperator():
+{}
+{
+    ( "preOperator" | "postOperator" ) PackageIdentifier() OpIdentifier()
+                           "(" FunctionArgs() ")"
+}
+
+void OpIdentifier():
+{}
+{
+    <IDENTIFIER> | OperatorNames()
+}
+
+void FunctionArgs():
+{}
+{
+    ("optional" | "out" | "coerce")? FunctionArgType() <IDENTIFIER>
+}
+
+void FunctionArgType():
+{}
+{
+    BasicType() | PackageIdentifier()
+}
+
+void FunctionBody():
+{}
+{
+    ( ";" | ( ((LocalDecl())* (CodeLine())*) (";")? ) )
+}
+
+void LocalDecl():
+{}
+{
+    "local" LocalType() <IDENTIFIER> ( "," <IDENTIFIER> )*
+}
+
+void LocalType():
+{}
+{
+    (PackageIdentifier() | ArrayDecl() | ClassType() | BasicType())
+}
+
+/**
+ * Code parts
+ */
+
+void CodeLine():
+{}
+{
+    //( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
+    //   | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
+    try {
+      LOOKAHEAD(2)
+        LabeledStatement() |
+        Block() |
+        EmptyStatement() |
+        StatementExpression() ";" |
+        SwitchStatement() |
+        IfStatement() |
+        WhileStatement() |
+        DoStatement() |
+        ForStatement() |
+        ForEachStatement() |
+        BreakStatement() |
+        ContinueStatement() |
+        ReturnStatement()
+    }
+    catch (ParseException ex) {
+        recover(ex, SEMICOLON);
+    }
+}
+
+void CodeBlock():
+{}
+{
+    ( CodeLine() | ( "{" ( CodeLine() )* "}" ) )
+}
+
+void Assignment():
+{}
+{
+    <IDENTIFIER> "=" Expression() ";"
+}
+
+
+void Statement():
+{}
+{
+    FuncCall() ";"
+}
+
+void LabeledStatement():
+{}
+{
+  <IDENTIFIER> ":" Statement()
+}
+
+void Block():
+{}
+{
+  "{" ( BlockStatement() )* "}"
+}
+
+void BlockStatement():
+{}
+{
+  LOOKAHEAD( /*Modifiers()*/ BasicType() <IDENTIFIER> )
+  VarDecl() ";"
+|
+  Statement()
+}
+
+void EmptyStatement():
+{}
+{
+  ";"
+}
+
+void StatementExpression():
+/*
+ * The last expansion of this production accepts more than the legal
+ * Java expansions for StatementExpression.  This expansion does not
+ * use PostfixExpression for performance reasons.
+ */
+{}
+{
+  PreIncrementExpression()
+|
+  PreDecrementExpression()
+|
+  PrimaryExpression()
+  [
+    "++"
+  |
+    "--"
+  |
+    AssignmentOperator() Expression()
+  ]
+}
+
+void FuncCall():
+{}
+{
+    ( ( "class" "'" PackageIdentifier() "'" "." "static" "." )
+                           | ( ( <IDENTIFIER> "." )+ )
+                           )?
+                           <IDENTIFIER> "(" ( Expression() ( "," Expression() )* )? ")"
+}
+
+void SwitchStatement():
+{}
+{
+    // switch LBRACK EXPR RBRACK LCBRACK ( CASERULE )+ ( DEFAULTRULE )? RCBRACK
+    "switch" "(" Expression() ")" "{"
+        (SwitchLabel() (BlockStatement())*)*
+    "}"
+}
+
+void SwitchLabel():
+{}
+{
+    ("case" <INTEGER_LITERAL> ":") | ("default" ":")
+}
+
+void IfStatement():
+/*
+ * The disambiguating algorithm of JavaCC automatically binds dangling
+ * else's to the innermost if statement.  The LOOKAHEAD specification
+ * is to tell JavaCC that we know what we are doing.
+ */
+{}
+{
+    // if LBRACK EXPR RBRACK CODEBLOCK ( else CODEBLOCK )?
+    "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
+}
+
+void WhileStatement():
+{}
+{
+    //while LBRACK EXPR RBRACK CODEBLOCK
+    "while" "(" Expression() ")" Statement()
+}
+
+void DoStatement():
+{}
+{
+    //do CODEBLOCK until LBRACK EXPR RBRACK
+    "do" Statement() "until" "(" Expression() ")" ";"
+}
+
+void ForStatement():
+{}
+{
+    "for" "("
+        [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
+    ")" Statement()
+}
+
+void ForEachStatement():
+{}
+{
+    // foreach FUNCCALL CODEBLOCK
+    "ForEach" [ Expression() ] Statement()
+}
+
+void ForInit():
+{}
+{
+    StatementExpressionList()
+}
+
+void StatementExpressionList():
+{}
+{
+    StatementExpression() ( "," StatementExpression() )*
+}
+
+void ForUpdate():
+{}
+{
+    StatementExpressionList()
+}
+
+void BreakStatement():
+{}
+{
+    "break" ";"
+}
+
+void ContinueStatement():
+{}
+{
+    "continue"  ";"
+}
+
+void ReturnStatement():
+{}
+{
+  "return" [ Expression() ] ";"
+}
+
+
+/**
+ * Defaultproperties
+ */
+void DefaultPropertiesBlock():
+{}
+{
+    "defaultproperties" "{" (DefProp())* "}"
+}
+
+void DefProp():
+{}
+{
+    DefPropIdentifier() "=" Expression()
+}
+
+void DefPropIdentifier():
+{}
+{
+    <IDENTIFIER> ( ("(" <INTEGER_LITERAL> ")") | ("[" <INTEGER_LITERAL> "]") )?
+}
+
+
+void ConstClassParams():
+{}
+{
+    (
+    "native" |
+    "nativereplication" |
+    "abstract" |
+
+    (
+    "guid" "("
+    <INTEGER_LITERAL> ","
+    <INTEGER_LITERAL> ","
+    <INTEGER_LITERAL> ","
+    <INTEGER_LITERAL> ")"
+    ) |
+
+    "transient" |
+    "config(file_name)" |
+    "placeable" |
+    "notplaceable" |
+    "hidecategories(category_list)"
+    )
+}
+
+void VarParams():
+{}
+{
+    (
+    "config" |
+    "const" |
+    "edfindable" |
+    "editconst" |
+    "editinline" |
+    "editinlineuse" |
+    "deprecated" |
+    "export" |
+    "globalconfig" |
+    "input" |
+    "localized" |
+    "native" |
+    "private" |
+    "protected" |
+    "transient" |
+    "travel"
+    )
+}
+
+void StateParams():
+{}
+{
+    ("auto" | "simulated")
+}
+
+void ConstFuncParams():
+{}
+{
+    (
+    "final" |
+    "iterator" |
+    "latent" |
+    "simulated" |
+    "singular" |
+    "simulated" |
+    "static" |
+    "exec" |
+    "protected" |
+    "private"
+    )
+}
+
+void BasicType():
+{}
+{
+  "bool" | "byte" | "float" | "int" | "string" | "name" | "class"
+}
+
+void FunctionType():
+{}
+{
+  "function" | "event" | "delegate"
+}
+
+void ResultType():
+{}
+{
+  "void" | BasicType()
+}
+
+/*
+ * Expression syntax follows.
+ */
+
+void Expression():
+/*
+ * This expansion has been written this way instead of:
+ *   Assignment() | ConditionalExpression()
+ * for performance reasons.
+ * However, it is a weakening of the grammar for it allows the LHS of
+ * assignments to be any conditional expression whereas it can only be
+ * a primary expression.  Consider adding a semantic predicate to work
+ * around this.
+ */
+{}
+{
+  ConditionalExpression()
+  [
+    LOOKAHEAD(2)
+    AssignmentOperator() Expression()
+  ]
+}
+
+void OperatorNames():
+{}
+{
+    "~" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" |
+    "-" | "=" | "+" | "|" | "\\" | ":" | "<" | ">" | "/" |
+    "?" | "`" |
+    "<<" | ">>" | "!=" | "<=" | ">=" | "++" | "--" | "?-" | "+=" |
+    "-=" | "*=" | "/=" | "&&" | "||" | "^^" | "==" | "**" |
+    "~=" | "@=" | ">>>"
+}
+
+void AssignmentOperator():
+{}
+{
+  "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|="
+}
+
+void ConditionalExpression():
+{}
+{
+  ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
+}
+
+void ConditionalOrExpression():
+{}
+{
+  ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
+}
+
+void ConditionalAndExpression():
+{}
+{
+  InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
+}
+
+void InclusiveOrExpression():
+{}
+{
+  ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
+}
+
+void ExclusiveOrExpression():
+{}
+{
+  AndExpression() ( "^" AndExpression() )*
+}
+
+void AndExpression():
+{}
+{
+  EqualityExpression() ( "&" EqualityExpression() )*
+}
+
+void EqualityExpression():
+{}
+{
+  RelationalExpression() ( ( "==" | "!=" ) RelationalExpression() )*
+}
+
+void RelationalExpression():
+{}
+{
+  ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression() )*
+}
+
+void ShiftExpression():
+{}
+{
+  AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
+}
+
+void AdditiveExpression():
+{}
+{
+  MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
+}
+
+void MultiplicativeExpression():
+{}
+{
+  UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
+}
+
+void UnaryExpression():
+{}
+{
+  ( "+" | "-" ) UnaryExpression()
+|
+  PreIncrementExpression()
+|
+  PreDecrementExpression()
+|
+  UnaryExpressionNotPlusMinus()
+}
+
+void PreIncrementExpression():
+{}
+{
+  "++" PrimaryExpression()
+}
+
+void PreDecrementExpression():
+{}
+{
+  "--" PrimaryExpression()
+}
+
+void UnaryExpressionNotPlusMinus():
+{}
+{
+  ( "~" | "!" ) UnaryExpression()
+|
+  LOOKAHEAD( CastLookahead() )
+  CastExpression()
+|
+  PostfixExpression()
+}
+
+// This production is to determine lookahead only.  The LOOKAHEAD specifications
+// below are not used, but they are there just to indicate that we know about
+// this.
+void CastLookahead():
+{}
+{
+  LOOKAHEAD(2)
+  "(" BasicType()
+|
+  LOOKAHEAD("(" BasicType() "[")
+  "(" BasicType() "[" "]"
+|
+  "(" BasicType() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "super" | "new" | Literal() )
+}
+
+void PostfixExpression():
+{}
+{
+  PrimaryExpression() [ "++" | "--" ]
+}
+
+void CastExpression():
+{}
+{
+  LOOKAHEAD("(" BasicType())
+  "(" BasicType() ")" UnaryExpression()
+|
+  "(" BasicType() ")" UnaryExpressionNotPlusMinus()
+}
+
+void PrimaryExpression():
+{}
+{
+  PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+}
+
+void MemberSelector():
+{}
+{
+  "." TypeArguments() <IDENTIFIER>
+}
+
+void Type():
+{}
+{
+   LOOKAHEAD(2) ReferenceType()
+ |
+   BasicType()
+}
+
+void ReferenceType():
+{}
+{
+   BasicType() ( LOOKAHEAD(2) "[" "]" )+
+  |
+   ( ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" )*
+}
+
+void ClassOrInterfaceType():
+{}
+{
+  <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ]
+  ( LOOKAHEAD(2) "." <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
+}
+
+void TypeArguments():
+{}
+{
+   "<" TypeArgument() ( "," TypeArgument() )* ">"
+}
+
+void TypeArgument():
+{}
+{
+   ReferenceType()
+ |
+   "?" [ WildcardBounds() ]
+}
+
+void WildcardBounds():
+{}
+{
+   "extends" ReferenceType()
+ |
+   "super" ReferenceType()
+}
+
+void PrimaryPrefix():
+{}
+{
+  Literal()
+|
+  "super" "." <IDENTIFIER>
+|
+  "(" Expression() ")"
+|
+  AllocationExpression()
+|
+  LOOKAHEAD( ResultType() "." "class" )
+  ResultType() "." "class"
+|
+  <IDENTIFIER>
+}
+
+void PrimarySuffix():
+{}
+{
+  LOOKAHEAD("." "super" ".")
+  "." "super"
+|
+  LOOKAHEAD(2)
+  "." AllocationExpression()
+|
+  LOOKAHEAD(3)
+  MemberSelector()
+|
+  "[" Expression() "]"
+|
+  "." <IDENTIFIER>
+|
+  FunctionArgs()
+}
+
+void AllocationExpression():
+{}
+{
+  LOOKAHEAD(2)
+  "new" BasicType() ArrayDimsAndInits()
+|
+  "new" ClassOrInterfaceType() [ TypeArguments() ]
+    (
+      ArrayDimsAndInits()
+    )
+}
+
+/*
+ * The third LOOKAHEAD specification below is to parse to PrimarySuffix
+ * if there is an expression between the "[...]".
+ */
+void ArrayDimsAndInits():
+{}
+{
+  LOOKAHEAD(2)
+  ( LOOKAHEAD(2) "[" Expression() "]" )+ ( LOOKAHEAD(2) "[" "]" )*
+|
+  ( "[" "]" )+ ArrayInitializer()
+}
+
+void VariableInitializer():
+{}
+{
+  ArrayInitializer()
+|
+  Expression()
+}
+
+void ArrayInitializer():
+{}
+{
+  "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+}
+
+void Literal():
+{}
+{
+  <INTEGER_LITERAL> |
+  <FLOATING_POINT_LITERAL> |
+  <NAME_LITERAL> |
+  <STRING_LITERAL> |
+  BooleanLiteral() |
+  NoneLiteral()
+}
+
+void BooleanLiteral():
+{}
+{
+  "true"
+|
+  "false"
+}
+
+void NoneLiteral():
+{}
+{
+  "none"
+}
+
+/*
+ * Statement syntax follows.
+ */
+
+
+
+/* We use productions to match >>>, >> and > so that we can keep the
+ * type declaration syntax with generics clean
+ */
+
+void RUNSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
+   ">" ">" ">"
+  )
+}
+
+void RSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
+  ">" ">"
+  )
 }
