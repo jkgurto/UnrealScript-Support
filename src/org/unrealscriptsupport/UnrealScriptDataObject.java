@@ -18,10 +18,12 @@ import org.openide.text.DataEditorSupport;
 
 public class UnrealScriptDataObject extends MultiDataObject {
 
-    public UnrealScriptDataObject(FileObject pf, MultiFileLoader loader) throws DataObjectExistsException, IOException {
+    public UnrealScriptDataObject(FileObject pf, MultiFileLoader loader)
+            throws DataObjectExistsException, IOException {
         super(pf, loader);
         CookieSet cookies = getCookieSet();
-        cookies.add((Node.Cookie) DataEditorSupport.create(this, getPrimaryEntry(), cookies));
+        cookies.add((Node.Cookie) DataEditorSupport.create(
+                this, getPrimaryEntry(), cookies));
     }
 
     @Override

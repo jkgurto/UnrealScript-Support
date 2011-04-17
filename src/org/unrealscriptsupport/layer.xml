@@ -64,7 +64,7 @@
                 </folder>
                 <folder name="Factories">
                     <file name="UnrealScriptDataLoader.instance">
-                        <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/unrealscriptsupport/icon-unreal_16x16.gif"/>
+                        <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/unrealscriptsupport/unrealmutatorproject/resources/class.png"/>
                         <attr name="dataObjectClass" stringvalue="org.unrealscriptsupport.UnrealScriptDataObject"/>
                         <attr name="instanceCreate" methodvalue="org.openide.loaders.DataLoaderPool.factory"/>
                         <attr name="mimeType" stringvalue="text/x-uc"/>
@@ -85,7 +85,7 @@
             <folder name="UnrealScript">
                 <file name="NewUnrealScriptProjectProject.zip" url="NewUnrealScriptProjectProject.zip">
                     <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/Project/Samples/UnrealScript/NewUnrealScriptProjectProject.zip"/>
-                    <attr name="iconBase" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
+                    <attr name="iconBase" stringvalue="org/unrealscriptsupport/unrealmutatorproject/resources/unreal.png"/>
                     <attr name="instantiatingIterator" methodvalue="org.unrealscriptsupport.samples.newunrealscriptproject.NewUnrealScriptProjectWizardIterator.createIterator"/>
                     <attr name="instantiatingWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/samples/newunrealscriptproject/NewUnrealScriptProjectDescription.html"/>
                     <attr name="template" boolvalue="true"/>
@@ -95,7 +95,7 @@
                 <folder name="UnrealScript">
                     <file name="LightTriggerProject.zip" url="LightTriggerProject.zip">
                         <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/Project/Samples/LightTriggerProject.zip"/>
-                        <attr name="iconBase" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
+                        <attr name="iconBase" stringvalue="org/unrealscriptsupport/unrealmutatorproject/resources/unreal.png"/>
                         <attr name="instantiatingIterator" methodvalue="org.unrealscriptsupport.samples.lighttrigger.LightTriggerWizardIterator.createIterator"/>
                         <attr name="instantiatingWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/samples/lighttrigger/LightTriggerDescription.html"/>
                         <attr name="template" boolvalue="true"/>
@@ -104,19 +104,19 @@
             </folder>
         </folder>
         <folder name="Unreal Script">
-            <file name="UnrealScriptEmptyTemplate.uc" url="UnrealScriptEmptyTemplate.uc">
+            <file name="UnrealScriptEmptyTemplate.uc" url="templates/UnrealScriptEmptyTemplate.uc">
                 <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/UnrealScript/UnrealScriptEmptyTemplate.uc"/>
-                <attr name="iconBase" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
+                <attr name="iconBase" stringvalue="org/unrealscriptsupport/unrealmutatorproject/resources/unreal.png"/>
                 <attr name="template" boolvalue="true"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/UnrealScriptEmptyTemplateDescription.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/templates/UnrealScriptEmptyTemplateDescription.html"/>
                 <!--Use this line only if your template makes use of the FreeMarker template language:-->
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
             </file>
-            <file name="UnrealScriptMutatorTemplate.uc" url="UnrealScriptMutatorTemplate.uc">
+            <file name="UnrealScriptMutatorTemplate.uc" url="templates/UnrealScriptMutatorTemplate.uc">
                 <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/UnrealScript/UnrealScriptMutatorTemplate.uc"/>
-                <attr name="iconBase" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
+                <attr name="iconBase" stringvalue="org/unrealscriptsupport/unrealmutatorproject/resources/unreal.png"/>
                 <attr name="template" boolvalue="true"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/UnrealScriptMutatorTemplateDescription.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/templates/UnrealScriptMutatorTemplateDescription.html"/>
                 <!--Use this line only if your template makes use of the FreeMarker template language:-->
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
             </file>
@@ -126,7 +126,7 @@
         <folder name="text">
             <folder name="x-uc">
                 <file name="language.nbs" url="UnrealScript.nbs">
-                    <attr name ="icon" stringvalue="org/unrealscriptsupport/icon-unreal_16x16.gif"/>
+                    <attr name ="icon" stringvalue="org/unrealscriptsupport/unrealmutatorproject/resources/unreal.png"/>
                 </file>
             </folder>
         </folder>

@@ -43,7 +43,7 @@ public class UnrealMutatorProjectFactory implements ProjectFactory {
                     " cannot save project");
         }
         //Force creation of the texts dir if it was deleted:
-        ((UnrealMutatorProject) project).getTextFolder(true);
+        ((UnrealMutatorProject) project).getSrcFolder(true);
     }
 
 }

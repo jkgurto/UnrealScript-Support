@@ -3,3 +3,4 @@ build/*
 manifest.mf
 nbproject/*
 doc/*
+NextCommitLog.txt
