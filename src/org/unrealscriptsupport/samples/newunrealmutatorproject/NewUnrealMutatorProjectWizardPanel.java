@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.unrealscriptsupport.samples.newunrealscriptproject;
+package org.unrealscriptsupport.samples.newunrealmutatorproject;
 
 import java.awt.Component;
 import java.util.HashSet;
@@ -17,25 +17,25 @@ import org.openide.util.NbBundle;
 /**
  * Panel just asking for basic info.
  */
-public class NewUnrealScriptProjectWizardPanel implements WizardDescriptor.Panel,
+public class NewUnrealMutatorProjectWizardPanel implements WizardDescriptor.Panel,
         WizardDescriptor.ValidatingPanel, WizardDescriptor.FinishablePanel {
 
     private WizardDescriptor wizardDescriptor;
-    private NewUnrealScriptProjectPanelVisual component;
+    private NewUnrealMutatorProjectPanelVisual component;
 
-    public NewUnrealScriptProjectWizardPanel() {
+    public NewUnrealMutatorProjectWizardPanel() {
     }
 
     public Component getComponent() {
         if (component == null) {
-            component = new NewUnrealScriptProjectPanelVisual(this);
-            component.setName(NbBundle.getMessage(NewUnrealScriptProjectWizardPanel.class, "LBL_CreateProjectStep"));
+            component = new NewUnrealMutatorProjectPanelVisual(this);
+            component.setName(NbBundle.getMessage(NewUnrealMutatorProjectWizardPanel.class, "LBL_CreateProjectStep"));
         }
         return component;
     }
 
     public HelpCtx getHelp() {
-        return new HelpCtx(NewUnrealScriptProjectWizardPanel.class);
+        return new HelpCtx(NewUnrealMutatorProjectWizardPanel.class);
     }
 
     public boolean isValid() {

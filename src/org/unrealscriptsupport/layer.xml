@@ -83,11 +83,11 @@
     <folder name="Templates">
         <folder name="Project">
             <folder name="UnrealScript">
-                <file name="NewUnrealScriptProjectProject.zip" url="NewUnrealScriptProjectProject.zip">
-                    <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/Project/Samples/UnrealScript/NewUnrealScriptProjectProject.zip"/>
+                <file name="NewUnrealMutatorProject.zip" url="NewUnrealMutatorProject.zip">
+                    <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/Project/Samples/UnrealScript/NewUnrealMutatorProject.zip"/>
                     <attr name="iconBase" stringvalue="org/unrealscriptsupport/unrealmutatorproject/resources/unreal.png"/>
-                    <attr name="instantiatingIterator" methodvalue="org.unrealscriptsupport.samples.newunrealscriptproject.NewUnrealScriptProjectWizardIterator.createIterator"/>
-                    <attr name="instantiatingWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/samples/newunrealscriptproject/NewUnrealScriptProjectDescription.html"/>
+                    <attr name="instantiatingIterator" methodvalue="org.unrealscriptsupport.samples.newunrealmutatorproject.NewUnrealMutatorProjectWizardIterator.createIterator"/>
+                    <attr name="instantiatingWizardURL" urlvalue="nbresloc:/org/unrealscriptsupport/samples/newunrealmutatorproject/NewUnrealMutatorProjectDescription.html"/>
                     <attr name="template" boolvalue="true"/>
                 </file>
             </folder>

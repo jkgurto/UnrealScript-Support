@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.unrealscriptsupport.samples.newunrealscriptproject;
+package org.unrealscriptsupport.samples.newunrealmutatorproject;
 
 import java.io.File;
 import javax.swing.JFileChooser;
@@ -15,12 +15,12 @@ import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.filesystems.FileUtil;
 
-public class NewUnrealScriptProjectPanelVisual extends JPanel implements DocumentListener {
+public class NewUnrealMutatorProjectPanelVisual extends JPanel implements DocumentListener {
 
     public static final String PROP_PROJECT_NAME = "projectName";
-    private NewUnrealScriptProjectWizardPanel panel;
+    private NewUnrealMutatorProjectWizardPanel panel;
 
-    public NewUnrealScriptProjectPanelVisual(NewUnrealScriptProjectWizardPanel panel) {
+    public NewUnrealMutatorProjectPanelVisual(NewUnrealMutatorProjectWizardPanel panel) {
         initComponents();
         this.panel = panel;
         // Register listener on the textFields to make the automatic updates
@@ -49,13 +49,13 @@ public class NewUnrealScriptProjectPanelVisual extends JPanel implements Documen
         createdFolderTextField = new javax.swing.JTextField();
 
         projectNameLabel.setLabelFor(projectNameTextField);
-        org.openide.awt.Mnemonics.setLocalizedText(projectNameLabel, org.openide.util.NbBundle.getMessage(NewUnrealScriptProjectPanelVisual.class, "NewUnrealScriptProjectPanelVisual.projectNameLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(projectNameLabel, org.openide.util.NbBundle.getMessage(NewUnrealMutatorProjectPanelVisual.class, "NewUnrealMutatorProjectPanelVisual.projectNameLabel.text")); // NOI18N
 
         projectLocationLabel.setLabelFor(projectLocationTextField);
-        org.openide.awt.Mnemonics.setLocalizedText(projectLocationLabel, org.openide.util.NbBundle.getMessage(NewUnrealScriptProjectPanelVisual.class, "NewUnrealScriptProjectPanelVisual.projectLocationLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(projectLocationLabel, org.openide.util.NbBundle.getMessage(NewUnrealMutatorProjectPanelVisual.class, "NewUnrealMutatorProjectPanelVisual.projectLocationLabel.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(browseButton, org.openide.util.NbBundle.getMessage(NewUnrealScriptProjectPanelVisual.class, "NewUnrealScriptProjectPanelVisual.browseButton.text")); // NOI18N
-        browseButton.setActionCommand(org.openide.util.NbBundle.getMessage(NewUnrealScriptProjectPanelVisual.class, "NewUnrealScriptProjectPanelVisual.browseButton.actionCommand")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(browseButton, org.openide.util.NbBundle.getMessage(NewUnrealMutatorProjectPanelVisual.class, "NewUnrealMutatorProjectPanelVisual.browseButton.text")); // NOI18N
+        browseButton.setActionCommand(org.openide.util.NbBundle.getMessage(NewUnrealMutatorProjectPanelVisual.class, "NewUnrealMutatorProjectPanelVisual.browseButton.actionCommand")); // NOI18N
         browseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseButtonActionPerformed(evt);
@@ -63,7 +63,7 @@ public class NewUnrealScriptProjectPanelVisual extends JPanel implements Documen
         });
 
         createdFolderLabel.setLabelFor(createdFolderTextField);
-        org.openide.awt.Mnemonics.setLocalizedText(createdFolderLabel, org.openide.util.NbBundle.getMessage(NewUnrealScriptProjectPanelVisual.class, "NewUnrealScriptProjectPanelVisual.createdFolderLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(createdFolderLabel, org.openide.util.NbBundle.getMessage(NewUnrealMutatorProjectPanelVisual.class, "NewUnrealMutatorProjectPanelVisual.createdFolderLabel.text")); // NOI18N
 
         createdFolderTextField.setEditable(false);
 
@@ -207,7 +207,7 @@ public class NewUnrealScriptProjectPanelVisual extends JPanel implements Documen
 
         String projectName = (String) settings.getProperty("name");
         if (projectName == null) {
-            projectName = "NewUnrealScriptProject";
+            projectName = "NewUnrealMutatorProject";
         }
         this.projectNameTextField.setText(projectName);
         this.projectNameTextField.selectAll();
@@ -218,6 +218,7 @@ public class NewUnrealScriptProjectPanelVisual extends JPanel implements Documen
     }
 
     // Implementation of DocumentListener --------------------------------------
+    @Override
     public void changedUpdate(DocumentEvent e) {
         updateTexts(e);
         if (this.projectNameTextField.getDocument() == e.getDocument()) {
@@ -225,6 +226,7 @@ public class NewUnrealScriptProjectPanelVisual extends JPanel implements Documen
         }
     }
 
+    @Override
     public void insertUpdate(DocumentEvent e) {
         updateTexts(e);
         if (this.projectNameTextField.getDocument() == e.getDocument()) {
@@ -232,6 +234,7 @@ public class NewUnrealScriptProjectPanelVisual extends JPanel implements Documen
         }
     }
 
+    @Override
     public void removeUpdate(DocumentEvent e) {
         updateTexts(e);
         if (this.projectNameTextField.getDocument() == e.getDocument()) {

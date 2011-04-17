@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.unrealscriptsupport.samples.newunrealscriptproject;
+package org.unrealscriptsupport.samples.newunrealmutatorproject;
 
 import java.awt.Component;
 import java.io.ByteArrayInputStream;
@@ -34,27 +34,27 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-public class NewUnrealScriptProjectWizardIterator implements WizardDescriptor./*Progress*/InstantiatingIterator {
+public class NewUnrealMutatorProjectWizardIterator implements WizardDescriptor./*Progress*/InstantiatingIterator {
 
     private int index;
     private WizardDescriptor.Panel[] panels;
     private WizardDescriptor wiz;
 
-    public NewUnrealScriptProjectWizardIterator() {
+    public NewUnrealMutatorProjectWizardIterator() {
     }
 
-    public static NewUnrealScriptProjectWizardIterator createIterator() {
-        return new NewUnrealScriptProjectWizardIterator();
+    public static NewUnrealMutatorProjectWizardIterator createIterator() {
+        return new NewUnrealMutatorProjectWizardIterator();
     }
 
     private WizardDescriptor.Panel[] createPanels() {
         return new WizardDescriptor.Panel[]{
-                    new NewUnrealScriptProjectWizardPanel(),};
+                    new NewUnrealMutatorProjectWizardPanel(),};
     }
 
     private String[] createSteps() {
         return new String[]{
-                    NbBundle.getMessage(NewUnrealScriptProjectWizardIterator.class, "LBL_CreateProjectStep")
+                    NbBundle.getMessage(NewUnrealMutatorProjectWizardIterator.class, "LBL_CreateProjectStep")
                 };
     }
 
