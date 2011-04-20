@@ -51,13 +51,31 @@ class SyntaxErrorsHighlightingTask extends ParserResultTask {
                 Token token = syntaxError.currentToken;
 
                 if (token != null) {
+
+                    int beginLine = token.beginLine - 1;
+                    int endLine = token.endLine - 1;
+                    if (beginLine < 0) {
+                        beginLine = 0;
+                    }
+
+                    if (endLine < 0) {
+                        endLine = 0;
+                    }
+
                     int start =
                             NbDocument.findLineOffset((StyledDocument) document,
-                                                       token.beginLine - 1)
+                                                       beginLine)
                             + token.beginColumn - 1;
                     int end = NbDocument.findLineOffset((StyledDocument) document,
-                                                        token.endLine - 1)
+                                                        endLine)
                             + token.endColumn;
+
+                    if (start < 0) {
+                        start = 0;
+                    }
+                    if (end < 0) {
+                        end = 0;
+                    }
 
                     ErrorDescription errorDescription =
                             ErrorDescriptionFactory.createErrorDescription(

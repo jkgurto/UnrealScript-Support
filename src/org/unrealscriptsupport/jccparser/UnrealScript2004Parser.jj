@@ -70,73 +70,6 @@ public class UnrealScriptParser
         } while (t.kind != recoveryPoint);
     }
 
-    /**
-     * Class to hold modifiers.
-     */
-    static public final class ModifierSet
-    {
-        /* Definitions of the bits in the modifiers field.  */
-        public static final int PUBLIC = 0x0001;
-        public static final int PROTECTED = 0x0002;
-        public static final int PRIVATE = 0x0004;
-        public static final int ABSTRACT = 0x0008;
-        public static final int STATIC = 0x0010;
-        public static final int FINAL = 0x0020;
-        public static final int NATIVE = 0x0080;
-        public static final int TRANSIENT = 0x0100;
-
-        /** A set of accessors that indicate whether the specified modifier
-         is in the set. */
-
-        public boolean isPublic(int modifiers)
-        {
-            return (modifiers & PUBLIC) != 0;
-        }
-
-        public boolean isProtected(int modifiers)
-        {
-            return (modifiers & PROTECTED) != 0;
-        }
-
-        public boolean isPrivate(int modifiers)
-        {
-            return (modifiers & PRIVATE) != 0;
-        }
-
-        public boolean isStatic(int modifiers)
-        {
-            return (modifiers & STATIC) != 0;
-        }
-
-        public boolean isAbstract(int modifiers)
-        {
-            return (modifiers & ABSTRACT) != 0;
-        }
-
-        public boolean isFinal(int modifiers)
-        {
-            return (modifiers & FINAL) != 0;
-        }
-
-        public boolean isNative(int modifiers)
-        {
-            return (modifiers & NATIVE) != 0;
-        }
-
-        public boolean isTransient(int modifiers)
-        {
-            return (modifiers & TRANSIENT) != 0;
-        }
-
-        /**
-         * Removes the given modifier.
-         */
-        static int removeModifier(int modifiers, int mod)
-        {
-            return modifiers & ~mod;
-        }
-    }
-
     public UnrealScriptParser(String fileName)
     {
         this(System.in);
@@ -196,7 +129,7 @@ PARSER_END(UnrealScriptParser)
 
 /* WHITE SPACE */
 
-TOKEN :
+SKIP :
 {
   < WHITESPACE:
   " "
@@ -208,56 +141,110 @@ TOKEN :
 
 /* COMMENTS */
 
+/* COMMENTS */
+
+// Start of Javadoc or multi-line comment
 MORE :
 {
-  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_JAVADOC_COMMENT
 |
   "/*" : IN_MULTI_LINE_COMMENT
 }
 
-TOKEN :
+// Single line comment
+SKIP :
 {
   <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
 }
 
-<IN_FORMAL_COMMENT>
-TOKEN :
+// End of Javadoc comment
+<IN_JAVADOC_COMMENT>
+SKIP :
 {
-  <FORMAL_COMMENT: "*/" > : DEFAULT
+  <JAVADOC_COMMENT: "*/"> : DEFAULT
 }
 
+// End of multi-line comment
 <IN_MULTI_LINE_COMMENT>
-TOKEN :
+SKIP :
 {
-  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+  <MULTI_LINE_COMMENT: "*/"> : DEFAULT
 }
 
-<IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
-MORE :
+// Inside Javadoc or multi-line comment
+<IN_MULTI_LINE_COMMENT>
+SKIP :
 {
   < ~[] >
+}
+
+// Inside Javadoc comment
+<IN_JAVADOC_COMMENT>
+SKIP :
+{
+  < ~[] >
+}
+
+// Start of string literal
+MORE :
+{
+    "\"" : IN_STRING_LITERAL
+}
+
+// Inside string literal
+<IN_STRING_LITERAL>
+SKIP :
+{
+    < ~["\""] >
+}
+
+// End of string literal
+<IN_STRING_LITERAL>
+TOKEN :
+{
+    <STRING_LITERAL: "\"" > : DEFAULT
+}
+
+// Start of name literal
+MORE :
+{
+    "\'" : IN_NAME_LITERAL
+}
+
+// Inside name literal
+<IN_NAME_LITERAL>
+SKIP :
+{
+    < ~["\'"] >
+}
+
+// End of name literal
+<IN_NAME_LITERAL>
+TOKEN :
+{
+    <NAME_LITERAL: "\'"> : DEFAULT
 }
 
 /* RESERVED WORDS AND LITERALS */
 
 TOKEN :
 {
-  < ABSTRACT: "Abstract" >
+  < ABSTRACT: "abstract" >
 | < ARRAY: "array" >
 | < AUTO: "auto" >
 | < BOOLEAN: "bool" >
 | < BREAK: "break" >
 | < BYTE: "byte" >
-| < CACHEEXEMPT: "CacheExempt" >
+| < CACHEEXEMPT: "cacheexempt" >
 | < CASE: "case" >
 | < CLASS: "class" >
-| < CLOCKWISEFROM: "ClockwiseFrom" >
+| < CLOCKWISEFROM: "clockwisefrom" >
 | < COERCE: "coerce" >
 | < COLLAPSECATEGORIES: "collapsecategories" >
 | < CONFIG: "config" >
 | < CONST: "const" >
 | < CONTINUE: "continue" >
-| < CROSS: "Cross" >
+| < CROSS: "cross" >
 | < _DEFAULT: "default" >
 | < _DEFAULTPROPERTIES: "defaultproperties" >
 | < DELEGATE: "delegate" >
@@ -265,7 +252,7 @@ TOKEN :
 | < DEPRECATED: "deprecated" >
 | < DO: "do" >
 | < DONTCOLLAPSECATEGORIES: "dontcollapsecategories" >
-| < DOTPRODUCT: "Dot" >
+| < DOTPRODUCT: "dot" >
 | < EDFINDABLE: "edfindable" >
 | < EDITCONST: "editconst" >
 | < EDITINLINE: "editinline" >
@@ -282,13 +269,13 @@ TOKEN :
 | < FINAL: "final" >
 | < FLOAT: "float" >
 | < FOR: "for" >
-| < FOREACH: "ForEach" >
+| < FOREACH: "foreach" >
 | < FUNCTION: "function" >
 | < GLOBALCONFIG: "globalconfig" >
 | < GOTO: "goto" >
 | < GUID: "guid" >
 | < HIDECATEGORIES: "hidecategories" >
-| < HIDEDROPDOWN: "HideDropDown" >
+| < HIDEDROPDOWN: "hidedropdown" >
 | < IF: "if" >
 | < IGNORES: "ignores" >
 | < INPUT: "input" >
@@ -312,8 +299,8 @@ TOKEN :
 | < PACKAGE: "package">
 | < PEROBJECTCONFIG: "perobjectconfig">
 | < PLACEABLE: "placeable">
-| < POSTOPERATOR: "postOperator" >
-| < PREOPERATOR: "preOperator" >
+| < POSTOPERATOR: "postoperator" >
+| < PREOPERATOR: "preoperator" >
 | < PRIVATE: "private" >
 | < PROTECTED: "protected" >
 | < PUBLIC: "public" >
@@ -377,7 +364,7 @@ TOKEN :
   >
 |
   < #HEXADECIMAL_EXPONENT: ["p","P"] (["+","-"])? (["0"-"9"])+ >
-|
+/*|
   < NAME_LITERAL:
       "'"
       (   (~["'","\\","\n","\r"])
@@ -402,7 +389,7 @@ TOKEN :
           )
       )*
       "\""
-  >
+  >*/
 }
 
 /* IDENTIFIERS */
@@ -1140,73 +1127,55 @@ TOKEN :
  *************************************************/
 
 /*
- * Program structuring syntax follows.
+ * --- Non-Terminals.
  */
 
+// PROGRAM                  = CLASSDECL
+//                            ( DECLARATIONS )*
+//                            ( REPLICATIONBLOCK )?
+//                            BODY
+//                            ( DEFAULTPROPERTIESBLOCK )?
 void CompilationUnit():
 {
-    //int modifiers;
 }
 {
-    //modifiers = Modifiers()
-try {
-  ClassDeclaration(/*modifiers*/)
-  ( Declarations() )*
-  ( ReplicationBlock() )?
-  Body()
-  ( DefaultPropertiesBlock() )?
-  ( < "\u001a" > )?
-  ( <STUFF_TO_IGNORE: ~[]> )?
-  <EOF>
-} catch (ParseException ex) {
+    try {
+        ClassDeclaration()
+        
+        /*
+        ( Declarations() )*
+        ( ReplicationBlock() )?
+        Body()
+        ( DefaultPropertiesBlock() )?
+        */
+
+        // ?
+        ( < "\u001a" > )?
+        // Anything not yet matched
+        ( <STUFF_TO_IGNORE: ~[]> )?
+        // Everything must have been matched by EOF
+        <EOF>
+    }
+    catch (ParseException ex) {
         recover (ex, SEMICOLON);
     }
 }
 
-/*
- * Modifiers. We match all modifiers in a single rule to reduce the chances of
- * syntax errors for simple modifier mistakes. It will also enable us to give
- * better error messages.
- */
-
-/*int Modifiers():
-{
-   int modifiers = 0;
-}
-{
- (
-  LOOKAHEAD(2)
-  (
-   "public" { modifiers |= ModifierSet.PUBLIC; }
-  |
-   "static" { modifiers |= ModifierSet.STATIC; }
-  |
-   "protected" { modifiers |= ModifierSet.PROTECTED; }
-  |
-   "private" { modifiers |= ModifierSet.PRIVATE; }
-  |
-   "final" { modifiers |= ModifierSet.FINAL; }
-  |
-   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
-  |
-   "native" { modifiers |= ModifierSet.NATIVE; }
-  |
-   "transient" { modifiers |= ModifierSet.TRANSIENT; }
-  )
- )*
-
- {
-    return modifiers;
- }
-}*/
-
-void ClassDeclaration(/*int modifiers*/):
+// CLASSDECL                = class IDENTIFIER ( extends PACKAGEIDENTIFIER )?
+//                            ( CLASSPARAMS )* SEMICOLON
+void ClassDeclaration():
 {
 }
 {
     "class" <IDENTIFIER> ("extends" PackageIdentifier())? (ClassParams())* ";"
 }
 
+
+// CLASSPARAMS              = CONSTCLASSPARAMS | within PACKAGEIDENTIFIER |
+//                            dependson LBRACK PACKAGEIDENTIFIER RBRACK |
+//                            config ( LBRACK PACKAGEIDENTIFIER RBRACK )? |
+//                            hidecategories LBRACK IDENTIFIERLIST RBRACK |
+//                            showcategories LBRACK IDENTIFIERLIST RBRACK
 void ClassParams():
 {}
 {
@@ -1220,42 +1189,63 @@ void ClassParams():
     )
 }
 
+// IDENTIFIER               = ( ALPHA | UNDERSCORE ) ( ALPHA | UNDERSCORE | DIGIT )*
+//                            // packagename.classname or classname.structname
+// See <IDENTIFIER> above
+
+// PACKAGEIDENTIFIER        = ( IDENTIFIER DOT )? IDENTIFIER
 void PackageIdentifier():
 {}
 {
-    ( (<IDENTIFIER> ".")? <IDENTIFIER> )
+    /// @todo FIXME lookahead
+    //( (LOOKAHEAD(2) (<IDENTIFIER> "."))? <IDENTIFIER> )
+    <IDENTIFIER>
 }
 
-void QualifiedIdentifier():
+// QUALIFIEDIDENTIFIER      = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT default DOT IDENTIFIER )
+//                            | ( ( IDENTIFIER DOT )* IDENTIFIER )
+//                            )
+/*void QualifiedIdentifier():
 {}
 {
     (
     ( "class" "'" PackageIdentifier() "'" "." "default" "." <IDENTIFIER> ) |
     ( ( <IDENTIFIER> "." )* <IDENTIFIER> )
     )
-}
+}*/
 
+// IDENTIFIERLIST           = IDENTIFIER ( COMMA IDENTIFIER )*
 void IdentifierList():
 {}
 {
     ( <IDENTIFIER> ( "," <IDENTIFIER> )* )
 }
 
-/*
- * Declaration parts
- */
-void Declarations():
+
+// STRINGVAL                = DQUOTE PRINTABLE DQUOTE
+// INTVAL                   = ( DIGIT+ | ( '0x' ( HEXDIGIT )+ ) )
+// FLOATVAL                 = ( DIGIT )+ DOT ( DIGIT )*
+// See above
+
+
+// -- Declaration parts
+// DECLARATIONS             = ( CONSTDECL | VARDECL | ENUMDECL | STRUCTDECL ) SEMICOLON
+/*void Declarations():
 {}
 {
     (ConstDecl() | VarDecl() | EnumDecl() | StructDecl()) ";"
 }
 
+
+// CONSTDECL                = const IDENTIFIER = CONSTVALUE
 void ConstDecl():
 {}
 {
     ("const" <IDENTIFIER> "=" ConstValue())
 }
 
+
+// CONSTVALUE               = ( STRINGVAL | INTVAL | FLOATVAL | BOOLVAL )
 void ConstValue():
 {}
 {
@@ -1267,6 +1257,9 @@ void ConstValue():
     )
 }
 
+
+// VARDECL                  = var ( CONFIGGROUP )? ( VARPARAMS )*
+//                            VARTYPE VARIDENTIFIER ( COMMA VARIDENTIFIER )*
 void VarDecl():
 {}
 {
@@ -1274,12 +1267,17 @@ void VarDecl():
     VarType() <IDENTIFIER> ( "," <IDENTIFIER> )*
 }
 
+
+// CONFIGGROUP              = LBRACK ( IDENTIFIER )? RBRACK
 void ConfigGroup():
 {}
 {
     "(" (<IDENTIFIER>)? ")"
 }
 
+
+// VARTYPE                  = PACKAGEIDENTIFIER | ENUMDECL | STRUCTDECL | ARRAYDECL | CLASSTYPE | BASICTYPE
+// VARIDENTIFIER            = IDENTIFIER
 void VarType():
 {}
 {
@@ -1293,36 +1291,49 @@ void VarType():
     )
 }
 
+
+// ARRAYDECL                = IDENTIFIER LSBRACK INTVAL RSBRACK
 void ArrayDecl():
 {}
 {
     <IDENTIFIER> "[" <INTEGER_LITERAL> "]"
 }
 
+
+// DYNARRAYDECL             = array LABRACK (PACKAGEIDENTIFIER | CLASSTYPE | BASICTYPE) RABRACK
 void DynArrayDecl():
 {}
 {
     "array" "<" (PackageIdentifier() | ClassType() | BasicType()) ">"
 }
 
+
+// CLASSTYPE                = class LABRACK PACKAGEIDENTIFIER RABRACK
 void ClassType():
 {}
 {
     "class" "<" PackageIdentifier() ">"
 }
 
+
+// ENUMDECL                 = enum IDENTIFIER LCBRACK ENUMOPTIONS RCBRACK
 void EnumDecl():
 {}
 {
     "enum" <IDENTIFIER> "{" EnumOptions() "}"
 }
 
+
+// ENUMOPTIONS              = IDENTIFIER ( COMMA IDENTIFIER )*
 void EnumOptions():
 {}
 {
     <IDENTIFIER> ( "," <IDENTIFIER> )*
 }
 
+
+// STRUCTDECL               = struct ( STRUCTPARAMS )* IDENTIFIER ( extends PACKAGEIDENTIFIER )?
+//                            LCBRACK STRUCTBODY RCBRACK
 void StructDecl():
 {}
 {
@@ -1330,28 +1341,35 @@ void StructDecl():
                            "{" StructBody() "}"
 }
 
+
+// STRUCTPARAMS             = ( native | export )
 void StructParams():
 {}
 {
     ("native" | "export")
 }
 
+
+// STRUCTBODY               = ( VARDECL SEMICOLON )+
 void StructBody():
 {}
 {
     (VarDecl() ";")+
 }
 
-/**
- * Replication parts
- */
 
+
+// Replication parts
+// REPLICATIONBLOCK         = replication LCBRACK ( REPLICATIONBODY )* RCBRACK
 void ReplicationBlock():
 {}
 {
     "replication" "{" (ReplicationBody())* "}"
 }
 
+
+// REPLICATIONBODY          = ( reliable | unreliable ) if LBRACK EXPR RBRACK
+//                            IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
 void ReplicationBody():
 {}
 {
@@ -1359,20 +1377,16 @@ void ReplicationBody():
                            <IDENTIFIER> ("," <IDENTIFIER>)* ";"
 }
 
-/**
- * Body parts
- */
-
+// Body parts
+// BODY                     = ( STATEDECL | FUNCTIONDECL )*
 void Body():
 {}
 {
     ( StateDecl() | FunctionDecl() )*
 }
 
-/**
- * State parts
- */
-
+// State parts
+// STATEDECL                = ( STATEPARAMS )* state IDENTIFIER ( CONFIGGROUP )? ( extends IDENTIFIER )? STATEBODY
 void StateDecl():
 {}
 {
@@ -1381,18 +1395,23 @@ void StateDecl():
 }
 
 
+// STATEBODY                = LCBRACK ( STATEIGNORE )? ( FUNCTIONDECL )* STATELABELS RCBRACK
 void StateBody():
 {}
 {
     "{" (StateIgnore())? (FunctionDecl())* StateLabels() "}"
 }
 
+
+// STATEIGNORE              = ignores IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
 void StateIgnore():
 {}
 {
     "ignores" <IDENTIFIER> ("," <IDENTIFIER>)* ";"
 }
 
+
+// STATELABELS              = ( IDENTIFIER COLON ( CODELINE )* )*
 void StateLabels():
 {}
 {
@@ -1400,16 +1419,19 @@ void StateLabels():
 }
 
 
-/**
- * Function  parts
- */
 
+// Function  parts
+// operators require an set amouth of arguments
+// FUNCTIONDECL             = ( NORMALFUNC | OPERATORFUNC )
 void FunctionDecl():
 {}
 {
     ( NormalFunc() | OperatorFunc() )
 }
 
+// NORMALFUNC               = ( FUNCTIONPARAMS )* FUNCTIONTYPE ( LOCALTYPE )?
+//                            IDENTIFIER LBRACK ( FUNCTIONARGS ( COMMA FUNCTIONARGS )* )? RBRACK
+//                            FUNCTIONBODY
 void NormalFunc():
 {}
 {
@@ -1418,18 +1440,21 @@ void NormalFunc():
         FunctionBody()
 }
 
+// FUNCTIONPARAMS           = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
 void FunctionParams():
 {}
 {
     ( ConstFuncParams() | ( "native" ("(" <INTEGER_LITERAL> ")")? ) )
 }
 
+// OPERATORFUNC             = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
 void OperatorFunc():
 {}
 {
     (FunctionParams())* OperatorType() FunctionBody()
 }
 
+// OPERATORTYPE             = ( BINARYOPERATOR | UNARYOPERATOR )
 void OperatorType():
 {}
 {
@@ -1437,6 +1462,8 @@ void OperatorType():
 }
 
 // requires two arguments
+// BINARYOPERATOR           = operator LBRACK INTVAL RBRACK PACKAGEIDENTIFIER OPIDENTIFIER
+//                            LBRACK FUNCTIONARGS COMMA FUNCTIONARGS RBRACK
 void BinaryOperator():
 {}
 {
@@ -1445,6 +1472,8 @@ void BinaryOperator():
 }
 
 // requires one argument
+// UNARYOPERATOR            = ( preoperator | postoperator ) PACKAGEIDENTIFIER OPIDENTIFIER
+//                            LBRACK FUNCTIONARGS RBRACK
 void UnaryOperator():
 {}
 {
@@ -1452,46 +1481,54 @@ void UnaryOperator():
                            "(" FunctionArgs() ")"
 }
 
+// OPIDENTIFIER             = IDENTIFIER | OPERATORNAMES
 void OpIdentifier():
 {}
 {
     <IDENTIFIER> | OperatorNames()
 }
 
+// FUNCTIONARGS             = ( optional | out | coerce )? FUNCTIONARGTYPE IDENTIFIER
 void FunctionArgs():
 {}
 {
     ("optional" | "out" | "coerce")? FunctionArgType() <IDENTIFIER>
 }
 
+// FUNCTIONARGTYPE          = BASICTYPE | PACKAGEIDENTIFIER
 void FunctionArgType():
 {}
 {
     BasicType() | PackageIdentifier()
 }
 
+
+// FUNCTIONBODY             = ( SEMICOLON | ( ( LOCALDECL )* ( CODELINE )* ) ( SEMICOLON )? )
 void FunctionBody():
 {}
 {
     ( ";" | ( ((LocalDecl())* (CodeLine())*) (";")? ) )
 }
 
+
+// LOCALDECL                = local LOCALTYPE IDENTIFIER ( COMMA IDENTIFIER )*
 void LocalDecl():
 {}
 {
     "local" LocalType() <IDENTIFIER> ( "," <IDENTIFIER> )*
 }
 
+
+// LOCALTYPE                = PACKAGEIDENTIFIER | ARRAYDECL | CLASSTYPE | BASICTYPE
 void LocalType():
 {}
 {
     (PackageIdentifier() | ArrayDecl() | ClassType() | BasicType())
 }
 
-/**
- * Code parts
- */
-
+// Code parts
+// CODELINE                 = ( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
+//                            | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
 void CodeLine():
 {}
 {
@@ -1518,12 +1555,23 @@ void CodeLine():
     }
 }
 
+// CODEBLOCK                = ( CODELINE | ( LCBRACK ( CODELINE )* RCBRACK ) )
 void CodeBlock():
 {}
 {
     ( CodeLine() | ( "{" ( CodeLine() )* "}" ) )
 }
 
+
+// STATEMENT                = FUNCCALL SEMICOLON
+void Statement():
+{}
+{
+    FuncCall() ";"
+}
+
+
+// ASSIGNMENT               = IDENTIFIER EQUALS EXPR SEMICOLON
 void Assignment():
 {}
 {
@@ -1531,124 +1579,75 @@ void Assignment():
 }
 
 
-void Statement():
+// IFTHENELSE               = if LBRACK EXPR RBRACK CODEBLOCK ( else CODEBLOCK )?'
+// The disambiguating algorithm of JavaCC automatically binds dangling
+// else's to the innermost if statement.  The LOOKAHEAD specification
+// is to tell JavaCC that we know what we are doing.
+void IfStatement():
 {}
 {
-    FuncCall() ";"
+    "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
 }
 
-void LabeledStatement():
+// WHILELOOP                = while LBRACK EXPR RBRACK CODEBLOCK
+void WhileStatement():
 {}
 {
-  <IDENTIFIER> ":" Statement()
+    "while" "(" Expression() ")" Statement()
 }
 
-void Block():
+// DOLOOP                   = do CODEBLOCK until LBRACK EXPR RBRACK
+void DoStatement():
 {}
 {
-  "{" ( BlockStatement() )* "}"
+    "do" Statement() "until" "(" Expression() ")" ";"
 }
 
-void BlockStatement():
-{}
-{
-  LOOKAHEAD( /*Modifiers()*/ BasicType() <IDENTIFIER> )
-  VarDecl() ";"
-|
-  Statement()
-}
-
-void EmptyStatement():
-{}
-{
-  ";"
-}
-
-void StatementExpression():
-/*
- * The last expansion of this production accepts more than the legal
- * Java expansions for StatementExpression.  This expansion does not
- * use PostfixExpression for performance reasons.
- */
-{}
-{
-  PreIncrementExpression()
-|
-  PreDecrementExpression()
-|
-  PrimaryExpression()
-  [
-    "++"
-  |
-    "--"
-  |
-    AssignmentOperator() Expression()
-  ]
-}
-
-void FuncCall():
-{}
-{
-    ( ( "class" "'" PackageIdentifier() "'" "." "static" "." )
-                           | ( ( <IDENTIFIER> "." )+ )
-                           )?
-                           <IDENTIFIER> "(" ( Expression() ( "," Expression() )* )? ")"
-}
-
+// SWITCHCASE               = switch LBRACK EXPR RBRACK LCBRACK ( CASERULE )+ ( DEFAULTRULE )? RCBRACK
 void SwitchStatement():
 {}
 {
-    // switch LBRACK EXPR RBRACK LCBRACK ( CASERULE )+ ( DEFAULTRULE )? RCBRACK
     "switch" "(" Expression() ")" "{"
         (SwitchLabel() (BlockStatement())*)*
     "}"
 }
 
+// CASERULE                 = case INTVAL COLON CODEBLOCK
 void SwitchLabel():
 {}
 {
     ("case" <INTEGER_LITERAL> ":") | ("default" ":")
 }
 
-void IfStatement():
-/*
- * The disambiguating algorithm of JavaCC automatically binds dangling
- * else's to the innermost if statement.  The LOOKAHEAD specification
- * is to tell JavaCC that we know what we are doing.
- */
+
+// DEFAULTRULE              = default CODEBLOCK
+
+
+// RETURNFUNC               = return ( EXPR )? SEMICOLON
+
+void ReturnStatement():
 {}
 {
-    // if LBRACK EXPR RBRACK CODEBLOCK ( else CODEBLOCK )?
-    "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
+  "return" [ Expression() ] ";"
 }
 
-void WhileStatement():
+
+// FOREACHLOOP              = foreach FUNCCALL CODEBLOCK
+void ForEachStatement():
 {}
 {
-    //while LBRACK EXPR RBRACK CODEBLOCK
-    "while" "(" Expression() ")" Statement()
+    // foreach FUNCCALL CODEBLOCK
+    "ForEach" [ Expression() ] Statement()
 }
 
-void DoStatement():
-{}
-{
-    //do CODEBLOCK until LBRACK EXPR RBRACK
-    "do" Statement() "until" "(" Expression() ")" ";"
-}
 
+// FORLOOP                  = for LBRACK ASSIGNMENT SEMICOLON EXPR SEMICOLON EXPR RBRACK CODEBLOCK
 void ForStatement():
 {}
 {
     "for" "("
         [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
     ")" Statement()
-}
-
-void ForEachStatement():
-{}
-{
-    // foreach FUNCCALL CODEBLOCK
-    "ForEach" [ Expression() ] Statement()
 }
 
 void ForInit():
@@ -1669,6 +1668,87 @@ void ForUpdate():
     StatementExpressionList()
 }
 
+
+// EXPR                     = OPERAND ( OPIDENTIFIER OPERAND )*
+// This expansion has been written this way instead of:
+//   Assignment() | ConditionalExpression()
+// for performance reasons.
+// However, it is a weakening of the grammar for it allows the LHS of
+// assignments to be any conditional expression whereas it can only be
+// a primary expression.  Consider adding a semantic predicate to work
+// around this.
+void Expression():
+{}
+{
+  ConditionalExpression()
+  [
+    LOOKAHEAD(2)
+    AssignmentOperator() Expression()
+  ]
+}
+
+// OPERAND                  = ( CONSTVALUE | QUALIFIEDIDENTIFIER | FUNCCALL )
+
+// FUNCCALL                 = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT static DOT )
+//                            | ( ( IDENTIFIER DOT )+ )
+//                            )?
+//                            IDENTIFIER LBRACK ( EXPR ( COMMA EXPR )* )? RBRACK
+void FuncCall():
+{}
+{
+    ( ( "class" "'" PackageIdentifier() "'" "." "static" "." )
+                           | ( ( <IDENTIFIER> "." )+ )
+                           )?
+                           <IDENTIFIER> "(" ( Expression() ( "," Expression() )* )? ")"
+}
+
+void LabeledStatement():
+{}
+{
+  <IDENTIFIER> ":" Statement()
+}
+
+void Block():
+{}
+{
+  "{" ( BlockStatement() )* "}"
+}
+
+void BlockStatement():
+{}
+{
+  LOOKAHEAD( BasicType() <IDENTIFIER> )
+  VarDecl() ";"
+|
+  Statement()
+}
+
+void EmptyStatement():
+{}
+{
+  ";"
+}
+
+// The last expansion of this production accepts more than the legal
+// Java expansions for StatementExpression.  This expansion does not
+// use PostfixExpression for performance reasons.
+void StatementExpression():
+{}
+{
+  PreIncrementExpression()
+|
+  PreDecrementExpression()
+|
+  PrimaryExpression()
+  [
+    "++"
+  |
+    "--"
+  |
+    AssignmentOperator() Expression()
+  ]
+}
+
 void BreakStatement():
 {}
 {
@@ -1681,35 +1761,65 @@ void ContinueStatement():
     "continue"  ";"
 }
 
-void ReturnStatement():
-{}
-{
-  "return" [ Expression() ] ";"
-}
 
-
-/**
- * Defaultproperties
- */
+// -- Defaultproperties
+// DEFAULTPROPERTIESBLOCK   = defaultproperties LCBRACK ( DEFPROP )* RCBRACK
 void DefaultPropertiesBlock():
 {}
 {
     "defaultproperties" "{" (DefProp())* "}"
 }
 
+// DEFPROP                  = DEFPROPIDENTIFIER EQUALS PRINTABLE
 void DefProp():
 {}
 {
     DefPropIdentifier() "=" Expression()
 }
 
+// DEFPROPIDENTIFIER        = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
 void DefPropIdentifier():
 {}
 {
     <IDENTIFIER> ( ("(" <INTEGER_LITERAL> ")") | ("[" <INTEGER_LITERAL> "]") )?
-}
+}*/
 
+/*
+ * Terminals
+ */
+/*
+PRINTABLE                = all printable characters
+ALPHA                    = 'a' .. 'z'
+DIGIT                    = '0' .. '9'
+HEXDIGIT                 = DIGIT | 'a' .. 'f'
+SEMICOLON                = ';'
+COLON                    = ':'
+UNDERSCORE               = '_'
+LBRACK                   = '('
+RBRACK                   = ')'
+LABRACK                  = '<'
+RABRACK                  = '>'
+LCBRACK                  = '{'
+RCBRACK                  = '}'
+LSBRACK                  = '['
+RSBRACK                  = ']'
+DOT                      = '.'
+COMMA                    = ','
+SQUOTE                   = '''
+DQUOTE                   = '"'
+EQUALS                   = '='
+*/
+/*
+See above
+*/
 
+// CONSTCLASSPARAMS         = abstract | native | nativereplication | safereplace |
+//                            perobjectconfig | transient | noexport | exportstructs |
+//                            // available but obsolete:
+//                            guid(INTVAL,INTVAL,INTVAL,INTVAL)
+//                            // available from warfare and up:
+//                            collapsecategories | dontcollapsecategories | placeable |
+//                            notplaceable | editinlinenew | noteditinlinenew
 void ConstClassParams():
 {}
 {
@@ -1734,6 +1844,19 @@ void ConstClassParams():
     )
 }
 
+// BOOLVAL                  = true | false
+/*void BooleanLiteral():
+{}
+{
+  "true"
+|
+  "false"
+}
+
+// VARPARAMS                = config | const | editconst | export | globalconfig | input |
+//                            localized | native | private | protected | transient | travel |
+//                            // available from warfare and up:
+//                            editinline | deprecated | edfindable | editinlineuse
 void VarParams():
 {}
 {
@@ -1757,12 +1880,15 @@ void VarParams():
     )
 }
 
+// STATEPARAMS              = auto | simulated
 void StateParams():
 {}
 {
     ("auto" | "simulated")
 }
 
+// CONSTFUNCPARAMS          = final | iterator | latent | simulated | singular | static |
+//                            exec | protected | private
 void ConstFuncParams():
 {}
 {
@@ -1780,48 +1906,29 @@ void ConstFuncParams():
     )
 }
 
+// BASICTYPE                = byte | int | float | string | bool | name | class
 void BasicType():
 {}
 {
   "bool" | "byte" | "float" | "int" | "string" | "name" | "class"
 }
 
+// FUNCTIONTYPE             = function | event | delegate
 void FunctionType():
 {}
 {
   "function" | "event" | "delegate"
-}
-
-void ResultType():
-{}
-{
-  "void" | BasicType()
-}
+}*/
 
 /*
- * Expression syntax follows.
- */
-
-void Expression():
-/*
- * This expansion has been written this way instead of:
- *   Assignment() | ConditionalExpression()
- * for performance reasons.
- * However, it is a weakening of the grammar for it allows the LHS of
- * assignments to be any conditional expression whereas it can only be
- * a primary expression.  Consider adding a semantic predicate to work
- * around this.
- */
-{}
-{
-  ConditionalExpression()
-  [
-    LOOKAHEAD(2)
-    AssignmentOperator() Expression()
-  ]
-}
-
-void OperatorNames():
+OPERATORNAMES            = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
+                           '-' | '=' | '+' | '|' | '\' | ':' | '<' | '>' | '/' |
+                           '?' | '`' |
+                           '<<' | '>>' | '!=' | '<=' | '>=' | '++' | '--' | '?-' | '+=' |
+                           '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
+                           '~=' | '@=' | '>>>'
+*/
+/*void OperatorNames():
 {}
 {
     "~" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" |
@@ -1830,7 +1937,16 @@ void OperatorNames():
     "<<" | ">>" | "!=" | "<=" | ">=" | "++" | "--" | "?-" | "+=" |
     "-=" | "*=" | "/=" | "&&" | "||" | "^^" | "==" | "**" |
     "~=" | "@=" | ">>>"
+}*/
+
+// Java Rules
+/*void ResultType():
+{}
+{
+  "void" | BasicType()
 }
+
+
 
 void AssignmentOperator():
 {}
@@ -2074,10 +2190,9 @@ void AllocationExpression():
     )
 }
 
-/*
- * The third LOOKAHEAD specification below is to parse to PrimarySuffix
- * if there is an expression between the "[...]".
- */
+
+// The third LOOKAHEAD specification below is to parse to PrimarySuffix
+// if there is an expression between the "[...]".
 void ArrayDimsAndInits():
 {}
 {
@@ -2112,13 +2227,7 @@ void Literal():
   NoneLiteral()
 }
 
-void BooleanLiteral():
-{}
-{
-  "true"
-|
-  "false"
-}
+
 
 void NoneLiteral():
 {}
@@ -2126,16 +2235,10 @@ void NoneLiteral():
   "none"
 }
 
-/*
- * Statement syntax follows.
- */
 
 
-
-/* We use productions to match >>>, >> and > so that we can keep the
- * type declaration syntax with generics clean
- */
-
+// We use productions to match >>>, >> and > so that we can keep the
+// type declaration syntax with generics clean
 void RUNSIGNEDSHIFT():
 {}
 {
@@ -2153,3 +2256,4 @@ void RSIGNEDSHIFT():
   ">" ">"
   )
 }
+*/

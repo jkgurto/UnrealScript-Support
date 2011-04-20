@@ -109,7 +109,7 @@ public class UnrealMutatorActionProvider implements ActionProvider {
         else if (string.equals(ActionProvider.COMMAND_RENAME)) {
             DefaultProjectOperations.performDefaultRenameOperation(
                     project,
-                    helper.getProjectDirectory().getName()); // @todo FIXME
+                    helper.getProjectDirectory().getName());
         }
         else if (string.equals(ActionProvider.COMMAND_MOVE)) {
             DefaultProjectOperations.performDefaultMoveOperation(project);

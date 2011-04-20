@@ -165,22 +165,22 @@ TOKEN :
 
 TOKEN :
 {
-  < ABSTRACT: "Abstract" >
+  < ABSTRACT: "abstract" >
 | < ARRAY: "array" >
 | < AUTO: "auto" >
 | < BOOLEAN: "bool" >
 | < BREAK: "break" >
 | < BYTE: "byte" >
-| < CACHEEXEMPT: "CacheExempt" >
+| < CACHEEXEMPT: "cacheexempt" >
 | < CASE: "case" >
 | < CLASS: "class" >
-| < CLOCKWISEFROM: "ClockwiseFrom" >
+| < CLOCKWISEFROM: "clockwisefrom" >
 | < COERCE: "coerce" >
 | < COLLAPSECATEGORIES: "collapsecategories" >
 | < CONFIG: "config" >
 | < CONST: "const" >
 | < CONTINUE: "continue" >
-| < CROSS: "Cross" >
+| < CROSS: "cross" >
 | < _DEFAULT: "default" >
 | < _DEFAULTPROPERTIES: "defaultproperties" >
 | < DELEGATE: "delegate" >
@@ -188,7 +188,7 @@ TOKEN :
 | < DEPRECATED: "deprecated" >
 | < DO: "do" >
 | < DONTCOLLAPSECATEGORIES: "dontcollapsecategories" >
-| < DOTPRODUCT: "Dot" >
+| < DOTPRODUCT: "dot" >
 | < EDFINDABLE: "edfindable" >
 | < EDITCONST: "editconst" >
 | < EDITINLINE: "editinline" >
@@ -205,13 +205,13 @@ TOKEN :
 | < FINAL: "final" >
 | < FLOAT: "float" >
 | < FOR: "for" >
-| < FOREACH: "ForEach" >
+| < FOREACH: "foreach" >
 | < FUNCTION: "function" >
 | < GLOBALCONFIG: "globalconfig" >
 | < GOTO: "goto" >
 | < GUID: "guid" >
 | < HIDECATEGORIES: "hidecategories" >
-| < HIDEDROPDOWN: "HideDropDown" >
+| < HIDEDROPDOWN: "hidedropdown" >
 | < IF: "if" >
 | < IGNORES: "ignores" >
 | < INPUT: "input" >
@@ -235,8 +235,8 @@ TOKEN :
 | < PACKAGE: "package">
 | < PEROBJECTCONFIG: "perobjectconfig">
 | < PLACEABLE: "placeable">
-| < POSTOPERATOR: "postOperator" >
-| < PREOPERATOR: "preOperator" >
+| < POSTOPERATOR: "postoperator" >
+| < PREOPERATOR: "preoperator" >
 | < PRIVATE: "private" >
 | < PROTECTED: "protected" >
 | < PUBLIC: "public" >

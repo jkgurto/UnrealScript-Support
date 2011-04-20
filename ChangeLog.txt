@@ -1,0 +1,4 @@
+1.3 Changed to Ant project type. Added rename, move, copy, etc, to project actions. Added nicer icons. Build script currently does nothing.<br/>
+1.2 Fixed bug in syntax highlighter with the keyword "string".<br/>
+1.1 Updated syntax highlighter. Can change fonts and colours in the options menu. Added new project and a sample project options to the "New Project" list.<br/>
+1.0 Creating project. Syntax highlighting.<br/>
