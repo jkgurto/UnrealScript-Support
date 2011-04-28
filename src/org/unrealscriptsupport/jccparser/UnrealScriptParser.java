@@ -16,12 +16,25 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
     public List<ParseException> syntaxErrors = new ArrayList<ParseException> ();
 
-    void recover (ParseException ex, int recoveryPoint) {
-        syntaxErrors.add (ex);
-        Token t;
-        do {
-            t = getNextToken ();
-        } while (t.kind != recoveryPoint);
+    /**
+     * Add to error list and step back to a recovery point.
+     */
+    void recover(ParseException ex, int recoveryPoint) {
+
+        syntaxErrors.add(ex);
+        Token t = getNextToken();
+
+        // (t.kind != recoveryPoint)
+        // Backtrack until the recoveryPoint token is found
+        // eg. a semicolon
+
+        // (t.next != null)
+        // If the recoveryPoint does not exist,
+        // then stop it backtracking forever
+        while ( (t.next != null) &&
+                (t.kind != recoveryPoint) ) {
+            t = getNextToken();
+        }
     }
 
     public UnrealScriptParser(String fileName)
@@ -94,19 +107,11 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     try {
       ClassDeclaration();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 175:
-        jj_consume_token(175);
+      case _DEFAULTPROPERTIES:
+        DefaultPropertiesBlock();
         break;
       default:
         jj_la1[0] = jj_gen;
-        ;
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case STUFF_TO_IGNORE:
-        jj_consume_token(STUFF_TO_IGNORE);
-        break;
-      default:
-        jj_la1[1] = jj_gen;
         ;
       }
       jj_consume_token(0);
@@ -114,43 +119,6 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         recover (ex, SEMICOLON);
     }
   }
-
-/*
- * Modifiers. We match all modifiers in a single rule to reduce the chances of
- * syntax errors for simple modifier mistakes. It will also enable us to give
- * better error messages.
- */
-
-/*int Modifiers():
-{
-   int modifiers = 0;
-}
-{
- (
-  LOOKAHEAD(2)
-  (
-   "public" { modifiers |= ModifierSet.PUBLIC; }
-  |
-   "static" { modifiers |= ModifierSet.STATIC; }
-  |
-   "protected" { modifiers |= ModifierSet.PROTECTED; }
-  |
-   "private" { modifiers |= ModifierSet.PRIVATE; }
-  |
-   "final" { modifiers |= ModifierSet.FINAL; }
-  |
-   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
-  |
-   "native" { modifiers |= ModifierSet.NATIVE; }
-  |
-   "transient" { modifiers |= ModifierSet.TRANSIENT; }
-  )
- )*
-
- {
-    return modifiers;
- }
-}*/
 
 // CLASSDECL                = class IDENTIFIER ( extends PACKAGEIDENTIFIER )?
 //                            ( CLASSPARAMS )* SEMICOLON
@@ -163,7 +131,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       PackageIdentifier();
       break;
     default:
-      jj_la1[2] = jj_gen;
+      jj_la1[1] = jj_gen;
       ;
     }
     label_1:
@@ -181,12 +149,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case SHOWCATEGORIES:
       case TRANSIENT:
       case WITHIN:
-      case 177:
-      case 178:
         ;
         break;
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[2] = jj_gen;
         break label_1;
       }
       ClassParams();
@@ -208,8 +174,6 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case NOTPLACEABLE:
     case PLACEABLE:
     case TRANSIENT:
-    case 177:
-    case 178:
       ConstClassParams();
       break;
     case WITHIN:
@@ -231,7 +195,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(RPAREN);
         break;
       default:
-        jj_la1[4] = jj_gen;
+        jj_la1[3] = jj_gen;
         ;
       }
       break;
@@ -248,19 +212,28 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[4] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
 // IDENTIFIER               = ( ALPHA | UNDERSCORE ) ( ALPHA | UNDERSCORE | DIGIT )*
-//                            // packagename.classname or classname.structname
 // See <IDENTIFIER> above
 
+// packagename.classname or classname.structname
 // PACKAGEIDENTIFIER        = ( IDENTIFIER DOT )? IDENTIFIER
   final public void PackageIdentifier() throws ParseException {
     jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case DOT:
+      jj_consume_token(DOT);
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[5] = jj_gen;
+      ;
+    }
   }
 
 // QUALIFIEDIDENTIFIER      = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT default DOT IDENTIFIER )
@@ -788,7 +761,6 @@ void Block():
 void BlockStatement():
 {}
 {
-  //LOOKAHEAD( Modifiers() BasicType() <IDENTIFIER> )
   LOOKAHEAD( BasicType() <IDENTIFIER> )
   VarDecl() ";"
 |
@@ -831,30 +803,64 @@ void ContinueStatement():
 {}
 {
     "continue"  ";"
-}
+}*/
 
 
 // -- Defaultproperties
 // DEFAULTPROPERTIESBLOCK   = defaultproperties LCBRACK ( DEFPROP )* RCBRACK
-void DefaultPropertiesBlock():
-{}
-{
-    "defaultproperties" "{" (DefProp())* "}"
-}
+  final public void DefaultPropertiesBlock() throws ParseException {
+    jj_consume_token(_DEFAULTPROPERTIES);
+    jj_consume_token(LBRACE);
+    label_3:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        ;
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        break label_3;
+      }
+      DefProp();
+    }
+    jj_consume_token(RBRACE);
+  }
 
 // DEFPROP                  = DEFPROPIDENTIFIER EQUALS PRINTABLE
-void DefProp():
-{}
-{
-    DefPropIdentifier() "=" Expression()
-}
+  final public void DefProp() throws ParseException {
+    DefPropIdentifier();
+    jj_consume_token(ASSIGN);
+    jj_consume_token(IDENTIFIER);
+  }
 
 // DEFPROPIDENTIFIER        = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
-void DefPropIdentifier():
-{}
-{
-    <IDENTIFIER> ( ("(" <INTEGER_LITERAL> ")") | ("[" <INTEGER_LITERAL> "]") )?
-}*/
+  final public void DefPropIdentifier() throws ParseException {
+    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+    case LBRACKET:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LPAREN:
+        jj_consume_token(LPAREN);
+        jj_consume_token(INTEGER_LITERAL);
+        jj_consume_token(RPAREN);
+        break;
+      case LBRACKET:
+        jj_consume_token(LBRACKET);
+        jj_consume_token(INTEGER_LITERAL);
+        jj_consume_token(RBRACKET);
+        break;
+      default:
+        jj_la1[8] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    default:
+      jj_la1[9] = jj_gen;
+      ;
+    }
+  }
 
 /*
  * Terminals
@@ -918,20 +924,14 @@ See above
     case TRANSIENT:
       jj_consume_token(TRANSIENT);
       break;
-    case 177:
-      jj_consume_token(177);
-      break;
     case PLACEABLE:
       jj_consume_token(PLACEABLE);
       break;
     case NOTPLACEABLE:
       jj_consume_token(NOTPLACEABLE);
       break;
-    case 178:
-      jj_consume_token(178);
-      break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[10] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -946,7 +946,7 @@ See above
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[8];
+  final private int[] jj_la1 = new int[11];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -962,22 +962,22 @@ See above
       jj_la1_init_5();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x0,0x0,0x0,0x8008000,0x0,0x8008000,0x0,0x8000,};
+      jj_la1_0 = new int[] {0x0,0x0,0x8008000,0x0,0x8008000,0x0,0x0,0x0,0x0,0x0,0x8000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x40000,0x18000004,0x0,0x18000004,0x0,0x8000000,};
+      jj_la1_1 = new int[] {0x1,0x40000,0x18000004,0x0,0x18000004,0x0,0x0,0x0,0x0,0x0,0x8000000,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x0,0x40104300,0x0,0x40104300,0x0,0x104300,};
+      jj_la1_2 = new int[] {0x0,0x0,0x40104300,0x0,0x40104300,0x0,0x0,0x0,0x0,0x0,0x104300,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x0,0x0,0x0,0x4080,0x10000000,0x4080,0x0,0x80,};
+      jj_la1_3 = new int[] {0x0,0x0,0x4080,0x10000000,0x4080,0x0,0x0,0x2000000,0x10000000,0x10000000,0x80,};
    }
    private static void jj_la1_init_4() {
-      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x8,0x0,};
+      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x10,0x8,0x0,0x1,0x1,0x0,};
    }
    private static void jj_la1_init_5() {
-      jj_la1_5 = new int[] {0x8000,0x10000,0x0,0x60000,0x0,0x60000,0x0,0x60000,};
+      jj_la1_5 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -991,7 +991,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1005,7 +1005,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -1015,7 +1015,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1025,7 +1025,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -1034,7 +1034,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1043,7 +1043,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -1094,12 +1094,12 @@ See above
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[179];
+    boolean[] la1tokens = new boolean[175];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 11; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1123,7 +1123,7 @@ See above
         }
       }
     }
-    for (int i = 0; i < 179; i++) {
+    for (int i = 0; i < 175; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

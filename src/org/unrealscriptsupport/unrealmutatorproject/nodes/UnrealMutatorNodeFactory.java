@@ -6,9 +6,11 @@
  * Reference:
  * http://platform.netbeans.org/tutorials/nbm-projecttypeant.html
  */
-package org.unrealscriptsupport.unrealmutatorproject;
+package org.unrealscriptsupport.unrealmutatorproject.nodes;
 
 
+import org.unrealscriptsupport.unrealmutatorproject.nodes.SrcNode;
+import org.unrealscriptsupport.unrealmutatorproject.nodes.ImportantFilesNode;
 import org.netbeans.api.project.*;
 import org.netbeans.spi.project.ui.support.*;
 import org.openide.filesystems.FileObject;
@@ -16,6 +18,7 @@ import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.nodes.*;
 import org.openide.util.Exceptions;
+import org.unrealscriptsupport.unrealmutatorproject.UnrealMutatorProject;
 
 @NodeFactory.Registration(projectType="org-unrealscriptsupport-UnrealMutatorProject", position=200)
 public class UnrealMutatorNodeFactory implements NodeFactory {

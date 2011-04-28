@@ -8,8 +8,9 @@
  * http://platform.netbeans.org/tutorials/nbm-projecttypeant.html
  */
 
-package org.unrealscriptsupport.unrealmutatorproject;
+package org.unrealscriptsupport.unrealmutatorproject.nodes;
 
+import org.unrealscriptsupport.unrealmutatorproject.nodes.FileFilteredNode;
 import java.awt.Image;
 import java.io.File;
 import java.io.FileFilter;
@@ -19,6 +20,7 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataFolder;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
+import org.unrealscriptsupport.unrealmutatorproject.UnrealMutatorProject;
 
 /** This is the node you actually see in the project tab for the project */
 public class ImportantFilesNode extends FileFilteredNode {

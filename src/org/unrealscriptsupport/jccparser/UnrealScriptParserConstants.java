@@ -342,8 +342,6 @@ public interface UnrealScriptParserConstants {
   int RSIGNEDSHIFT = 173;
   /** RegularExpression Id. */
   int GT = 174;
-  /** RegularExpression Id. */
-  int STUFF_TO_IGNORE = 176;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -533,10 +531,6 @@ public interface UnrealScriptParserConstants {
     "\">>>\"",
     "\">>\"",
     "\">\"",
-    "\"\\u001a\"",
-    "<STUFF_TO_IGNORE>",
-    "\"config(file_name)\"",
-    "\"hidecategories(category_list)\"",
   };
 
 }

@@ -8,7 +8,7 @@
  * http://platform.netbeans.org/tutorials/nbm-projecttypeant.html
  */
 
-package org.unrealscriptsupport.unrealmutatorproject;
+package org.unrealscriptsupport.unrealmutatorproject.nodes;
 
 import java.awt.Image;
 import javax.swing.Action;
@@ -19,6 +19,7 @@ import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
+import org.unrealscriptsupport.unrealmutatorproject.UnrealMutatorProject;
 
 /** This is the node you actually see in the project tab for the project */
 public class SrcNode extends FilterNode {

@@ -62,12 +62,25 @@ public class UnrealScriptParser
 
     public List<ParseException> syntaxErrors = new ArrayList<ParseException> ();
 
-    void recover (ParseException ex, int recoveryPoint) {
-        syntaxErrors.add (ex);
-        Token t;
-        do {
-            t = getNextToken ();
-        } while (t.kind != recoveryPoint);
+    /**
+     * Add to error list and step back to a recovery point.
+     */
+    void recover(ParseException ex, int recoveryPoint) {
+
+        syntaxErrors.add(ex);
+        Token t = getNextToken();
+
+        // (t.kind != recoveryPoint)
+        // Backtrack until the recoveryPoint token is found
+        // eg. a semicolon
+
+        // (t.next != null)
+        // If the recoveryPoint does not exist,
+        // then stop it backtracking forever
+        while ( (t.next != null) &&
+                (t.kind != recoveryPoint) ) {
+            t = getNextToken();
+        }
     }
 
     public UnrealScriptParser(String fileName)
@@ -1142,17 +1155,16 @@ void CompilationUnit():
     try {
         ClassDeclaration()
         
-        /*
-        ( Declarations() )*
-        ( ReplicationBlock() )?
-        Body()
+        
+        //( Declarations() )*
+        //( ReplicationBlock() )?
+        //Body()
         ( DefaultPropertiesBlock() )?
-        */
 
         // ?
-        ( < "\u001a" > )?
+        //( < "\u001a" > )?
         // Anything not yet matched
-        ( <STUFF_TO_IGNORE: ~[]> )?
+        //( <STUFF_TO_IGNORE: ~[]> )?
         // Everything must have been matched by EOF
         <EOF>
     }
@@ -1180,7 +1192,7 @@ void ClassParams():
 {}
 {
     (
-    (ConstClassParams()) |
+    ConstClassParams() |
     ("within" PackageIdentifier()) |
     ("dependsOn" "(" PackageIdentifier() ")") |
     ("config" ( "(" PackageIdentifier() ")" )?) |
@@ -1190,16 +1202,17 @@ void ClassParams():
 }
 
 // IDENTIFIER               = ( ALPHA | UNDERSCORE ) ( ALPHA | UNDERSCORE | DIGIT )*
-//                            // packagename.classname or classname.structname
 // See <IDENTIFIER> above
 
+// packagename.classname or classname.structname
 // PACKAGEIDENTIFIER        = ( IDENTIFIER DOT )? IDENTIFIER
 void PackageIdentifier():
 {}
 {
     /// @todo FIXME lookahead
     //( (LOOKAHEAD(2) (<IDENTIFIER> "."))? <IDENTIFIER> )
-    <IDENTIFIER>
+    //<IDENTIFIER>
+    <IDENTIFIER> ("." <IDENTIFIER>)?
 }
 
 // QUALIFIEDIDENTIFIER      = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT default DOT IDENTIFIER )
@@ -1759,7 +1772,7 @@ void ContinueStatement():
 {}
 {
     "continue"  ";"
-}
+}*/
 
 
 // -- Defaultproperties
@@ -1774,7 +1787,8 @@ void DefaultPropertiesBlock():
 void DefProp():
 {}
 {
-    DefPropIdentifier() "=" Expression()
+    //DefPropIdentifier() "=" Expression()
+    DefPropIdentifier() "=" <IDENTIFIER>
 }
 
 // DEFPROPIDENTIFIER        = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
@@ -1782,7 +1796,7 @@ void DefPropIdentifier():
 {}
 {
     <IDENTIFIER> ( ("(" <INTEGER_LITERAL> ")") | ("[" <INTEGER_LITERAL> "]") )?
-}*/
+}
 
 /*
  * Terminals
@@ -1823,25 +1837,19 @@ See above
 void ConstClassParams():
 {}
 {
-    (
     "native" |
     "nativereplication" |
     "abstract" |
 
-    (
-    "guid" "("
+    ("guid" "("
     <INTEGER_LITERAL> ","
     <INTEGER_LITERAL> ","
     <INTEGER_LITERAL> ","
-    <INTEGER_LITERAL> ")"
-    ) |
+    <INTEGER_LITERAL> ")") |
 
     "transient" |
-    "config(file_name)" |
     "placeable" |
-    "notplaceable" |
-    "hidecategories(category_list)"
-    )
+    "notplaceable"
 }
 
 // BOOLVAL                  = true | false

@@ -7,7 +7,7 @@
  * http://wiki.netbeans.org/DevFaqNodesDecorating
  */
 
-package org.unrealscriptsupport.unrealmutatorproject;
+package org.unrealscriptsupport.unrealmutatorproject.nodes;
 
 import java.io.*;
 import java.util.*;
@@ -53,7 +53,7 @@ public class FileFilteredNode extends FilterNode {
 
             for (Node node : super.createNodes(key)) {
                 DataObject dataObject =
-                        (DataObject) node.getLookup().lookup(DataObject.class);
+                        node.getLookup().lookup(DataObject.class);
 
                 if (dataObject != null) {
                     FileObject fileObject = dataObject.getPrimaryFile();
