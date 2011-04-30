@@ -20,14 +20,16 @@ class UnrealScriptLexer implements Lexer<UnrealScriptTokenId> {
     UnrealScriptLexer (LexerRestartInfo<UnrealScriptTokenId> info) {
         this.info = info;
         JavaCharStream stream = new JavaCharStream (info.input ());
-        unrealScriptParserTokenManager = new UnrealScriptParserTokenManager (stream);
+        unrealScriptParserTokenManager =
+                new UnrealScriptParserTokenManager(stream);
     }
 
     @Override
-    public org.netbeans.api.lexer.Token<UnrealScriptTokenId> nextToken () {
-        Token token = unrealScriptParserTokenManager.getNextToken ();
-        if (info.input ().readLength () < 1) return null;
-        return info.tokenFactory ().createToken (UnrealScriptLanguageHierarchy.getToken (token.kind));
+    public org.netbeans.api.lexer.Token<UnrealScriptTokenId> nextToken() {
+        Token token = unrealScriptParserTokenManager.getNextToken();
+        if (info.input().readLength() < 1) return null;
+        return info.tokenFactory().createToken(
+                UnrealScriptLanguageHierarchy.getToken(token.kind));
     }
 
     @Override

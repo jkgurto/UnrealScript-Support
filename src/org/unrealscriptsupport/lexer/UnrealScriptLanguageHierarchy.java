@@ -96,6 +96,7 @@ public class UnrealScriptLanguageHierarchy extends LanguageHierarchy<UnrealScrip
                 new UnrealScriptTokenId("LOCALIZED", "keyword", UnrealScriptParserConstants.LOCALIZED),
                 new UnrealScriptTokenId("NAME", "keyword", UnrealScriptParserConstants.NAME),
                 new UnrealScriptTokenId("NATIVE", "keyword", UnrealScriptParserConstants.NATIVE),
+                new UnrealScriptTokenId("REPLICATION", "keyword", UnrealScriptParserConstants.REPLICATION),
                 new UnrealScriptTokenId("NATIVEREPLICATION", "keyword", UnrealScriptParserConstants.NATIVEREPLICATION),
                 new UnrealScriptTokenId("NEW", "keyword", UnrealScriptParserConstants.NEW),
                 new UnrealScriptTokenId("NOEDITINLINEW", "keyword", UnrealScriptParserConstants.NOEDITINLINEW),
@@ -123,6 +124,7 @@ public class UnrealScriptLanguageHierarchy extends LanguageHierarchy<UnrealScrip
                 new UnrealScriptTokenId("STATIC", "keyword", UnrealScriptParserConstants.STATIC),
                 new UnrealScriptTokenId("STRING", "keyword", UnrealScriptParserConstants.STRING),
                 new UnrealScriptTokenId("STRUCT", "keyword", UnrealScriptParserConstants.STRUCT),
+                new UnrealScriptTokenId("STRUCTDEFAULTPROPERTIES", "method-declaration", UnrealScriptParserConstants.STRUCTDEFAULTPROPERTIES),
                 new UnrealScriptTokenId("SUPER", "keyword", UnrealScriptParserConstants.SUPER),
                 new UnrealScriptTokenId("SWITCH", "keyword", UnrealScriptParserConstants.SWITCH),
                 new UnrealScriptTokenId("TRANSIENT", "keyword", UnrealScriptParserConstants.TRANSIENT),
@@ -196,7 +198,8 @@ public class UnrealScriptLanguageHierarchy extends LanguageHierarchy<UnrealScrip
                 new UnrealScriptTokenId("RUNSIGNEDSHIFTASSIGN", "operator", UnrealScriptParserConstants.RUNSIGNEDSHIFTASSIGN),
                 new UnrealScriptTokenId("RUNSIGNEDSHIFT", "operator", UnrealScriptParserConstants.RUNSIGNEDSHIFT),
                 new UnrealScriptTokenId("RSIGNEDSHIFT", "operator", UnrealScriptParserConstants.RSIGNEDSHIFT),
-                new UnrealScriptTokenId("GT", "operator", UnrealScriptParserConstants.GT)
+                new UnrealScriptTokenId("GT", "operator", UnrealScriptParserConstants.GT),
+                new UnrealScriptTokenId("ALL", "operator", UnrealScriptParserConstants.ALL)
 
                 // DO NOT add
                 // DEFAULT, IN_FORMAL_COMMENT, IN_MULTI_LINE_COMMENT, etc

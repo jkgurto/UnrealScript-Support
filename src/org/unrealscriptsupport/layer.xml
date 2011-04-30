@@ -103,7 +103,7 @@
                 </folder>
             </folder>
         </folder>
-        <folder name="Unreal Script">
+        <folder name="UnrealScript">
             <file name="UnrealScriptEmptyTemplate.uc" url="templates/UnrealScriptEmptyTemplate.uc">
                 <attr name="displayName" bundlevalue="org.unrealscriptsupport.Bundle#Templates/UnrealScript/UnrealScriptEmptyTemplate.uc"/>
                 <attr name="iconBase" stringvalue="org/unrealscriptsupport/unrealmutatorproject/resources/unreal.png"/>

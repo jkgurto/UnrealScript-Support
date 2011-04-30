@@ -106,17 +106,42 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void CompilationUnit() throws ParseException {
     try {
       ClassDeclaration();
+      label_1:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case CONST:
+        case ENUM:
+        case STRUCT:
+        case VAR:
+          ;
+          break;
+        default:
+          jj_la1[0] = jj_gen;
+          break label_1;
+        }
+        Declarations();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case REPLICATION:
+        ReplicationBlock();
+        break;
+      default:
+        jj_la1[1] = jj_gen;
+        ;
+      }
+      Body();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case _DEFAULTPROPERTIES:
         DefaultPropertiesBlock();
         break;
       default:
-        jj_la1[0] = jj_gen;
+        jj_la1[2] = jj_gen;
         ;
       }
       jj_consume_token(0);
     } catch (ParseException ex) {
-        recover (ex, SEMICOLON);
+        //recover(ex, SEMICOLON);
+        recover(ex, '\u005cn');
     }
   }
 
@@ -131,10 +156,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       PackageIdentifier();
       break;
     default:
-      jj_la1[1] = jj_gen;
+      jj_la1[3] = jj_gen;
       ;
     }
-    label_1:
+    label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ABSTRACT:
@@ -152,8 +177,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[2] = jj_gen;
-        break label_1;
+        jj_la1[4] = jj_gen;
+        break label_2;
       }
       ClassParams();
     }
@@ -195,7 +220,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(RPAREN);
         break;
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[5] = jj_gen;
         ;
       }
       break;
@@ -212,7 +237,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[6] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -225,13 +250,19 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // PACKAGEIDENTIFIER        = ( IDENTIFIER DOT )? IDENTIFIER
   final public void PackageIdentifier() throws ParseException {
     jj_consume_token(IDENTIFIER);
+    PackageIdentifierEnd();
+  }
+
+// Workaround for choice conflicts
+// Lots of things start with <IDENTIFIER>
+  final public void PackageIdentifierEnd() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DOT:
       jj_consume_token(DOT);
       jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[7] = jj_gen;
       ;
     }
   }
@@ -251,15 +282,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // IDENTIFIERLIST           = IDENTIFIER ( COMMA IDENTIFIER )*
   final public void IdentifierList() throws ParseException {
     jj_consume_token(IDENTIFIER);
-    label_2:
+    label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[6] = jj_gen;
-        break label_2;
+        jj_la1[8] = jj_gen;
+        break label_3;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
@@ -274,306 +305,1015 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // -- Declaration parts
 // DECLARATIONS             = ( CONSTDECL | VARDECL | ENUMDECL | STRUCTDECL ) SEMICOLON
-/*void Declarations():
-{}
-{
-    (ConstDecl() | VarDecl() | EnumDecl() | StructDecl()) ";"
-}
-
+  final public void Declarations() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CONST:
+      ConstDecl();
+      break;
+    case VAR:
+      VarDecl();
+      break;
+    case ENUM:
+      EnumDecl();
+      break;
+    case STRUCT:
+      StructDecl();
+      break;
+    default:
+      jj_la1[9] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(SEMICOLON);
+  }
 
 // CONSTDECL                = const IDENTIFIER = CONSTVALUE
-void ConstDecl():
-{}
-{
-    ("const" <IDENTIFIER> "=" ConstValue())
-}
-
+  final public void ConstDecl() throws ParseException {
+    jj_consume_token(CONST);
+    jj_consume_token(IDENTIFIER);
+    jj_consume_token(ASSIGN);
+    ConstValue();
+  }
 
 // CONSTVALUE               = ( STRINGVAL | INTVAL | FLOATVAL | BOOLVAL )
-void ConstValue():
-{}
-{
-    (
-    <STRING_LITERAL> |
-    <INTEGER_LITERAL> |
-    <FLOATING_POINT_LITERAL> |
-    BooleanLiteral()
-    )
-}
-
+  final public void ConstValue() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case STRING_LITERAL:
+      jj_consume_token(STRING_LITERAL);
+      break;
+    case INTEGER_LITERAL:
+      jj_consume_token(INTEGER_LITERAL);
+      break;
+    case FLOATING_POINT_LITERAL:
+      jj_consume_token(FLOATING_POINT_LITERAL);
+      break;
+    case FALSE:
+    case TRUE:
+      BooleanLiteral();
+      break;
+    default:
+      jj_la1[10] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // VARDECL                  = var ( CONFIGGROUP )? ( VARPARAMS )*
 //                            VARTYPE VARIDENTIFIER ( COMMA VARIDENTIFIER )*
-void VarDecl():
-{}
-{
-    "var" ( ConfigGroup() )? ( VarParams() )*
-    VarType() <IDENTIFIER> ( "," <IDENTIFIER> )*
-}
-
+  final public void VarDecl() throws ParseException {
+    jj_consume_token(VAR);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      ConfigGroup();
+      break;
+    default:
+      jj_la1[11] = jj_gen;
+      ;
+    }
+    label_4:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CONFIG:
+      case CONST:
+      case DEPRECATED:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINEUSE:
+      case EXPORT:
+      case GLOBALCONFIG:
+      case INPUT:
+      case LOCALIZED:
+      case NATIVE:
+      case PRIVATE:
+      case PROTECTED:
+      case TRANSIENT:
+      case TRAVEL:
+        ;
+        break;
+      default:
+        jj_la1[12] = jj_gen;
+        break label_4;
+      }
+      VarParams();
+    }
+    VarType();
+    jj_consume_token(IDENTIFIER);
+    label_5:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[13] = jj_gen;
+        break label_5;
+      }
+      jj_consume_token(COMMA);
+      jj_consume_token(IDENTIFIER);
+    }
+  }
 
 // CONFIGGROUP              = LBRACK ( IDENTIFIER )? RBRACK
-void ConfigGroup():
-{}
-{
-    "(" (<IDENTIFIER>)? ")"
-}
-
+  final public void ConfigGroup() throws ParseException {
+    jj_consume_token(LPAREN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[14] = jj_gen;
+      ;
+    }
+    jj_consume_token(RPAREN);
+  }
 
 // VARTYPE                  = PACKAGEIDENTIFIER | ENUMDECL | STRUCTDECL | ARRAYDECL | CLASSTYPE | BASICTYPE
 // VARIDENTIFIER            = IDENTIFIER
-void VarType():
-{}
-{
-    (
-    PackageIdentifier() |
-    EnumDecl() |
-    StructDecl() |
-    ArrayDecl() |
-    ClassType() |
-    BasicType()
-    )
-}
-
+  final public void VarType() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      PackageIdentifierOrArrayDecl();
+      break;
+    case ARRAY:
+      DynArrayDecl();
+      break;
+    case ENUM:
+      EnumDecl();
+      break;
+    case STRUCT:
+      StructDecl();
+      break;
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      BasicTypeOrClassType();
+      break;
+    default:
+      jj_la1[15] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // ARRAYDECL                = IDENTIFIER LSBRACK INTVAL RSBRACK
-void ArrayDecl():
-{}
-{
-    <IDENTIFIER> "[" <INTEGER_LITERAL> "]"
-}
+  final public void ArrayDecl() throws ParseException {
+    jj_consume_token(IDENTIFIER);
+    ArrayDeclEnd();
+  }
 
+// Workaround for choice conflicts
+// Lots of things start with <IDENTIFIER>
+  final public void ArrayDeclEnd() throws ParseException {
+    jj_consume_token(LBRACKET);
+    jj_consume_token(INTEGER_LITERAL);
+    jj_consume_token(RBRACKET);
+  }
 
 // DYNARRAYDECL             = array LABRACK (PACKAGEIDENTIFIER | CLASSTYPE | BASICTYPE) RABRACK
-void DynArrayDecl():
-{}
-{
-    "array" "<" (PackageIdentifier() | ClassType() | BasicType()) ">"
-}
-
+  final public void DynArrayDecl() throws ParseException {
+    jj_consume_token(ARRAY);
+    jj_consume_token(LT);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      PackageIdentifier();
+      break;
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      BasicTypeOrClassType();
+      break;
+    default:
+      jj_la1[16] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(GT);
+  }
 
 // CLASSTYPE                = class LABRACK PACKAGEIDENTIFIER RABRACK
-void ClassType():
-{}
-{
-    "class" "<" PackageIdentifier() ">"
-}
+  final public void ClassType() throws ParseException {
+    jj_consume_token(CLASS);
+    ClassTypeEnd();
+  }
 
+// Workaround for choice conflicts
+// BasicType and ClassType can start with "class"
+  final public void ClassTypeEnd() throws ParseException {
+    jj_consume_token(LT);
+    PackageIdentifier();
+    jj_consume_token(GT);
+  }
 
 // ENUMDECL                 = enum IDENTIFIER LCBRACK ENUMOPTIONS RCBRACK
-void EnumDecl():
-{}
-{
-    "enum" <IDENTIFIER> "{" EnumOptions() "}"
-}
-
+  final public void EnumDecl() throws ParseException {
+    jj_consume_token(ENUM);
+    jj_consume_token(IDENTIFIER);
+    jj_consume_token(LBRACE);
+    EnumOptions();
+    jj_consume_token(RBRACE);
+  }
 
 // ENUMOPTIONS              = IDENTIFIER ( COMMA IDENTIFIER )*
-void EnumOptions():
-{}
-{
-    <IDENTIFIER> ( "," <IDENTIFIER> )*
-}
-
+  final public void EnumOptions() throws ParseException {
+    jj_consume_token(IDENTIFIER);
+    label_6:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[17] = jj_gen;
+        break label_6;
+      }
+      jj_consume_token(COMMA);
+      jj_consume_token(IDENTIFIER);
+    }
+  }
 
 // STRUCTDECL               = struct ( STRUCTPARAMS )* IDENTIFIER ( extends PACKAGEIDENTIFIER )?
 //                            LCBRACK STRUCTBODY RCBRACK
-void StructDecl():
-{}
-{
-    "struct" (StructParams())* <IDENTIFIER> ("extends" PackageIdentifier())?
-                           "{" StructBody() "}"
-}
-
+  final public void StructDecl() throws ParseException {
+    jj_consume_token(STRUCT);
+    label_7:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case EXPORT:
+      case NATIVE:
+        ;
+        break;
+      default:
+        jj_la1[18] = jj_gen;
+        break label_7;
+      }
+      StructParams();
+    }
+    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case EXTENDS:
+      jj_consume_token(EXTENDS);
+      PackageIdentifier();
+      break;
+    default:
+      jj_la1[19] = jj_gen;
+      ;
+    }
+    jj_consume_token(LBRACE);
+    StructBody();
+    jj_consume_token(RBRACE);
+  }
 
 // STRUCTPARAMS             = ( native | export )
-void StructParams():
-{}
-{
-    ("native" | "export")
-}
-
+  final public void StructParams() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case NATIVE:
+      jj_consume_token(NATIVE);
+      break;
+    case EXPORT:
+      jj_consume_token(EXPORT);
+      break;
+    default:
+      jj_la1[20] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // STRUCTBODY               = ( VARDECL SEMICOLON )+
-void StructBody():
-{}
-{
-    (VarDecl() ";")+
-}
-
-
+  final public void StructBody() throws ParseException {
+    label_8:
+    while (true) {
+      VarDecl();
+      jj_consume_token(SEMICOLON);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case VAR:
+        ;
+        break;
+      default:
+        jj_la1[21] = jj_gen;
+        break label_8;
+      }
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case STRUCTDEFAULTPROPERTIES:
+      StructDefaultPropertiesBlock();
+      break;
+    default:
+      jj_la1[22] = jj_gen;
+      ;
+    }
+  }
 
 // Replication parts
 // REPLICATIONBLOCK         = replication LCBRACK ( REPLICATIONBODY )* RCBRACK
-void ReplicationBlock():
-{}
-{
-    "replication" "{" (ReplicationBody())* "}"
-}
-
+  final public void ReplicationBlock() throws ParseException {
+    jj_consume_token(REPLICATION);
+    jj_consume_token(LBRACE);
+    label_9:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case RELIABLE:
+      case UNRELIABLE:
+        ;
+        break;
+      default:
+        jj_la1[23] = jj_gen;
+        break label_9;
+      }
+      ReplicationBody();
+    }
+    jj_consume_token(RBRACE);
+  }
 
 // REPLICATIONBODY          = ( reliable | unreliable ) if LBRACK EXPR RBRACK
 //                            IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
-void ReplicationBody():
-{}
-{
-    ("reliable" | "unreliable") "if" "(" Expression() ")"
-                           <IDENTIFIER> ("," <IDENTIFIER>)* ";"
-}
+  final public void ReplicationBody() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case RELIABLE:
+      jj_consume_token(RELIABLE);
+      break;
+    case UNRELIABLE:
+      jj_consume_token(UNRELIABLE);
+      break;
+    default:
+      jj_la1[24] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(IF);
+    jj_consume_token(LPAREN);
+    Expression();
+    jj_consume_token(RPAREN);
+    jj_consume_token(IDENTIFIER);
+    label_10:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[25] = jj_gen;
+        break label_10;
+      }
+      jj_consume_token(COMMA);
+      jj_consume_token(IDENTIFIER);
+    }
+    jj_consume_token(SEMICOLON);
+  }
 
 // Body parts
 // BODY                     = ( STATEDECL | FUNCTIONDECL )*
-void Body():
-{}
-{
-    ( StateDecl() | FunctionDecl() )*
-}
+  final public void Body() throws ParseException {
+    label_11:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case AUTO:
+      case DELEGATE:
+      case EVENT:
+      case EXEC:
+      case FINAL:
+      case FUNCTION:
+      case ITERATOR:
+      case LATENT:
+      case NATIVE:
+      case OPERATOR:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case SIMULATED:
+      case SINGULAR:
+      case STATE:
+      case STATIC:
+        ;
+        break;
+      default:
+        jj_la1[26] = jj_gen;
+        break label_11;
+      }
+      StateOrFunctionDecl();
+    }
+  }
+
+// Prevent choice conflicts, both can start with "simulated"
+  final public void StateOrFunctionDecl() throws ParseException {
+    label_12:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case SIMULATED:
+        ;
+        break;
+      default:
+        jj_la1[27] = jj_gen;
+        break label_12;
+      }
+      StateAndConstFuncParams();
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case AUTO:
+    case STATE:
+      StateDecl();
+      break;
+    case DELEGATE:
+    case EVENT:
+    case EXEC:
+    case FINAL:
+    case FUNCTION:
+    case ITERATOR:
+    case LATENT:
+    case NATIVE:
+    case OPERATOR:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case SINGULAR:
+    case STATIC:
+      FunctionDecl();
+      break;
+    default:
+      jj_la1[28] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // State parts
 // STATEDECL                = ( STATEPARAMS )* state IDENTIFIER ( CONFIGGROUP )? ( extends IDENTIFIER )? STATEBODY
-void StateDecl():
-{}
-{
-    (StateParams())* "state" <IDENTIFIER>
-        (ConfigGroup())? ("extends" <IDENTIFIER>)? StateBody()
-}
-
+  final public void StateDecl() throws ParseException {
+    label_13:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case AUTO:
+        ;
+        break;
+      default:
+        jj_la1[29] = jj_gen;
+        break label_13;
+      }
+      StateParams();
+    }
+    jj_consume_token(STATE);
+    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      ConfigGroup();
+      break;
+    default:
+      jj_la1[30] = jj_gen;
+      ;
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case EXTENDS:
+      jj_consume_token(EXTENDS);
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[31] = jj_gen;
+      ;
+    }
+    StateBody();
+  }
 
 // STATEBODY                = LCBRACK ( STATEIGNORE )? ( FUNCTIONDECL )* STATELABELS RCBRACK
-void StateBody():
-{}
-{
-    "{" (StateIgnore())? (FunctionDecl())* StateLabels() "}"
-}
-
+  final public void StateBody() throws ParseException {
+    jj_consume_token(LBRACE);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IGNORES:
+      StateIgnore();
+      break;
+    default:
+      jj_la1[32] = jj_gen;
+      ;
+    }
+    label_14:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DELEGATE:
+      case EVENT:
+      case EXEC:
+      case FINAL:
+      case FUNCTION:
+      case ITERATOR:
+      case LATENT:
+      case NATIVE:
+      case OPERATOR:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case SINGULAR:
+      case STATIC:
+        ;
+        break;
+      default:
+        jj_la1[33] = jj_gen;
+        break label_14;
+      }
+      FunctionDecl();
+    }
+    StateLabels();
+    jj_consume_token(RBRACE);
+  }
 
 // STATEIGNORE              = ignores IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
-void StateIgnore():
-{}
-{
-    "ignores" <IDENTIFIER> ("," <IDENTIFIER>)* ";"
-}
-
+  final public void StateIgnore() throws ParseException {
+    jj_consume_token(IGNORES);
+    jj_consume_token(IDENTIFIER);
+    label_15:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[34] = jj_gen;
+        break label_15;
+      }
+      jj_consume_token(COMMA);
+      jj_consume_token(IDENTIFIER);
+    }
+    jj_consume_token(SEMICOLON);
+  }
 
 // STATELABELS              = ( IDENTIFIER COLON ( CODELINE )* )*
-void StateLabels():
-{}
-{
-    ( <IDENTIFIER> ":" (CodeLine())* )*
-}
-
-
+  final public void StateLabels() throws ParseException {
+    label_16:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        ;
+        break;
+      default:
+        jj_la1[35] = jj_gen;
+        break label_16;
+      }
+      jj_consume_token(IDENTIFIER);
+      jj_consume_token(COLON);
+      label_17:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case LBRACE:
+        case SEMICOLON:
+          ;
+          break;
+        default:
+          jj_la1[36] = jj_gen;
+          break label_17;
+        }
+        CodeLine();
+      }
+    }
+  }
 
 // Function  parts
 // operators require an set amouth of arguments
 // FUNCTIONDECL             = ( NORMALFUNC | OPERATORFUNC )
-void FunctionDecl():
-{}
-{
-    ( NormalFunc() | OperatorFunc() )
-}
+  final public void FunctionDecl() throws ParseException {
+    NormalOrOperatorFunc();
+  }
+
+// Moved (FunctionParams())* here to prevent choice conflicts
+  final public void NormalOrOperatorFunc() throws ParseException {
+    label_18:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case EXEC:
+      case FINAL:
+      case ITERATOR:
+      case LATENT:
+      case NATIVE:
+      case PRIVATE:
+      case PROTECTED:
+      case SINGULAR:
+      case STATIC:
+        ;
+        break;
+      default:
+        jj_la1[37] = jj_gen;
+        break label_18;
+      }
+      FunctionParams();
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case DELEGATE:
+    case EVENT:
+    case FUNCTION:
+      NormalFuncEnd();
+      break;
+    case OPERATOR:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+      OperatorFuncEnd();
+      break;
+    default:
+      jj_la1[38] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // NORMALFUNC               = ( FUNCTIONPARAMS )* FUNCTIONTYPE ( LOCALTYPE )?
 //                            IDENTIFIER LBRACK ( FUNCTIONARGS ( COMMA FUNCTIONARGS )* )? RBRACK
 //                            FUNCTIONBODY
-void NormalFunc():
-{}
-{
-    (FunctionParams())* FunctionType() ( LocalType() )?
-        <IDENTIFIER> "(" ( FunctionArgs() ("," FunctionArgs())* )? ")"
-        FunctionBody()
-}
+  final public void NormalFuncEnd() throws ParseException {
+    FunctionType();
+    LocalTypeThenIdentifier();
+    jj_consume_token(LPAREN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ARRAY:
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case COERCE:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case OPTIONAL:
+    case OUT:
+    case STRING:
+    case IDENTIFIER:
+      FunctionArgs();
+      label_19:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case COMMA:
+          ;
+          break;
+        default:
+          jj_la1[39] = jj_gen;
+          break label_19;
+        }
+        jj_consume_token(COMMA);
+        FunctionArgs();
+      }
+      break;
+    default:
+      jj_la1[40] = jj_gen;
+      ;
+    }
+    jj_consume_token(RPAREN);
+    FunctionBody();
+  }
+
+// Prevent choice conflict
+// If is a PackageIdentifier() in LocalType(), and then <IDENTIFIER>
+// Instead of:
+// ( LocalType() )? <IDENTIFIER>
+  final public void LocalTypeThenIdentifier() throws ParseException {
+    if (jj_2_1(2)) {
+      PackageIdentifierOrArrayDecl();
+      jj_consume_token(IDENTIFIER);
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case BOOLEAN:
+      case BYTE:
+      case CLASS:
+      case FLOAT:
+      case INT:
+      case NAME:
+      case STRING:
+        LocalTypeEnd();
+        jj_consume_token(IDENTIFIER);
+        break;
+      case IDENTIFIER:
+        jj_consume_token(IDENTIFIER);
+        break;
+      default:
+        jj_la1[41] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+  }
 
 // FUNCTIONPARAMS           = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
-void FunctionParams():
-{}
-{
-    ( ConstFuncParams() | ( "native" ("(" <INTEGER_LITERAL> ")")? ) )
-}
+  final public void FunctionParams() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case EXEC:
+    case FINAL:
+    case ITERATOR:
+    case LATENT:
+    case PRIVATE:
+    case PROTECTED:
+    case SINGULAR:
+    case STATIC:
+      ConstFuncParams();
+      break;
+    case NATIVE:
+      jj_consume_token(NATIVE);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LPAREN:
+        jj_consume_token(LPAREN);
+        jj_consume_token(INTEGER_LITERAL);
+        jj_consume_token(RPAREN);
+        break;
+      default:
+        jj_la1[42] = jj_gen;
+        ;
+      }
+      break;
+    default:
+      jj_la1[43] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // OPERATORFUNC             = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
-void OperatorFunc():
-{}
-{
-    (FunctionParams())* OperatorType() FunctionBody()
-}
+  final public void OperatorFuncEnd() throws ParseException {
+    OperatorType();
+    FunctionBody();
+  }
 
 // OPERATORTYPE             = ( BINARYOPERATOR | UNARYOPERATOR )
-void OperatorType():
-{}
-{
-    ( BinaryOperator() | UnaryOperator() )
-}
+  final public void OperatorType() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OPERATOR:
+      BinaryOperator();
+      break;
+    case POSTOPERATOR:
+    case PREOPERATOR:
+      UnaryOperator();
+      break;
+    default:
+      jj_la1[44] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // requires two arguments
 // BINARYOPERATOR           = operator LBRACK INTVAL RBRACK PACKAGEIDENTIFIER OPIDENTIFIER
 //                            LBRACK FUNCTIONARGS COMMA FUNCTIONARGS RBRACK
-void BinaryOperator():
-{}
-{
-    "operator" "(" <INTEGER_LITERAL> ")" PackageIdentifier() OpIdentifier()
-                           "(" FunctionArgs() "," FunctionArgs() ")"
-}
+  final public void BinaryOperator() throws ParseException {
+    jj_consume_token(OPERATOR);
+    jj_consume_token(LPAREN);
+    jj_consume_token(INTEGER_LITERAL);
+    jj_consume_token(RPAREN);
+    PackageIdentifier();
+    OpIdentifier();
+    jj_consume_token(LPAREN);
+    FunctionArgs();
+    jj_consume_token(COMMA);
+    FunctionArgs();
+    jj_consume_token(RPAREN);
+  }
 
 // requires one argument
 // UNARYOPERATOR            = ( preoperator | postoperator ) PACKAGEIDENTIFIER OPIDENTIFIER
 //                            LBRACK FUNCTIONARGS RBRACK
-void UnaryOperator():
-{}
-{
-    ( "preOperator" | "postOperator" ) PackageIdentifier() OpIdentifier()
-                           "(" FunctionArgs() ")"
-}
+  final public void UnaryOperator() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PREOPERATOR:
+      jj_consume_token(PREOPERATOR);
+      break;
+    case POSTOPERATOR:
+      jj_consume_token(POSTOPERATOR);
+      break;
+    default:
+      jj_la1[45] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    PackageIdentifier();
+    OpIdentifier();
+    jj_consume_token(LPAREN);
+    FunctionArgs();
+    jj_consume_token(RPAREN);
+  }
 
 // OPIDENTIFIER             = IDENTIFIER | OPERATORNAMES
-void OpIdentifier():
-{}
-{
-    <IDENTIFIER> | OperatorNames()
-}
+  final public void OpIdentifier() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    case ASSIGN:
+    case AT:
+    case DOLLARS:
+    case LT:
+    case BANG:
+    case TILDE:
+    case HOOK:
+    case COLON:
+    case EQ:
+    case LE:
+    case GE:
+    case NE:
+    case SC_OR:
+    case SC_AND:
+    case INCR:
+    case DECR:
+    case PLUS:
+    case MINUS:
+    case STAR:
+    case SLASH:
+    case BIT_AND:
+    case BIT_OR:
+    case XOR:
+    case REM:
+    case LSHIFT:
+    case EXPONENT:
+    case ATASSIGN:
+    case PLUSASSIGN:
+    case MINUSASSIGN:
+    case STARASSIGN:
+    case SLASHASSIGN:
+    case RUNSIGNEDSHIFT:
+    case RSIGNEDSHIFT:
+    case GT:
+    case 176:
+    case 177:
+    case 178:
+    case 179:
+    case 180:
+    case 181:
+      OperatorNames();
+      break;
+    default:
+      jj_la1[46] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // FUNCTIONARGS             = ( optional | out | coerce )? FUNCTIONARGTYPE IDENTIFIER
-void FunctionArgs():
-{}
-{
-    ("optional" | "out" | "coerce")? FunctionArgType() <IDENTIFIER>
-}
+  final public void FunctionArgs() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case COERCE:
+    case OPTIONAL:
+    case OUT:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OPTIONAL:
+        jj_consume_token(OPTIONAL);
+        break;
+      case OUT:
+        jj_consume_token(OUT);
+        break;
+      case COERCE:
+        jj_consume_token(COERCE);
+        break;
+      default:
+        jj_la1[47] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    default:
+      jj_la1[48] = jj_gen;
+      ;
+    }
+    FunctionArgType();
+    jj_consume_token(IDENTIFIER);
+  }
 
 // FUNCTIONARGTYPE          = BASICTYPE | PACKAGEIDENTIFIER
-void FunctionArgType():
-{}
-{
-    BasicType() | PackageIdentifier()
-}
-
+  final public void FunctionArgType() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      BasicType();
+      break;
+    case IDENTIFIER:
+      PackageIdentifier();
+      break;
+    case ARRAY:
+      DynArrayDecl();
+      break;
+    default:
+      jj_la1[49] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
 
 // FUNCTIONBODY             = ( SEMICOLON | ( ( LOCALDECL )* ( CODELINE )* ) ( SEMICOLON )? )
-void FunctionBody():
-{}
-{
-    ( ";" | ( ((LocalDecl())* (CodeLine())*) (";")? ) )
-}
-
+  final public void FunctionBody() throws ParseException {
+    label_20:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LOCAL:
+        ;
+        break;
+      default:
+        jj_la1[50] = jj_gen;
+        break label_20;
+      }
+      LocalDecl();
+    }
+    label_21:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LBRACE:
+      case SEMICOLON:
+        ;
+        break;
+      default:
+        jj_la1[51] = jj_gen;
+        break label_21;
+      }
+      CodeLine();
+    }
+  }
 
 // LOCALDECL                = local LOCALTYPE IDENTIFIER ( COMMA IDENTIFIER )*
-void LocalDecl():
-{}
-{
-    "local" LocalType() <IDENTIFIER> ( "," <IDENTIFIER> )*
-}
-
+  final public void LocalDecl() throws ParseException {
+    jj_consume_token(LOCAL);
+    LocalType();
+    jj_consume_token(IDENTIFIER);
+    label_22:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[52] = jj_gen;
+        break label_22;
+      }
+      jj_consume_token(COMMA);
+      jj_consume_token(IDENTIFIER);
+    }
+    jj_consume_token(SEMICOLON);
+  }
 
 // LOCALTYPE                = PACKAGEIDENTIFIER | ARRAYDECL | CLASSTYPE | BASICTYPE
-void LocalType():
-{}
-{
-    (PackageIdentifier() | ArrayDecl() | ClassType() | BasicType())
-}
+  final public void LocalType() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      PackageIdentifierOrArrayDecl();
+      break;
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      LocalTypeEnd();
+      break;
+    default:
+      jj_la1[53] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+// LocalType without PackageIdentifier and ArrayDecl
+// to prevent choice conflicts with <IDENTIFIER>
+  final public void LocalTypeEnd() throws ParseException {
+    BasicTypeOrClassType();
+  }
+
+// choice conflict - multiple things that start with <IDENTIFIER>
+  final public void PackageIdentifierOrArrayDecl() throws ParseException {
+    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LBRACKET:
+      ArrayDeclEnd();
+      break;
+    default:
+      jj_la1[54] = jj_gen;
+      PackageIdentifierEnd();
+    }
+  }
 
 // Code parts
 // CODELINE                 = ( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
 //                            | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
-void CodeLine():
+  final public void CodeLine() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case SEMICOLON:
+      jj_consume_token(SEMICOLON);
+      break;
+    case LBRACE:
+      jj_consume_token(LBRACE);
+      jj_consume_token(SEMICOLON);
+      jj_consume_token(RBRACE);
+      break;
+    default:
+      jj_la1[55] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+/*void CodeLine():
 {}
 {
     //( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
@@ -612,22 +1352,22 @@ void Statement():
 {}
 {
     FuncCall() ";"
-}
+}*/
 
 
 // ASSIGNMENT               = IDENTIFIER EQUALS EXPR SEMICOLON
-void Assignment():
-{}
-{
-    <IDENTIFIER> "=" Expression() ";"
-}
-
+  final public void Assignment() throws ParseException {
+    jj_consume_token(IDENTIFIER);
+    jj_consume_token(ASSIGN);
+    Expression();
+    jj_consume_token(SEMICOLON);
+  }
 
 // IFTHENELSE               = if LBRACK EXPR RBRACK CODEBLOCK ( else CODEBLOCK )?'
 // The disambiguating algorithm of JavaCC automatically binds dangling
 // else's to the innermost if statement.  The LOOKAHEAD specification
 // is to tell JavaCC that we know what we are doing.
-void IfStatement():
+/*void IfStatement():
 {}
 {
     "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
@@ -710,7 +1450,7 @@ void ForUpdate():
 {}
 {
     StatementExpressionList()
-}
+}*/
 
 
 // EXPR                     = OPERAND ( OPIDENTIFIER OPERAND )*
@@ -721,7 +1461,28 @@ void ForUpdate():
 // assignments to be any conditional expression whereas it can only be
 // a primary expression.  Consider adding a semantic predicate to work
 // around this.
-void Expression():
+  final public void Expression() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    case STRING_LITERAL:
+    case NAME_LITERAL:
+    case FALSE:
+    case NONE:
+    case TRUE:
+    case INTEGER_LITERAL:
+    case FLOATING_POINT_LITERAL:
+      Literal();
+      break;
+    default:
+      jj_la1[56] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+/*void Expression():
 {}
 {
   ConditionalExpression()
@@ -811,15 +1572,33 @@ void ContinueStatement():
   final public void DefaultPropertiesBlock() throws ParseException {
     jj_consume_token(_DEFAULTPROPERTIES);
     jj_consume_token(LBRACE);
-    label_3:
+    label_23:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENTIFIER:
         ;
         break;
       default:
-        jj_la1[7] = jj_gen;
-        break label_3;
+        jj_la1[57] = jj_gen;
+        break label_23;
+      }
+      DefProp();
+    }
+    jj_consume_token(RBRACE);
+  }
+
+  final public void StructDefaultPropertiesBlock() throws ParseException {
+    jj_consume_token(STRUCTDEFAULTPROPERTIES);
+    jj_consume_token(LBRACE);
+    label_24:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        ;
+        break;
+      default:
+        jj_la1[58] = jj_gen;
+        break label_24;
       }
       DefProp();
     }
@@ -830,7 +1609,7 @@ void ContinueStatement():
   final public void DefProp() throws ParseException {
     DefPropIdentifier();
     jj_consume_token(ASSIGN);
-    jj_consume_token(IDENTIFIER);
+    Expression();
   }
 
 // DEFPROPIDENTIFIER        = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
@@ -851,13 +1630,13 @@ void ContinueStatement():
         jj_consume_token(RBRACKET);
         break;
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[59] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[9] = jj_gen;
+      jj_la1[60] = jj_gen;
       ;
     }
   }
@@ -931,10 +1710,731 @@ See above
       jj_consume_token(NOTPLACEABLE);
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[61] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+  }
+
+// BOOLVAL                  = true | false
+  final public void BooleanLiteral() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case TRUE:
+      jj_consume_token(TRUE);
+      break;
+    case FALSE:
+      jj_consume_token(FALSE);
+      break;
+    default:
+      jj_la1[62] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+// VARPARAMS                = config | const | editconst | export | globalconfig | input |
+//                            localized | native | private | protected | transient | travel |
+//                            // available from warfare and up:
+//                            editinline | deprecated | edfindable | editinlineuse
+  final public void VarParams() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CONFIG:
+      jj_consume_token(CONFIG);
+      break;
+    case CONST:
+      jj_consume_token(CONST);
+      break;
+    case EDFINDABLE:
+      jj_consume_token(EDFINDABLE);
+      break;
+    case EDITCONST:
+      jj_consume_token(EDITCONST);
+      break;
+    case EDITINLINE:
+      jj_consume_token(EDITINLINE);
+      break;
+    case EDITINLINEUSE:
+      jj_consume_token(EDITINLINEUSE);
+      break;
+    case DEPRECATED:
+      jj_consume_token(DEPRECATED);
+      break;
+    case EXPORT:
+      jj_consume_token(EXPORT);
+      break;
+    case GLOBALCONFIG:
+      jj_consume_token(GLOBALCONFIG);
+      break;
+    case INPUT:
+      jj_consume_token(INPUT);
+      break;
+    case LOCALIZED:
+      jj_consume_token(LOCALIZED);
+      break;
+    case NATIVE:
+      jj_consume_token(NATIVE);
+      break;
+    case PRIVATE:
+      jj_consume_token(PRIVATE);
+      break;
+    case PROTECTED:
+      jj_consume_token(PROTECTED);
+      break;
+    case TRANSIENT:
+      jj_consume_token(TRANSIENT);
+      break;
+    case TRAVEL:
+      jj_consume_token(TRAVEL);
+      break;
+    default:
+      jj_la1[63] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+// STATEPARAMS              = auto | simulated
+// Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
+  final public void StateParams() throws ParseException {
+    jj_consume_token(AUTO);
+  }
+
+// CONSTFUNCPARAMS          = final | iterator | latent | simulated | singular | static |
+//                            exec | protected | private
+// Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
+  final public void ConstFuncParams() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case FINAL:
+      jj_consume_token(FINAL);
+      break;
+    case ITERATOR:
+      jj_consume_token(ITERATOR);
+      break;
+    case LATENT:
+      jj_consume_token(LATENT);
+      break;
+    case SINGULAR:
+      jj_consume_token(SINGULAR);
+      break;
+    case STATIC:
+      jj_consume_token(STATIC);
+      break;
+    case EXEC:
+      jj_consume_token(EXEC);
+      break;
+    case PROTECTED:
+      jj_consume_token(PROTECTED);
+      break;
+    case PRIVATE:
+      jj_consume_token(PRIVATE);
+      break;
+    default:
+      jj_la1[64] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+// Prevent choice conflicts between StateParams and ConstFuncParams
+  final public void StateAndConstFuncParams() throws ParseException {
+    jj_consume_token(SIMULATED);
+  }
+
+// BASICTYPE                = byte | int | float | string | bool | name | class
+// Moved "class" to BasicClassType() to prevent choice confilcts with ClassType
+  final public void BasicType() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BOOLEAN:
+    case BYTE:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      BasicTypeSimple();
+      break;
+    case CLASS:
+      BasicClassType();
+      break;
+    default:
+      jj_la1[65] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void BasicTypeSimple() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BOOLEAN:
+      jj_consume_token(BOOLEAN);
+      break;
+    case BYTE:
+      jj_consume_token(BYTE);
+      break;
+    case FLOAT:
+      jj_consume_token(FLOAT);
+      break;
+    case INT:
+      jj_consume_token(INT);
+      break;
+    case STRING:
+      jj_consume_token(STRING);
+      break;
+    case NAME:
+      jj_consume_token(NAME);
+      break;
+    default:
+      jj_la1[66] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void BasicClassType() throws ParseException {
+    jj_consume_token(CLASS);
+  }
+
+// choice conflict - multiple things that can start with "class"
+  final public void BasicTypeOrClassType() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BOOLEAN:
+    case BYTE:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      BasicTypeSimple();
+      break;
+    case CLASS:
+      jj_consume_token(CLASS);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LT:
+        ClassTypeEnd();
+        break;
+      default:
+        jj_la1[67] = jj_gen;
+        ;
+      }
+      break;
+    default:
+      jj_la1[68] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+// FUNCTIONTYPE             = function | event | delegate
+  final public void FunctionType() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case FUNCTION:
+      jj_consume_token(FUNCTION);
+      break;
+    case EVENT:
+      jj_consume_token(EVENT);
+      break;
+    case DELEGATE:
+      jj_consume_token(DELEGATE);
+      break;
+    default:
+      jj_la1[69] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+/*
+OPERATORNAMES            = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
+                           '-' | '=' | '+' | '|' | '\' | ':' | '<' | '>' | '/' |
+                           '?' | '`' |
+                           '<<' | '>>' | '!=' | '<=' | '>=' | '++' | '--' | '?-' | '+=' |
+                           '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
+                           '~=' | '@=' | '>>>'
+*/
+  final public void OperatorNames() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case TILDE:
+      jj_consume_token(TILDE);
+      break;
+    case BANG:
+      jj_consume_token(BANG);
+      break;
+    case AT:
+      jj_consume_token(AT);
+      break;
+    case 176:
+      jj_consume_token(176);
+      break;
+    case DOLLARS:
+      jj_consume_token(DOLLARS);
+      break;
+    case REM:
+      jj_consume_token(REM);
+      break;
+    case XOR:
+      jj_consume_token(XOR);
+      break;
+    case BIT_AND:
+      jj_consume_token(BIT_AND);
+      break;
+    case STAR:
+      jj_consume_token(STAR);
+      break;
+    case MINUS:
+      jj_consume_token(MINUS);
+      break;
+    case ASSIGN:
+      jj_consume_token(ASSIGN);
+      break;
+    case PLUS:
+      jj_consume_token(PLUS);
+      break;
+    case BIT_OR:
+      jj_consume_token(BIT_OR);
+      break;
+    case 177:
+      jj_consume_token(177);
+      break;
+    case COLON:
+      jj_consume_token(COLON);
+      break;
+    case LT:
+      jj_consume_token(LT);
+      break;
+    case GT:
+      jj_consume_token(GT);
+      break;
+    case SLASH:
+      jj_consume_token(SLASH);
+      break;
+    case HOOK:
+      jj_consume_token(HOOK);
+      break;
+    case 178:
+      jj_consume_token(178);
+      break;
+    case LSHIFT:
+      jj_consume_token(LSHIFT);
+      break;
+    case RSIGNEDSHIFT:
+      jj_consume_token(RSIGNEDSHIFT);
+      break;
+    case NE:
+      jj_consume_token(NE);
+      break;
+    case LE:
+      jj_consume_token(LE);
+      break;
+    case GE:
+      jj_consume_token(GE);
+      break;
+    case INCR:
+      jj_consume_token(INCR);
+      break;
+    case DECR:
+      jj_consume_token(DECR);
+      break;
+    case 179:
+      jj_consume_token(179);
+      break;
+    case PLUSASSIGN:
+      jj_consume_token(PLUSASSIGN);
+      break;
+    case MINUSASSIGN:
+      jj_consume_token(MINUSASSIGN);
+      break;
+    case STARASSIGN:
+      jj_consume_token(STARASSIGN);
+      break;
+    case SLASHASSIGN:
+      jj_consume_token(SLASHASSIGN);
+      break;
+    case SC_AND:
+      jj_consume_token(SC_AND);
+      break;
+    case SC_OR:
+      jj_consume_token(SC_OR);
+      break;
+    case 180:
+      jj_consume_token(180);
+      break;
+    case EQ:
+      jj_consume_token(EQ);
+      break;
+    case EXPONENT:
+      jj_consume_token(EXPONENT);
+      break;
+    case 181:
+      jj_consume_token(181);
+      break;
+    case ATASSIGN:
+      jj_consume_token(ATASSIGN);
+      break;
+    case RUNSIGNEDSHIFT:
+      jj_consume_token(RUNSIGNEDSHIFT);
+      break;
+    default:
+      jj_la1[70] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+// Java Rules
+/*void ResultType():
+{}
+{
+  "void" | BasicType()
+}
+
+
+
+void AssignmentOperator():
+{}
+{
+  "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|="
+}
+
+void ConditionalExpression():
+{}
+{
+  ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
+}
+
+void ConditionalOrExpression():
+{}
+{
+  ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
+}
+
+void ConditionalAndExpression():
+{}
+{
+  InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
+}
+
+void InclusiveOrExpression():
+{}
+{
+  ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
+}
+
+void ExclusiveOrExpression():
+{}
+{
+  AndExpression() ( "^" AndExpression() )*
+}
+
+void AndExpression():
+{}
+{
+  EqualityExpression() ( "&" EqualityExpression() )*
+}
+
+void EqualityExpression():
+{}
+{
+  RelationalExpression() ( ( "==" | "!=" ) RelationalExpression() )*
+}
+
+void RelationalExpression():
+{}
+{
+  ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression() )*
+}
+
+void ShiftExpression():
+{}
+{
+  AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
+}
+
+void AdditiveExpression():
+{}
+{
+  MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
+}
+
+void MultiplicativeExpression():
+{}
+{
+  UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
+}
+
+void UnaryExpression():
+{}
+{
+  ( "+" | "-" ) UnaryExpression()
+|
+  PreIncrementExpression()
+|
+  PreDecrementExpression()
+|
+  UnaryExpressionNotPlusMinus()
+}
+
+void PreIncrementExpression():
+{}
+{
+  "++" PrimaryExpression()
+}
+
+void PreDecrementExpression():
+{}
+{
+  "--" PrimaryExpression()
+}
+
+void UnaryExpressionNotPlusMinus():
+{}
+{
+  ( "~" | "!" ) UnaryExpression()
+|
+  LOOKAHEAD( CastLookahead() )
+  CastExpression()
+|
+  PostfixExpression()
+}
+
+// This production is to determine lookahead only.  The LOOKAHEAD specifications
+// below are not used, but they are there just to indicate that we know about
+// this.
+void CastLookahead():
+{}
+{
+  LOOKAHEAD(2)
+  "(" BasicType()
+|
+  LOOKAHEAD("(" BasicType() "[")
+  "(" BasicType() "[" "]"
+|
+  "(" BasicType() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "super" | "new" | Literal() )
+}
+
+void PostfixExpression():
+{}
+{
+  PrimaryExpression() [ "++" | "--" ]
+}
+
+void CastExpression():
+{}
+{
+  LOOKAHEAD("(" BasicType())
+  "(" BasicType() ")" UnaryExpression()
+|
+  "(" BasicType() ")" UnaryExpressionNotPlusMinus()
+}
+
+void PrimaryExpression():
+{}
+{
+  PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+}
+
+void MemberSelector():
+{}
+{
+  "." TypeArguments() <IDENTIFIER>
+}
+
+void Type():
+{}
+{
+   LOOKAHEAD(2) ReferenceType()
+ |
+   BasicType()
+}
+
+void ReferenceType():
+{}
+{
+   BasicType() ( LOOKAHEAD(2) "[" "]" )+
+  |
+   ( ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" )*
+}
+
+void ClassOrInterfaceType():
+{}
+{
+  <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ]
+  ( LOOKAHEAD(2) "." <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
+}
+
+void TypeArguments():
+{}
+{
+   "<" TypeArgument() ( "," TypeArgument() )* ">"
+}
+
+void TypeArgument():
+{}
+{
+   ReferenceType()
+ |
+   "?" [ WildcardBounds() ]
+}
+
+void WildcardBounds():
+{}
+{
+   "extends" ReferenceType()
+ |
+   "super" ReferenceType()
+}
+
+void PrimaryPrefix():
+{}
+{
+  Literal()
+|
+  "super" "." <IDENTIFIER>
+|
+  "(" Expression() ")"
+|
+  AllocationExpression()
+|
+  LOOKAHEAD( ResultType() "." "class" )
+  ResultType() "." "class"
+|
+  <IDENTIFIER>
+}
+
+void PrimarySuffix():
+{}
+{
+  LOOKAHEAD("." "super" ".")
+  "." "super"
+|
+  LOOKAHEAD(2)
+  "." AllocationExpression()
+|
+  LOOKAHEAD(3)
+  MemberSelector()
+|
+  "[" Expression() "]"
+|
+  "." <IDENTIFIER>
+|
+  FunctionArgs()
+}
+
+void AllocationExpression():
+{}
+{
+  LOOKAHEAD(2)
+  "new" BasicType() ArrayDimsAndInits()
+|
+  "new" ClassOrInterfaceType() [ TypeArguments() ]
+    (
+      ArrayDimsAndInits()
+    )
+}
+
+
+// The third LOOKAHEAD specification below is to parse to PrimarySuffix
+// if there is an expression between the "[...]".
+void ArrayDimsAndInits():
+{}
+{
+  LOOKAHEAD(2)
+  ( LOOKAHEAD(2) "[" Expression() "]" )+ ( LOOKAHEAD(2) "[" "]" )*
+|
+  ( "[" "]" )+ ArrayInitializer()
+}
+
+void VariableInitializer():
+{}
+{
+  ArrayInitializer()
+|
+  Expression()
+}
+
+void ArrayInitializer():
+{}
+{
+  "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+}*/
+  final public void Literal() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INTEGER_LITERAL:
+      jj_consume_token(INTEGER_LITERAL);
+      break;
+    case FLOATING_POINT_LITERAL:
+      jj_consume_token(FLOATING_POINT_LITERAL);
+      break;
+    case NAME_LITERAL:
+      jj_consume_token(NAME_LITERAL);
+      break;
+    case STRING_LITERAL:
+      jj_consume_token(STRING_LITERAL);
+      break;
+    case FALSE:
+    case TRUE:
+      BooleanLiteral();
+      break;
+    case NONE:
+      NoneLiteral();
+      break;
+    default:
+      jj_la1[71] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void NoneLiteral() throws ParseException {
+    jj_consume_token(NONE);
+  }
+
+  private boolean jj_2_1(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_1(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(0, xla); }
+  }
+
+  private boolean jj_3R_25() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_26()) {
+    jj_scanpos = xsp;
+    if (jj_3R_27()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_27() {
+    if (jj_3R_29()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_30() {
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_28() {
+    if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_29() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_30()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_25()) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_26() {
+    if (jj_3R_28()) return true;
+    return false;
   }
 
   /** Generated Token Manager. */
@@ -945,8 +2445,10 @@ See above
   /** Next token. */
   public Token jj_nt;
   private int jj_ntk;
+  private Token jj_scanpos, jj_lastpos;
+  private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[11];
+  final private int[] jj_la1 = new int[72];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -962,23 +2464,26 @@ See above
       jj_la1_init_5();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x0,0x0,0x8008000,0x0,0x8008000,0x0,0x0,0x0,0x0,0x0,0x8000,};
+      jj_la1_0 = new int[] {0x10000000,0x0,0x0,0x0,0x8008000,0x0,0x8008000,0x0,0x0,0x10000000,0x800,0x0,0x18000000,0x0,0x0,0x950000,0x940000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000,0x0,0x20000,0x20000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2950000,0x940000,0x0,0x0,0x0,0x0,0x0,0x2000000,0x2000000,0x950000,0x0,0x0,0x0,0x940000,0x0,0x0,0x4800,0x0,0x0,0x0,0x0,0x8000,0x0,0x18000000,0x0,0x940000,0x140000,0x0,0x940000,0x0,0x0,0x4800,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x1,0x40000,0x18000004,0x0,0x18000004,0x0,0x0,0x0,0x0,0x0,0x8000000,};
+      jj_la1_1 = new int[] {0x2000,0x0,0x1,0x40000,0x18000004,0x0,0x18000004,0x0,0x0,0x2000,0x80000,0x0,0x2010b88,0x0,0x0,0x202000,0x200000,0x0,0x10000,0x40000,0x10000,0x0,0x0,0x0,0x0,0x0,0x110c002,0x0,0x110c002,0x0,0x0,0x40000,0x80000000,0x110c002,0x0,0x0,0x0,0x108000,0x1004002,0x0,0x200000,0x200000,0x0,0x108000,0x0,0x0,0x0,0x0,0x0,0x200000,0x0,0x0,0x0,0x200000,0x0,0x0,0x80000,0x0,0x0,0x0,0x0,0x8000000,0x80000,0x2010b88,0x108000,0x200000,0x200000,0x0,0x200000,0x1004002,0x0,0x80000,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x40104300,0x0,0x40104300,0x0,0x0,0x0,0x0,0x0,0x104300,};
+      jj_la1_2 = new int[] {0x0,0x8000000,0x0,0x0,0x40104300,0x0,0x40104300,0x0,0x0,0x0,0x0,0x0,0x1800141,0x0,0x0,0x84,0x84,0x0,0x100,0x0,0x100,0x0,0x0,0x4000000,0x4000000,0x0,0x81e08118,0x80000000,0x1e08118,0x0,0x0,0x0,0x0,0x1e08118,0x0,0x0,0x0,0x1800118,0x608000,0x0,0x30084,0x84,0x0,0x1800118,0x608000,0x600000,0x0,0x30000,0x30000,0x84,0x20,0x0,0x0,0x84,0x0,0x0,0x2000,0x0,0x0,0x0,0x0,0x104300,0x0,0x1800141,0x1800018,0x84,0x84,0x0,0x84,0x0,0x0,0x2000,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x0,0x0,0x4080,0x10000000,0x4080,0x0,0x0,0x2000000,0x10000000,0x10000000,0x80,};
+      jj_la1_3 = new int[] {0x2010,0x0,0x0,0x0,0x8100,0x20000000,0x8100,0x0,0x0,0x2010,0x220400,0x20000000,0x300,0x0,0x4000000,0x4000018,0x4000008,0x0,0x0,0x0,0x0,0x2000,0x20,0x800,0x800,0x0,0x7,0x0,0x7,0x0,0x20000000,0x0,0x0,0x5,0x0,0x4000000,0x80000000,0x5,0x0,0x0,0x4000008,0x4000008,0x20000000,0x5,0x0,0x0,0x4000000,0x0,0x0,0x4000008,0x0,0x80000000,0x0,0x4000008,0x0,0x80000000,0x4220400,0x4000000,0x4000000,0x20000000,0x20000000,0x100,0x400,0x300,0x5,0x8,0x8,0x0,0x8,0x0,0x0,0x220400,};
    }
    private static void jj_la1_init_4() {
-      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x10,0x8,0x0,0x1,0x1,0x0,};
+      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20,0x10,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x8,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0xffffffc0,0x0,0x0,0x0,0x0,0x8,0x10,0x0,0x2,0x8,0x0,0x0,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x200,0x0,0x0,0xffffffc0,0x0,};
    }
    private static void jj_la1_init_5() {
-      jj_la1_5 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_5 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3fe03d,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3fe03d,0x0,};
    }
+  final private JJCalls[] jj_2_rtns = new JJCalls[1];
+  private boolean jj_rescan = false;
+  private int jj_gc = 0;
 
   /** Constructor with InputStream. */
   public UnrealScriptParser(java.io.InputStream stream) {
@@ -991,7 +2496,8 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 72; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -1005,7 +2511,8 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 72; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Constructor. */
@@ -1015,7 +2522,8 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 72; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -1025,7 +2533,8 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 72; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Constructor with generated Token Manager. */
@@ -1034,7 +2543,8 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 72; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -1043,7 +2553,8 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 72; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -1053,11 +2564,44 @@ See above
     jj_ntk = -1;
     if (token.kind == kind) {
       jj_gen++;
+      if (++jj_gc > 100) {
+        jj_gc = 0;
+        for (int i = 0; i < jj_2_rtns.length; i++) {
+          JJCalls c = jj_2_rtns[i];
+          while (c != null) {
+            if (c.gen < jj_gen) c.first = null;
+            c = c.next;
+          }
+        }
+      }
       return token;
     }
     token = oldToken;
     jj_kind = kind;
     throw generateParseException();
+  }
+
+  static private final class LookaheadSuccess extends java.lang.Error { }
+  final private LookaheadSuccess jj_ls = new LookaheadSuccess();
+  private boolean jj_scan_token(int kind) {
+    if (jj_scanpos == jj_lastpos) {
+      jj_la--;
+      if (jj_scanpos.next == null) {
+        jj_lastpos = jj_scanpos = jj_scanpos.next = token_source.getNextToken();
+      } else {
+        jj_lastpos = jj_scanpos = jj_scanpos.next;
+      }
+    } else {
+      jj_scanpos = jj_scanpos.next;
+    }
+    if (jj_rescan) {
+      int i = 0; Token tok = token;
+      while (tok != null && tok != jj_scanpos) { i++; tok = tok.next; }
+      if (tok != null) jj_add_error_token(kind, i);
+    }
+    if (jj_scanpos.kind != kind) return true;
+    if (jj_la == 0 && jj_scanpos == jj_lastpos) throw jj_ls;
+    return false;
   }
 
 
@@ -1090,16 +2634,43 @@ See above
   private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
   private int[] jj_expentry;
   private int jj_kind = -1;
+  private int[] jj_lasttokens = new int[100];
+  private int jj_endpos;
+
+  private void jj_add_error_token(int kind, int pos) {
+    if (pos >= 100) return;
+    if (pos == jj_endpos + 1) {
+      jj_lasttokens[jj_endpos++] = kind;
+    } else if (jj_endpos != 0) {
+      jj_expentry = new int[jj_endpos];
+      for (int i = 0; i < jj_endpos; i++) {
+        jj_expentry[i] = jj_lasttokens[i];
+      }
+      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+        int[] oldentry = (int[])(it.next());
+        if (oldentry.length == jj_expentry.length) {
+          for (int i = 0; i < jj_expentry.length; i++) {
+            if (oldentry[i] != jj_expentry[i]) {
+              continue jj_entries_loop;
+            }
+          }
+          jj_expentries.add(jj_expentry);
+          break jj_entries_loop;
+        }
+      }
+      if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
+    }
+  }
 
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[175];
+    boolean[] la1tokens = new boolean[182];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 72; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1123,13 +2694,16 @@ See above
         }
       }
     }
-    for (int i = 0; i < 175; i++) {
+    for (int i = 0; i < 182; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
         jj_expentries.add(jj_expentry);
       }
     }
+    jj_endpos = 0;
+    jj_rescan_token();
+    jj_add_error_token(0, 0);
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
       exptokseq[i] = jj_expentries.get(i);
@@ -1143,6 +2717,41 @@ See above
 
   /** Disable tracing. */
   final public void disable_tracing() {
+  }
+
+  private void jj_rescan_token() {
+    jj_rescan = true;
+    for (int i = 0; i < 1; i++) {
+    try {
+      JJCalls p = jj_2_rtns[i];
+      do {
+        if (p.gen > jj_gen) {
+          jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
+          switch (i) {
+            case 0: jj_3_1(); break;
+          }
+        }
+        p = p.next;
+      } while (p != null);
+      } catch(LookaheadSuccess ls) { }
+    }
+    jj_rescan = false;
+  }
+
+  private void jj_save(int index, int xla) {
+    JJCalls p = jj_2_rtns[index];
+    while (p.gen > jj_gen) {
+      if (p.next == null) { p = p.next = new JJCalls(); break; }
+      p = p.next;
+    }
+    p.gen = jj_gen + xla - jj_la; p.first = token; p.arg = xla;
+  }
+
+  static final class JJCalls {
+    int gen;
+    Token first;
+    int arg;
+    JJCalls next;
   }
 
 }

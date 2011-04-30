@@ -251,6 +251,7 @@ TOKEN :
 | < STATIC: "static" >
 | < STRING: "string" >
 | < STRUCT: "struct" >
+| < STRUCTDEFAULTPROPERTIES: "structdefaultproperties" >
 | < SUPER: "super" >
 | < SWITCH: "switch" >
 | < TRANSIENT: "transient" >
@@ -1062,7 +1063,8 @@ TOKEN :
 // For error checking purposes
 // Keep as last token in file
 // http://netbeans-org.1045718.n5.nabble.com/New-Language-Support-Tutorial-td3290238.html
-/*TOKEN :
+TOKEN :
 {
     < ALL: ( ~[" ", "\t", "\n","\r", "\f"] ) >
-}*/
+    //< ALL: ( ~[] ) >
+}

@@ -195,153 +195,155 @@ public interface UnrealScriptParserConstants {
   /** RegularExpression Id. */
   int STRUCT = 100;
   /** RegularExpression Id. */
-  int SUPER = 101;
+  int STRUCTDEFAULTPROPERTIES = 101;
   /** RegularExpression Id. */
-  int SWITCH = 102;
+  int SUPER = 102;
   /** RegularExpression Id. */
-  int TRANSIENT = 103;
+  int SWITCH = 103;
   /** RegularExpression Id. */
-  int TRAVEL = 104;
+  int TRANSIENT = 104;
   /** RegularExpression Id. */
-  int TRUE = 105;
+  int TRAVEL = 105;
   /** RegularExpression Id. */
-  int UNRELIABLE = 106;
+  int TRUE = 106;
   /** RegularExpression Id. */
-  int UNTIL = 107;
+  int UNRELIABLE = 107;
   /** RegularExpression Id. */
-  int VAR = 108;
+  int UNTIL = 108;
   /** RegularExpression Id. */
-  int VOID = 109;
+  int VAR = 109;
   /** RegularExpression Id. */
-  int WITHIN = 110;
+  int VOID = 110;
   /** RegularExpression Id. */
-  int WHILE = 111;
+  int WITHIN = 111;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 112;
+  int WHILE = 112;
   /** RegularExpression Id. */
-  int DECIMAL_LITERAL = 113;
+  int INTEGER_LITERAL = 113;
   /** RegularExpression Id. */
-  int HEX_LITERAL = 114;
+  int DECIMAL_LITERAL = 114;
   /** RegularExpression Id. */
-  int OCTAL_LITERAL = 115;
+  int HEX_LITERAL = 115;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 116;
+  int OCTAL_LITERAL = 116;
   /** RegularExpression Id. */
-  int DECIMAL_FLOATING_POINT_LITERAL = 117;
+  int FLOATING_POINT_LITERAL = 117;
   /** RegularExpression Id. */
-  int DECIMAL_EXPONENT = 118;
+  int DECIMAL_FLOATING_POINT_LITERAL = 118;
   /** RegularExpression Id. */
-  int HEXADECIMAL_FLOATING_POINT_LITERAL = 119;
+  int DECIMAL_EXPONENT = 119;
   /** RegularExpression Id. */
-  int HEXADECIMAL_EXPONENT = 120;
+  int HEXADECIMAL_FLOATING_POINT_LITERAL = 120;
   /** RegularExpression Id. */
-  int IDENTIFIER = 121;
+  int HEXADECIMAL_EXPONENT = 121;
   /** RegularExpression Id. */
-  int LETTER = 122;
+  int IDENTIFIER = 122;
   /** RegularExpression Id. */
-  int PART_LETTER = 123;
+  int LETTER = 123;
   /** RegularExpression Id. */
-  int LPAREN = 124;
+  int PART_LETTER = 124;
   /** RegularExpression Id. */
-  int RPAREN = 125;
+  int LPAREN = 125;
   /** RegularExpression Id. */
-  int LBRACE = 126;
+  int RPAREN = 126;
   /** RegularExpression Id. */
-  int RBRACE = 127;
+  int LBRACE = 127;
   /** RegularExpression Id. */
-  int LBRACKET = 128;
+  int RBRACE = 128;
   /** RegularExpression Id. */
-  int RBRACKET = 129;
+  int LBRACKET = 129;
   /** RegularExpression Id. */
-  int SEMICOLON = 130;
+  int RBRACKET = 130;
   /** RegularExpression Id. */
-  int COMMA = 131;
+  int SEMICOLON = 131;
   /** RegularExpression Id. */
-  int DOT = 132;
+  int COMMA = 132;
   /** RegularExpression Id. */
-  int ASSIGN = 133;
+  int DOT = 133;
   /** RegularExpression Id. */
-  int AT = 134;
+  int ASSIGN = 134;
   /** RegularExpression Id. */
-  int DOLLARS = 135;
+  int AT = 135;
   /** RegularExpression Id. */
-  int LT = 136;
+  int DOLLARS = 136;
   /** RegularExpression Id. */
-  int BANG = 137;
+  int LT = 137;
   /** RegularExpression Id. */
-  int TILDE = 138;
+  int BANG = 138;
   /** RegularExpression Id. */
-  int HOOK = 139;
+  int TILDE = 139;
   /** RegularExpression Id. */
-  int COLON = 140;
+  int HOOK = 140;
   /** RegularExpression Id. */
-  int EQ = 141;
+  int COLON = 141;
   /** RegularExpression Id. */
-  int LE = 142;
+  int EQ = 142;
   /** RegularExpression Id. */
-  int GE = 143;
+  int LE = 143;
   /** RegularExpression Id. */
-  int NE = 144;
+  int GE = 144;
   /** RegularExpression Id. */
-  int SC_OR = 145;
+  int NE = 145;
   /** RegularExpression Id. */
-  int SC_AND = 146;
+  int SC_OR = 146;
   /** RegularExpression Id. */
-  int INCR = 147;
+  int SC_AND = 147;
   /** RegularExpression Id. */
-  int DECR = 148;
+  int INCR = 148;
   /** RegularExpression Id. */
-  int PLUS = 149;
+  int DECR = 149;
   /** RegularExpression Id. */
-  int MINUS = 150;
+  int PLUS = 150;
   /** RegularExpression Id. */
-  int STAR = 151;
+  int MINUS = 151;
   /** RegularExpression Id. */
-  int SLASH = 152;
+  int STAR = 152;
   /** RegularExpression Id. */
-  int BIT_AND = 153;
+  int SLASH = 153;
   /** RegularExpression Id. */
-  int BIT_OR = 154;
+  int BIT_AND = 154;
   /** RegularExpression Id. */
-  int XOR = 155;
+  int BIT_OR = 155;
   /** RegularExpression Id. */
-  int REM = 156;
+  int XOR = 156;
   /** RegularExpression Id. */
-  int LSHIFT = 157;
+  int REM = 157;
   /** RegularExpression Id. */
-  int EXPONENT = 158;
+  int LSHIFT = 158;
   /** RegularExpression Id. */
-  int ATASSIGN = 159;
+  int EXPONENT = 159;
   /** RegularExpression Id. */
-  int DOLLARSASSIGN = 160;
+  int ATASSIGN = 160;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 161;
+  int DOLLARSASSIGN = 161;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 162;
+  int PLUSASSIGN = 162;
   /** RegularExpression Id. */
-  int STARASSIGN = 163;
+  int MINUSASSIGN = 163;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 164;
+  int STARASSIGN = 164;
   /** RegularExpression Id. */
-  int ANDASSIGN = 165;
+  int SLASHASSIGN = 165;
   /** RegularExpression Id. */
-  int ORASSIGN = 166;
+  int ANDASSIGN = 166;
   /** RegularExpression Id. */
-  int XORASSIGN = 167;
+  int ORASSIGN = 167;
   /** RegularExpression Id. */
-  int REMASSIGN = 168;
+  int XORASSIGN = 168;
   /** RegularExpression Id. */
-  int LSHIFTASSIGN = 169;
+  int REMASSIGN = 169;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 170;
+  int LSHIFTASSIGN = 170;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFTASSIGN = 171;
+  int RSIGNEDSHIFTASSIGN = 171;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFT = 172;
+  int RUNSIGNEDSHIFTASSIGN = 172;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFT = 173;
+  int RUNSIGNEDSHIFT = 173;
   /** RegularExpression Id. */
-  int GT = 174;
+  int RSIGNEDSHIFT = 174;
+  /** RegularExpression Id. */
+  int GT = 175;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -457,6 +459,7 @@ public interface UnrealScriptParserConstants {
     "\"static\"",
     "\"string\"",
     "\"struct\"",
+    "\"structdefaultproperties\"",
     "\"super\"",
     "\"switch\"",
     "\"transient\"",
@@ -531,6 +534,12 @@ public interface UnrealScriptParserConstants {
     "\">>>\"",
     "\">>\"",
     "\">\"",
+    "\"#\"",
+    "\"\\\\\"",
+    "\"`\"",
+    "\"?-\"",
+    "\"^^\"",
+    "\"~=\"",
   };
 
 }

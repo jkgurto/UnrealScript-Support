@@ -328,6 +328,7 @@ TOKEN :
 | < STATIC: "static" >
 | < STRING: "string" >
 | < STRUCT: "struct" >
+| < STRUCTDEFAULTPROPERTIES: "structdefaultproperties" >
 | < SUPER: "super" >
 | < SWITCH: "switch" >
 | < TRANSIENT: "transient" >
@@ -1154,11 +1155,9 @@ void CompilationUnit():
 {
     try {
         ClassDeclaration()
-        
-        
-        //( Declarations() )*
-        //( ReplicationBlock() )?
-        //Body()
+        ( Declarations() )*
+        ( ReplicationBlock() )?
+        Body()
         ( DefaultPropertiesBlock() )?
 
         // ?
@@ -1169,7 +1168,8 @@ void CompilationUnit():
         <EOF>
     }
     catch (ParseException ex) {
-        recover (ex, SEMICOLON);
+        //recover(ex, SEMICOLON);
+        recover(ex, '\n');
     }
 }
 
@@ -1209,10 +1209,15 @@ void ClassParams():
 void PackageIdentifier():
 {}
 {
-    /// @todo FIXME lookahead
-    //( (LOOKAHEAD(2) (<IDENTIFIER> "."))? <IDENTIFIER> )
-    //<IDENTIFIER>
-    <IDENTIFIER> ("." <IDENTIFIER>)?
+    <IDENTIFIER> PackageIdentifierEnd()
+}
+
+// Workaround for choice conflicts
+// Lots of things start with <IDENTIFIER>
+void PackageIdentifierEnd():
+{}
+{
+    ("." <IDENTIFIER>)?
 }
 
 // QUALIFIEDIDENTIFIER      = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT default DOT IDENTIFIER )
@@ -1243,7 +1248,7 @@ void IdentifierList():
 
 // -- Declaration parts
 // DECLARATIONS             = ( CONSTDECL | VARDECL | ENUMDECL | STRUCTDECL ) SEMICOLON
-/*void Declarations():
+void Declarations():
 {}
 {
     (ConstDecl() | VarDecl() | EnumDecl() | StructDecl()) ";"
@@ -1254,7 +1259,7 @@ void IdentifierList():
 void ConstDecl():
 {}
 {
-    ("const" <IDENTIFIER> "=" ConstValue())
+    "const" <IDENTIFIER> "=" ConstValue()
 }
 
 
@@ -1262,12 +1267,10 @@ void ConstDecl():
 void ConstValue():
 {}
 {
-    (
     <STRING_LITERAL> |
     <INTEGER_LITERAL> |
     <FLOATING_POINT_LITERAL> |
     BooleanLiteral()
-    )
 }
 
 
@@ -1294,14 +1297,11 @@ void ConfigGroup():
 void VarType():
 {}
 {
-    (
-    PackageIdentifier() |
+    PackageIdentifierOrArrayDecl() |
+    DynArrayDecl() |
     EnumDecl() |
     StructDecl() |
-    ArrayDecl() |
-    ClassType() |
-    BasicType()
-    )
+    BasicTypeOrClassType()
 }
 
 
@@ -1309,7 +1309,15 @@ void VarType():
 void ArrayDecl():
 {}
 {
-    <IDENTIFIER> "[" <INTEGER_LITERAL> "]"
+    <IDENTIFIER> ArrayDeclEnd()
+}
+
+// Workaround for choice conflicts
+// Lots of things start with <IDENTIFIER>
+void ArrayDeclEnd():
+{}
+{
+    "[" <INTEGER_LITERAL> "]"
 }
 
 
@@ -1317,7 +1325,7 @@ void ArrayDecl():
 void DynArrayDecl():
 {}
 {
-    "array" "<" (PackageIdentifier() | ClassType() | BasicType()) ">"
+    "array" "<" (PackageIdentifier() | BasicTypeOrClassType()) ">"
 }
 
 
@@ -1325,7 +1333,15 @@ void DynArrayDecl():
 void ClassType():
 {}
 {
-    "class" "<" PackageIdentifier() ">"
+    "class" ClassTypeEnd()
+}
+
+// Workaround for choice conflicts
+// BasicType and ClassType can start with "class"
+void ClassTypeEnd():
+{}
+{
+    "<" PackageIdentifier() ">"
 }
 
 
@@ -1367,7 +1383,7 @@ void StructParams():
 void StructBody():
 {}
 {
-    (VarDecl() ";")+
+    (VarDecl() ";")+ (StructDefaultPropertiesBlock())?
 }
 
 
@@ -1395,7 +1411,14 @@ void ReplicationBody():
 void Body():
 {}
 {
-    ( StateDecl() | FunctionDecl() )*
+    ( StateOrFunctionDecl() )*
+}
+
+// Prevent choice conflicts, both can start with "simulated"
+void StateOrFunctionDecl():
+{}
+{
+    (StateAndConstFuncParams())* (StateDecl() | FunctionDecl())
 }
 
 // State parts
@@ -1439,18 +1462,38 @@ void StateLabels():
 void FunctionDecl():
 {}
 {
-    ( NormalFunc() | OperatorFunc() )
+    NormalOrOperatorFunc()
+}
+
+// Moved (FunctionParams())* here to prevent choice conflicts
+void NormalOrOperatorFunc():
+{}
+{
+    (FunctionParams())* ( NormalFuncEnd() | OperatorFuncEnd() )
 }
 
 // NORMALFUNC               = ( FUNCTIONPARAMS )* FUNCTIONTYPE ( LOCALTYPE )?
 //                            IDENTIFIER LBRACK ( FUNCTIONARGS ( COMMA FUNCTIONARGS )* )? RBRACK
 //                            FUNCTIONBODY
-void NormalFunc():
+void NormalFuncEnd():
 {}
 {
-    (FunctionParams())* FunctionType() ( LocalType() )?
-        <IDENTIFIER> "(" ( FunctionArgs() ("," FunctionArgs())* )? ")"
+     FunctionType()
+        LocalTypeThenIdentifier() "(" ( FunctionArgs() ("," FunctionArgs())* )? ")"
         FunctionBody()
+}
+
+// Prevent choice conflict
+// If is a PackageIdentifier() in LocalType(), and then <IDENTIFIER>
+// Instead of:
+// ( LocalType() )? <IDENTIFIER>
+void LocalTypeThenIdentifier():
+{}
+{
+    LOOKAHEAD(2)
+    ( PackageIdentifierOrArrayDecl() <IDENTIFIER> ) |
+    ( LocalTypeEnd() <IDENTIFIER> ) |
+    ( <IDENTIFIER> )
 }
 
 // FUNCTIONPARAMS           = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
@@ -1461,10 +1504,10 @@ void FunctionParams():
 }
 
 // OPERATORFUNC             = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
-void OperatorFunc():
+void OperatorFuncEnd():
 {}
 {
-    (FunctionParams())* OperatorType() FunctionBody()
+    OperatorType() FunctionBody()
 }
 
 // OPERATORTYPE             = ( BINARYOPERATOR | UNARYOPERATOR )
@@ -1490,7 +1533,7 @@ void BinaryOperator():
 void UnaryOperator():
 {}
 {
-    ( "preOperator" | "postOperator" ) PackageIdentifier() OpIdentifier()
+    ( "preoperator" | "postoperator" ) PackageIdentifier() OpIdentifier()
                            "(" FunctionArgs() ")"
 }
 
@@ -1512,7 +1555,7 @@ void FunctionArgs():
 void FunctionArgType():
 {}
 {
-    BasicType() | PackageIdentifier()
+    BasicType() | PackageIdentifier() | DynArrayDecl()
 }
 
 
@@ -1520,7 +1563,8 @@ void FunctionArgType():
 void FunctionBody():
 {}
 {
-    ( ";" | ( ((LocalDecl())* (CodeLine())*) (";")? ) )
+    //( ";" | ( ((LocalDecl())* (CodeLine())*) (";")? ) )
+    (LocalDecl())* (CodeLine())*
 }
 
 
@@ -1528,7 +1572,7 @@ void FunctionBody():
 void LocalDecl():
 {}
 {
-    "local" LocalType() <IDENTIFIER> ( "," <IDENTIFIER> )*
+    "local" LocalType() <IDENTIFIER> ( "," <IDENTIFIER> )* ";"
 }
 
 
@@ -1536,13 +1580,33 @@ void LocalDecl():
 void LocalType():
 {}
 {
-    (PackageIdentifier() | ArrayDecl() | ClassType() | BasicType())
+    (PackageIdentifierOrArrayDecl() | LocalTypeEnd())
+}
+
+// LocalType without PackageIdentifier and ArrayDecl
+// to prevent choice conflicts with <IDENTIFIER>
+void LocalTypeEnd():
+{}
+{
+    BasicTypeOrClassType()
+}
+
+// choice conflict - multiple things that start with <IDENTIFIER>
+void PackageIdentifierOrArrayDecl():
+{}
+{
+    <IDENTIFIER> (ArrayDeclEnd() | PackageIdentifierEnd())
 }
 
 // Code parts
 // CODELINE                 = ( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
 //                            | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
 void CodeLine():
+{}
+{
+    ";" | ("{" ";" "}")
+}
+/*void CodeLine():
 {}
 {
     //( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
@@ -1581,7 +1645,7 @@ void Statement():
 {}
 {
     FuncCall() ";"
-}
+}*/
 
 
 // ASSIGNMENT               = IDENTIFIER EQUALS EXPR SEMICOLON
@@ -1596,7 +1660,7 @@ void Assignment():
 // The disambiguating algorithm of JavaCC automatically binds dangling
 // else's to the innermost if statement.  The LOOKAHEAD specification
 // is to tell JavaCC that we know what we are doing.
-void IfStatement():
+/*void IfStatement():
 {}
 {
     "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
@@ -1679,7 +1743,7 @@ void ForUpdate():
 {}
 {
     StatementExpressionList()
-}
+}*/
 
 
 // EXPR                     = OPERAND ( OPIDENTIFIER OPERAND )*
@@ -1691,6 +1755,13 @@ void ForUpdate():
 // a primary expression.  Consider adding a semantic predicate to work
 // around this.
 void Expression():
+{}
+{
+    /// @todo FIXME
+    <IDENTIFIER> | Literal()
+}
+
+/*void Expression():
 {}
 {
   ConditionalExpression()
@@ -1783,12 +1854,17 @@ void DefaultPropertiesBlock():
     "defaultproperties" "{" (DefProp())* "}"
 }
 
+void StructDefaultPropertiesBlock():
+{}
+{
+    "structdefaultproperties" "{" (DefProp())* "}"
+}
+
 // DEFPROP                  = DEFPROPIDENTIFIER EQUALS PRINTABLE
 void DefProp():
 {}
 {
-    //DefPropIdentifier() "=" Expression()
-    DefPropIdentifier() "=" <IDENTIFIER>
+    DefPropIdentifier() "=" Expression()
 }
 
 // DEFPROPIDENTIFIER        = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
@@ -1853,12 +1929,10 @@ void ConstClassParams():
 }
 
 // BOOLVAL                  = true | false
-/*void BooleanLiteral():
+void BooleanLiteral():
 {}
 {
-  "true"
-|
-  "false"
+    "true" | "false"
 }
 
 // VARPARAMS                = config | const | editconst | export | globalconfig | input |
@@ -1889,36 +1963,61 @@ void VarParams():
 }
 
 // STATEPARAMS              = auto | simulated
+// Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
 void StateParams():
 {}
 {
-    ("auto" | "simulated")
+    "auto"
 }
 
 // CONSTFUNCPARAMS          = final | iterator | latent | simulated | singular | static |
 //                            exec | protected | private
+// Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
 void ConstFuncParams():
 {}
 {
-    (
     "final" |
     "iterator" |
     "latent" |
-    "simulated" |
     "singular" |
-    "simulated" |
     "static" |
     "exec" |
     "protected" |
     "private"
-    )
+}
+
+// Prevent choice conflicts between StateParams and ConstFuncParams
+void StateAndConstFuncParams():
+{}
+{
+    "simulated"
 }
 
 // BASICTYPE                = byte | int | float | string | bool | name | class
+// Moved "class" to BasicClassType() to prevent choice confilcts with ClassType
 void BasicType():
 {}
 {
-  "bool" | "byte" | "float" | "int" | "string" | "name" | "class"
+    BasicTypeSimple() | BasicClassType()
+}
+
+void BasicTypeSimple():
+{}
+{
+    "bool" | "byte" | "float" | "int" | "string" | "name"
+}
+
+void BasicClassType():
+{}
+{
+    "class"
+}
+
+// choice conflict - multiple things that can start with "class"
+void BasicTypeOrClassType():
+{}
+{
+    BasicTypeSimple() | ( "class" (ClassTypeEnd())? )
 }
 
 // FUNCTIONTYPE             = function | event | delegate
@@ -1926,7 +2025,7 @@ void FunctionType():
 {}
 {
   "function" | "event" | "delegate"
-}*/
+}
 
 /*
 OPERATORNAMES            = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
@@ -1936,7 +2035,7 @@ OPERATORNAMES            = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
                            '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
                            '~=' | '@=' | '>>>'
 */
-/*void OperatorNames():
+void OperatorNames():
 {}
 {
     "~" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" |
@@ -1945,7 +2044,7 @@ OPERATORNAMES            = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
     "<<" | ">>" | "!=" | "<=" | ">=" | "++" | "--" | "?-" | "+=" |
     "-=" | "*=" | "/=" | "&&" | "||" | "^^" | "==" | "**" |
     "~=" | "@=" | ">>>"
-}*/
+}
 
 // Java Rules
 /*void ResultType():
@@ -2222,7 +2321,7 @@ void ArrayInitializer():
 {}
 {
   "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
-}
+}*/
 
 void Literal():
 {}
@@ -2247,7 +2346,7 @@ void NoneLiteral():
 
 // We use productions to match >>>, >> and > so that we can keep the
 // type declaration syntax with generics clean
-void RUNSIGNEDSHIFT():
+/*void RUNSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
