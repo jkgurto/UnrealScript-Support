@@ -110,9 +110,11 @@ public class Token implements java.io.Serializable {
     public static Token newToken(int ofKind, String image) {
         switch (ofKind) {
             case UnrealScriptParserConstants.RUNSIGNEDSHIFT:
+                return new GTToken(ofKind, image, UnrealScriptParserConstants.RUNSIGNEDSHIFT);
             case UnrealScriptParserConstants.RSIGNEDSHIFT:
+                return new GTToken(ofKind, image, UnrealScriptParserConstants.RSIGNEDSHIFT);
             case UnrealScriptParserConstants.GT:
-                return new GTToken(ofKind, image);
+                return new GTToken(ofKind, image, UnrealScriptParserConstants.GT);
 
             default:
                 return new Token(ofKind, image);
@@ -121,10 +123,11 @@ public class Token implements java.io.Serializable {
 
     public static class GTToken extends Token {
 
-        int realKind = UnrealScriptParserConstants.GT;
+        int realKind;
 
-        public GTToken(int kind, String image) {
+        public GTToken(int kind, String image, int realKind) {
             super(kind, image);
+            this.realKind = realKind;
         }
     }
 }

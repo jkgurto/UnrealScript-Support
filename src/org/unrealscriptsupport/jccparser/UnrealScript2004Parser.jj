@@ -1144,7 +1144,7 @@ TOKEN :
  * --- Non-Terminals.
  */
 
-// PROGRAM                  = CLASSDECL
+// PROGRAM = CLASSDECL
 //                            ( DECLARATIONS )*
 //                            ( REPLICATIONBLOCK )?
 //                            BODY
@@ -1173,7 +1173,7 @@ void CompilationUnit():
     }
 }
 
-// CLASSDECL                = class IDENTIFIER ( extends PACKAGEIDENTIFIER )?
+// CLASSDECL = class IDENTIFIER ( extends PACKAGEIDENTIFIER )?
 //                            ( CLASSPARAMS )* SEMICOLON
 void ClassDeclaration():
 {
@@ -1183,7 +1183,7 @@ void ClassDeclaration():
 }
 
 
-// CLASSPARAMS              = CONSTCLASSPARAMS | within PACKAGEIDENTIFIER |
+// CLASSPARAMS = CONSTCLASSPARAMS | within PACKAGEIDENTIFIER |
 //                            dependson LBRACK PACKAGEIDENTIFIER RBRACK |
 //                            config ( LBRACK PACKAGEIDENTIFIER RBRACK )? |
 //                            hidecategories LBRACK IDENTIFIERLIST RBRACK |
@@ -1201,11 +1201,11 @@ void ClassParams():
     )
 }
 
-// IDENTIFIER               = ( ALPHA | UNDERSCORE ) ( ALPHA | UNDERSCORE | DIGIT )*
+// IDENTIFIER = ( ALPHA | UNDERSCORE ) ( ALPHA | UNDERSCORE | DIGIT )*
 // See <IDENTIFIER> above
 
 // packagename.classname or classname.structname
-// PACKAGEIDENTIFIER        = ( IDENTIFIER DOT )? IDENTIFIER
+// PACKAGEIDENTIFIER = ( IDENTIFIER DOT )? IDENTIFIER
 void PackageIdentifier():
 {}
 {
@@ -1220,19 +1220,61 @@ void PackageIdentifierEnd():
     ("." <IDENTIFIER>)?
 }
 
-// QUALIFIEDIDENTIFIER      = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT default DOT IDENTIFIER )
+// QUALIFIEDIDENTIFIER = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT default DOT IDENTIFIER )
 //                            | ( ( IDENTIFIER DOT )* IDENTIFIER )
 //                            )
-/*void QualifiedIdentifier():
+void QualifiedIdentifier():
 {}
 {
-    (
-    ( "class" "'" PackageIdentifier() "'" "." "default" "." <IDENTIFIER> ) |
-    ( ( <IDENTIFIER> "." )* <IDENTIFIER> )
-    )
-}*/
+    (QualifiedIdentifierStart())? <IDENTIFIER> ("."  <IDENTIFIER>)*
+}
 
-// IDENTIFIERLIST           = IDENTIFIER ( COMMA IDENTIFIER )*
+void QualifiedIdentifierStart():
+{}
+{
+    /// @todo FIXME
+    //( "class" "'" PackageIdentifier() "'" "." "default" "." <IDENTIFIER> ) |
+    "class" <NAME_LITERAL> "." "default" "." 
+}
+
+// FUNCCALL = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT static DOT )
+//                            | ( ( IDENTIFIER DOT )+ )
+//                            )?
+//                            IDENTIFIER LBRACK ( EXPR ( COMMA EXPR )* )? RBRACK
+void FuncCall():
+{}
+{   
+    (FuncCallStart())? <IDENTIFIER> ("."  <IDENTIFIER>)* FuncCallEnd()
+}
+
+void FuncCallStart():
+{}
+{
+    /// @todo FIXME
+    //( ( "class" "'" PackageIdentifier() "'" "." "static" "." )
+    "class" <NAME_LITERAL> "." "static" "."
+}
+
+void FuncCallEnd():
+{}
+{
+    "(" ( Expression() ("," Expression())* )? ")"
+}
+
+void FuncCallOrQualifiedIdentifier():
+{}
+{
+    ( ("class" <NAME_LITERAL> ".")
+        ( ("static" "." <IDENTIFIER> ("."  <IDENTIFIER>)* FuncCallEnd()) |
+          ("default" "." <IDENTIFIER> ("."  <IDENTIFIER>)*) )
+    ) |
+    (<IDENTIFIER> ("."  <IDENTIFIER>)* (FuncCallEnd())? )
+
+    //FuncCall() |
+    //QualifiedIdentifier()
+}
+
+// IDENTIFIERLIST = IDENTIFIER ( COMMA IDENTIFIER )*
 void IdentifierList():
 {}
 {
@@ -1240,14 +1282,14 @@ void IdentifierList():
 }
 
 
-// STRINGVAL                = DQUOTE PRINTABLE DQUOTE
-// INTVAL                   = ( DIGIT+ | ( '0x' ( HEXDIGIT )+ ) )
-// FLOATVAL                 = ( DIGIT )+ DOT ( DIGIT )*
+// STRINGVAL = DQUOTE PRINTABLE DQUOTE
+// INTVAL = ( DIGIT+ | ( '0x' ( HEXDIGIT )+ ) )
+// FLOATVAL = ( DIGIT )+ DOT ( DIGIT )*
 // See above
 
 
 // -- Declaration parts
-// DECLARATIONS             = ( CONSTDECL | VARDECL | ENUMDECL | STRUCTDECL ) SEMICOLON
+// DECLARATIONS = ( CONSTDECL | VARDECL | ENUMDECL | STRUCTDECL ) SEMICOLON
 void Declarations():
 {}
 {
@@ -1255,26 +1297,15 @@ void Declarations():
 }
 
 
-// CONSTDECL                = const IDENTIFIER = CONSTVALUE
+// CONSTDECL = const IDENTIFIER = CONSTVALUE
+// CONSTVALUE = ( STRINGVAL | INTVAL | FLOATVAL | BOOLVAL )
 void ConstDecl():
 {}
 {
-    "const" <IDENTIFIER> "=" ConstValue()
+    "const" <IDENTIFIER> "=" Literal()
 }
 
-
-// CONSTVALUE               = ( STRINGVAL | INTVAL | FLOATVAL | BOOLVAL )
-void ConstValue():
-{}
-{
-    <STRING_LITERAL> |
-    <INTEGER_LITERAL> |
-    <FLOATING_POINT_LITERAL> |
-    BooleanLiteral()
-}
-
-
-// VARDECL                  = var ( CONFIGGROUP )? ( VARPARAMS )*
+// VARDECL = var ( CONFIGGROUP )? ( VARPARAMS )*
 //                            VARTYPE VARIDENTIFIER ( COMMA VARIDENTIFIER )*
 void VarDecl():
 {}
@@ -1284,7 +1315,7 @@ void VarDecl():
 }
 
 
-// CONFIGGROUP              = LBRACK ( IDENTIFIER )? RBRACK
+// CONFIGGROUP = LBRACK ( IDENTIFIER )? RBRACK
 void ConfigGroup():
 {}
 {
@@ -1292,8 +1323,8 @@ void ConfigGroup():
 }
 
 
-// VARTYPE                  = PACKAGEIDENTIFIER | ENUMDECL | STRUCTDECL | ARRAYDECL | CLASSTYPE | BASICTYPE
-// VARIDENTIFIER            = IDENTIFIER
+// VARTYPE = PACKAGEIDENTIFIER | ENUMDECL | STRUCTDECL | ARRAYDECL | CLASSTYPE | BASICTYPE
+// VARIDENTIFIER = IDENTIFIER
 void VarType():
 {}
 {
@@ -1305,7 +1336,7 @@ void VarType():
 }
 
 
-// ARRAYDECL                = IDENTIFIER LSBRACK INTVAL RSBRACK
+// ARRAYDECL = IDENTIFIER LSBRACK INTVAL RSBRACK
 void ArrayDecl():
 {}
 {
@@ -1321,7 +1352,7 @@ void ArrayDeclEnd():
 }
 
 
-// DYNARRAYDECL             = array LABRACK (PACKAGEIDENTIFIER | CLASSTYPE | BASICTYPE) RABRACK
+// DYNARRAYDECL = array LABRACK (PACKAGEIDENTIFIER | CLASSTYPE | BASICTYPE) RABRACK
 void DynArrayDecl():
 {}
 {
@@ -1329,7 +1360,7 @@ void DynArrayDecl():
 }
 
 
-// CLASSTYPE                = class LABRACK PACKAGEIDENTIFIER RABRACK
+// CLASSTYPE = class LABRACK PACKAGEIDENTIFIER RABRACK
 void ClassType():
 {}
 {
@@ -1345,7 +1376,7 @@ void ClassTypeEnd():
 }
 
 
-// ENUMDECL                 = enum IDENTIFIER LCBRACK ENUMOPTIONS RCBRACK
+// ENUMDECL = enum IDENTIFIER LCBRACK ENUMOPTIONS RCBRACK
 void EnumDecl():
 {}
 {
@@ -1353,7 +1384,7 @@ void EnumDecl():
 }
 
 
-// ENUMOPTIONS              = IDENTIFIER ( COMMA IDENTIFIER )*
+// ENUMOPTIONS = IDENTIFIER ( COMMA IDENTIFIER )*
 void EnumOptions():
 {}
 {
@@ -1361,7 +1392,7 @@ void EnumOptions():
 }
 
 
-// STRUCTDECL               = struct ( STRUCTPARAMS )* IDENTIFIER ( extends PACKAGEIDENTIFIER )?
+// STRUCTDECL = struct ( STRUCTPARAMS )* IDENTIFIER ( extends PACKAGEIDENTIFIER )?
 //                            LCBRACK STRUCTBODY RCBRACK
 void StructDecl():
 {}
@@ -1371,7 +1402,7 @@ void StructDecl():
 }
 
 
-// STRUCTPARAMS             = ( native | export )
+// STRUCTPARAMS = ( native | export )
 void StructParams():
 {}
 {
@@ -1379,7 +1410,7 @@ void StructParams():
 }
 
 
-// STRUCTBODY               = ( VARDECL SEMICOLON )+
+// STRUCTBODY = ( VARDECL SEMICOLON )+
 void StructBody():
 {}
 {
@@ -1389,7 +1420,7 @@ void StructBody():
 
 
 // Replication parts
-// REPLICATIONBLOCK         = replication LCBRACK ( REPLICATIONBODY )* RCBRACK
+// REPLICATIONBLOCK = replication LCBRACK ( REPLICATIONBODY )* RCBRACK
 void ReplicationBlock():
 {}
 {
@@ -1397,7 +1428,7 @@ void ReplicationBlock():
 }
 
 
-// REPLICATIONBODY          = ( reliable | unreliable ) if LBRACK EXPR RBRACK
+// REPLICATIONBODY = ( reliable | unreliable ) if LBRACK EXPR RBRACK
 //                            IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
 void ReplicationBody():
 {}
@@ -1407,7 +1438,7 @@ void ReplicationBody():
 }
 
 // Body parts
-// BODY                     = ( STATEDECL | FUNCTIONDECL )*
+// BODY = ( STATEDECL | FUNCTIONDECL )*
 void Body():
 {}
 {
@@ -1422,43 +1453,33 @@ void StateOrFunctionDecl():
 }
 
 // State parts
-// STATEDECL                = ( STATEPARAMS )* state IDENTIFIER ( CONFIGGROUP )? ( extends IDENTIFIER )? STATEBODY
+// STATEDECL = ( STATEPARAMS )* state IDENTIFIER ( CONFIGGROUP )? ( extends IDENTIFIER )? STATEBODY
 void StateDecl():
 {}
 {
-    (StateParams())* "state" <IDENTIFIER>
+    (StateParams())* "state" ("(" ")")? <IDENTIFIER>
         (ConfigGroup())? ("extends" <IDENTIFIER>)? StateBody()
 }
 
 
-// STATEBODY                = LCBRACK ( STATEIGNORE )? ( FUNCTIONDECL )* STATELABELS RCBRACK
+// STATEBODY = LCBRACK ( STATEIGNORE )? ( FUNCTIONDECL )* STATELABELS RCBRACK
 void StateBody():
 {}
 {
-    "{" (StateIgnore())? (FunctionDecl())* StateLabels() "}"
+    "{" (StateIgnore())? (FunctionDecl())* (LabelStatement())* "}"
 }
 
 
-// STATEIGNORE              = ignores IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
+// STATEIGNORE = ignores IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
 void StateIgnore():
 {}
 {
     "ignores" <IDENTIFIER> ("," <IDENTIFIER>)* ";"
 }
 
-
-// STATELABELS              = ( IDENTIFIER COLON ( CODELINE )* )*
-void StateLabels():
-{}
-{
-    ( <IDENTIFIER> ":" (CodeLine())* )*
-}
-
-
-
 // Function  parts
 // operators require an set amouth of arguments
-// FUNCTIONDECL             = ( NORMALFUNC | OPERATORFUNC )
+// FUNCTIONDECL = ( NORMALFUNC | OPERATORFUNC )
 void FunctionDecl():
 {}
 {
@@ -1472,7 +1493,7 @@ void NormalOrOperatorFunc():
     (FunctionParams())* ( NormalFuncEnd() | OperatorFuncEnd() )
 }
 
-// NORMALFUNC               = ( FUNCTIONPARAMS )* FUNCTIONTYPE ( LOCALTYPE )?
+// NORMALFUNC = ( FUNCTIONPARAMS )* FUNCTIONTYPE ( LOCALTYPE )?
 //                            IDENTIFIER LBRACK ( FUNCTIONARGS ( COMMA FUNCTIONARGS )* )? RBRACK
 //                            FUNCTIONBODY
 void NormalFuncEnd():
@@ -1496,21 +1517,21 @@ void LocalTypeThenIdentifier():
     ( <IDENTIFIER> )
 }
 
-// FUNCTIONPARAMS           = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
+// FUNCTIONPARAMS = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
 void FunctionParams():
 {}
 {
     ( ConstFuncParams() | ( "native" ("(" <INTEGER_LITERAL> ")")? ) )
 }
 
-// OPERATORFUNC             = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
+// OPERATORFUNC = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
 void OperatorFuncEnd():
 {}
 {
     OperatorType() FunctionBody()
 }
 
-// OPERATORTYPE             = ( BINARYOPERATOR | UNARYOPERATOR )
+// OPERATORTYPE = ( BINARYOPERATOR | UNARYOPERATOR )
 void OperatorType():
 {}
 {
@@ -1518,7 +1539,7 @@ void OperatorType():
 }
 
 // requires two arguments
-// BINARYOPERATOR           = operator LBRACK INTVAL RBRACK PACKAGEIDENTIFIER OPIDENTIFIER
+// BINARYOPERATOR = operator LBRACK INTVAL RBRACK PACKAGEIDENTIFIER OPIDENTIFIER
 //                            LBRACK FUNCTIONARGS COMMA FUNCTIONARGS RBRACK
 void BinaryOperator():
 {}
@@ -1528,7 +1549,7 @@ void BinaryOperator():
 }
 
 // requires one argument
-// UNARYOPERATOR            = ( preoperator | postoperator ) PACKAGEIDENTIFIER OPIDENTIFIER
+// UNARYOPERATOR = ( preoperator | postoperator ) PACKAGEIDENTIFIER OPIDENTIFIER
 //                            LBRACK FUNCTIONARGS RBRACK
 void UnaryOperator():
 {}
@@ -1537,21 +1558,14 @@ void UnaryOperator():
                            "(" FunctionArgs() ")"
 }
 
-// OPIDENTIFIER             = IDENTIFIER | OPERATORNAMES
-void OpIdentifier():
-{}
-{
-    <IDENTIFIER> | OperatorNames()
-}
-
-// FUNCTIONARGS             = ( optional | out | coerce )? FUNCTIONARGTYPE IDENTIFIER
+// FUNCTIONARGS = ( optional | out | coerce )? FUNCTIONARGTYPE IDENTIFIER
 void FunctionArgs():
 {}
 {
     ("optional" | "out" | "coerce")? FunctionArgType() <IDENTIFIER>
 }
 
-// FUNCTIONARGTYPE          = BASICTYPE | PACKAGEIDENTIFIER
+// FUNCTIONARGTYPE = BASICTYPE | PACKAGEIDENTIFIER
 void FunctionArgType():
 {}
 {
@@ -1559,16 +1573,15 @@ void FunctionArgType():
 }
 
 
-// FUNCTIONBODY             = ( SEMICOLON | ( ( LOCALDECL )* ( CODELINE )* ) ( SEMICOLON )? )
+// FUNCTIONBODY = ( SEMICOLON | ( ( LOCALDECL )* ( CODELINE )* ) ( SEMICOLON )? )
 void FunctionBody():
 {}
 {
-    //( ";" | ( ((LocalDecl())* (CodeLine())*) (";")? ) )
-    (LocalDecl())* (CodeLine())*
+    ";" | ( "{" (LocalDecl())* (CodeLine())* "}" )
 }
 
 
-// LOCALDECL                = local LOCALTYPE IDENTIFIER ( COMMA IDENTIFIER )*
+// LOCALDECL = local LOCALTYPE IDENTIFIER ( COMMA IDENTIFIER )*
 void LocalDecl():
 {}
 {
@@ -1576,7 +1589,7 @@ void LocalDecl():
 }
 
 
-// LOCALTYPE                = PACKAGEIDENTIFIER | ARRAYDECL | CLASSTYPE | BASICTYPE
+// LOCALTYPE = PACKAGEIDENTIFIER | ARRAYDECL | CLASSTYPE | BASICTYPE
 void LocalType():
 {}
 {
@@ -1599,24 +1612,18 @@ void PackageIdentifierOrArrayDecl():
 }
 
 // Code parts
-// CODELINE                 = ( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
-//                            | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
+// CODELINE = ( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
+//              | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
 void CodeLine():
-{}
-{
-    ";" | ("{" ";" "}")
-}
-/*void CodeLine():
 {}
 {
     //( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
     //   | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
     try {
-      LOOKAHEAD(2)
-        LabeledStatement() |
-        Block() |
+        CodeBlock() |
+        (LOOKAHEAD(2) Statement() | LOOKAHEAD(2)(StatementExpression() ";") |
+                      LabelStatement() ) |
         EmptyStatement() |
-        StatementExpression() ";" |
         SwitchStatement() |
         IfStatement() |
         WhileStatement() |
@@ -1625,106 +1632,126 @@ void CodeLine():
         ForEachStatement() |
         BreakStatement() |
         ContinueStatement() |
-        ReturnStatement()
+        ReturnStatement() |
+        GotoStatement()
     }
     catch (ParseException ex) {
         recover(ex, SEMICOLON);
     }
 }
 
-// CODEBLOCK                = ( CODELINE | ( LCBRACK ( CODELINE )* RCBRACK ) )
+// CODEBLOCK = ( CODELINE | ( LCBRACK ( CODELINE )* RCBRACK ) )
 void CodeBlock():
 {}
 {
-    ( CodeLine() | ( "{" ( CodeLine() )* "}" ) )
+    "{" ( CodeLine() )* "}"
 }
 
-
-// STATEMENT                = FUNCCALL SEMICOLON
+// STATEMENT = FUNCCALL SEMICOLON
 void Statement():
 {}
 {
     FuncCall() ";"
-}*/
+}
 
 
-// ASSIGNMENT               = IDENTIFIER EQUALS EXPR SEMICOLON
+// ASSIGNMENT = IDENTIFIER EQUALS EXPR SEMICOLON
 void Assignment():
 {}
 {
     <IDENTIFIER> "=" Expression() ";"
 }
 
-
-// IFTHENELSE               = if LBRACK EXPR RBRACK CODEBLOCK ( else CODEBLOCK )?'
+// IFTHENELSE = if LBRACK EXPR RBRACK CODEBLOCK ( else CODEBLOCK )?'
 // The disambiguating algorithm of JavaCC automatically binds dangling
 // else's to the innermost if statement.  The LOOKAHEAD specification
 // is to tell JavaCC that we know what we are doing.
-/*void IfStatement():
+void IfStatement():
 {}
 {
-    "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
+    "if" "(" Expression() ")" CodeLine() ( LOOKAHEAD(1) "else" CodeLine() )?
 }
 
-// WHILELOOP                = while LBRACK EXPR RBRACK CODEBLOCK
+// WHILELOOP = while LBRACK EXPR RBRACK CODEBLOCK
 void WhileStatement():
 {}
 {
-    "while" "(" Expression() ")" Statement()
+    "while" "(" Expression() ")" CodeLine()
 }
 
-// DOLOOP                   = do CODEBLOCK until LBRACK EXPR RBRACK
+// DOLOOP = do CODEBLOCK until LBRACK EXPR RBRACK
 void DoStatement():
 {}
 {
-    "do" Statement() "until" "(" Expression() ")" ";"
+    "do" CodeLine() "until" "(" Expression() ")" ";"
 }
 
-// SWITCHCASE               = switch LBRACK EXPR RBRACK LCBRACK ( CASERULE )+ ( DEFAULTRULE )? RCBRACK
+// SWITCHCASE = switch LBRACK EXPR RBRACK LCBRACK ( CASERULE )+ ( DEFAULTRULE )? RCBRACK
 void SwitchStatement():
 {}
 {
     "switch" "(" Expression() ")" "{"
-        (SwitchLabel() (BlockStatement())*)*
+        (SwitchLabel())*
+        (DefaultLabel())?
     "}"
 }
 
-// CASERULE                 = case INTVAL COLON CODEBLOCK
+// CASERULE = case INTVAL COLON CODEBLOCK
 void SwitchLabel():
 {}
 {
-    ("case" <INTEGER_LITERAL> ":") | ("default" ":")
+    "case" (<INTEGER_LITERAL> | QualifiedIdentifier()) ":" (CodeLine())*
 }
 
+// DEFAULTRULE = default CODEBLOCK
+void DefaultLabel():
+{}
+{
+    "default" ":" (CodeLine())+
+}
 
-// DEFAULTRULE              = default CODEBLOCK
-
-
-// RETURNFUNC               = return ( EXPR )? SEMICOLON
-
+// RETURNFUNC = return ( EXPR )? SEMICOLON
 void ReturnStatement():
 {}
 {
-  "return" [ Expression() ] ";"
+  "return" ( Expression() )? ";"
 }
 
+// eg.
+// {
+//     LoopForever:
+//         goto LoopForever;
+// }
+void GotoStatement():
+{}
+{
+    "goto" ( <IDENTIFIER> | <NAME_LITERAL> | ("(" <NAME_LITERAL> ")") ) ";"
+}
 
-// FOREACHLOOP              = foreach FUNCCALL CODEBLOCK
+// STATELABELS = ( IDENTIFIER COLON ( CODELINE )* )*
+void LabelStatement():
+{}
+{
+    <IDENTIFIER> ":" (LOOKAHEAD(1) CodeLine())*
+}
+
+// FOREACHLOOP = foreach FUNCCALL CODEBLOCK
 void ForEachStatement():
 {}
 {
     // foreach FUNCCALL CODEBLOCK
-    "ForEach" [ Expression() ] Statement()
+    "foreach" FuncCall() CodeBlock()
 }
 
 
-// FORLOOP                  = for LBRACK ASSIGNMENT SEMICOLON EXPR SEMICOLON EXPR RBRACK CODEBLOCK
+// FORLOOP = for LBRACK ASSIGNMENT SEMICOLON EXPR SEMICOLON EXPR RBRACK CODEBLOCK
 void ForStatement():
 {}
 {
     "for" "("
-        [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
-    ")" Statement()
+                [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
+          ")"
+    CodeLine()
 }
 
 void ForInit():
@@ -1743,10 +1770,10 @@ void ForUpdate():
 {}
 {
     StatementExpressionList()
-}*/
+}
 
 
-// EXPR                     = OPERAND ( OPIDENTIFIER OPERAND )*
+// EXPR = OPERAND ( OPIDENTIFIER OPERAND )*
 // This expansion has been written this way instead of:
 //   Assignment() | ConditionalExpression()
 // for performance reasons.
@@ -1757,8 +1784,7 @@ void ForUpdate():
 void Expression():
 {}
 {
-    /// @todo FIXME
-    <IDENTIFIER> | Literal()
+    Operand() ( LOOKAHEAD(2) OpIdentifier() Operand() )*
 }
 
 /*void Expression():
@@ -1769,42 +1795,20 @@ void Expression():
     LOOKAHEAD(2)
     AssignmentOperator() Expression()
   ]
-}
+}*/
 
-// OPERAND                  = ( CONSTVALUE | QUALIFIEDIDENTIFIER | FUNCCALL )
-
-// FUNCCALL                 = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT static DOT )
-//                            | ( ( IDENTIFIER DOT )+ )
-//                            )?
-//                            IDENTIFIER LBRACK ( EXPR ( COMMA EXPR )* )? RBRACK
-void FuncCall():
+// OPERAND = ( CONSTVALUE | QUALIFIEDIDENTIFIER | FUNCCALL )
+void Operand():
 {}
 {
-    ( ( "class" "'" PackageIdentifier() "'" "." "static" "." )
-                           | ( ( <IDENTIFIER> "." )+ )
-                           )?
-                           <IDENTIFIER> "(" ( Expression() ( "," Expression() )* )? ")"
+    Literal() | FuncCallOrQualifiedIdentifier()
 }
 
-void LabeledStatement():
+// OPIDENTIFIER = IDENTIFIER | OPERATORNAMES
+void OpIdentifier():
 {}
 {
-  <IDENTIFIER> ":" Statement()
-}
-
-void Block():
-{}
-{
-  "{" ( BlockStatement() )* "}"
-}
-
-void BlockStatement():
-{}
-{
-  LOOKAHEAD( BasicType() <IDENTIFIER> )
-  VarDecl() ";"
-|
-  Statement()
+    <IDENTIFIER> | OperatorNames()
 }
 
 void EmptyStatement():
@@ -1819,18 +1823,10 @@ void EmptyStatement():
 void StatementExpression():
 {}
 {
-  PreIncrementExpression()
-|
-  PreDecrementExpression()
-|
-  PrimaryExpression()
-  [
-    "++"
-  |
-    "--"
-  |
-    AssignmentOperator() Expression()
-  ]
+    PreIncrementExpression() |
+    PreDecrementExpression() |
+    PrimaryExpression() ( "++" | "--" | AssignmentOperator()
+                          (LOOKAHEAD(3) Expression() | StatementExpression()) )?
 }
 
 void BreakStatement():
@@ -1843,11 +1839,11 @@ void ContinueStatement():
 {}
 {
     "continue"  ";"
-}*/
+}
 
 
 // -- Defaultproperties
-// DEFAULTPROPERTIESBLOCK   = defaultproperties LCBRACK ( DEFPROP )* RCBRACK
+// DEFAULTPROPERTIESBLOCK = defaultproperties LCBRACK ( DEFPROP )* RCBRACK
 void DefaultPropertiesBlock():
 {}
 {
@@ -1860,14 +1856,14 @@ void StructDefaultPropertiesBlock():
     "structdefaultproperties" "{" (DefProp())* "}"
 }
 
-// DEFPROP                  = DEFPROPIDENTIFIER EQUALS PRINTABLE
+// DEFPROP = DEFPROPIDENTIFIER EQUALS PRINTABLE
 void DefProp():
 {}
 {
     DefPropIdentifier() "=" Expression()
 }
 
-// DEFPROPIDENTIFIER        = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
+// DEFPROPIDENTIFIER = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
 void DefPropIdentifier():
 {}
 {
@@ -1903,7 +1899,7 @@ EQUALS                   = '='
 See above
 */
 
-// CONSTCLASSPARAMS         = abstract | native | nativereplication | safereplace |
+// CONSTCLASSPARAMS = abstract | native | nativereplication | safereplace |
 //                            perobjectconfig | transient | noexport | exportstructs |
 //                            // available but obsolete:
 //                            guid(INTVAL,INTVAL,INTVAL,INTVAL)
@@ -1928,14 +1924,14 @@ void ConstClassParams():
     "notplaceable"
 }
 
-// BOOLVAL                  = true | false
+// BOOLVAL = true | false
 void BooleanLiteral():
 {}
 {
     "true" | "false"
 }
 
-// VARPARAMS                = config | const | editconst | export | globalconfig | input |
+// VARPARAMS = config | const | editconst | export | globalconfig | input |
 //                            localized | native | private | protected | transient | travel |
 //                            // available from warfare and up:
 //                            editinline | deprecated | edfindable | editinlineuse
@@ -1962,7 +1958,7 @@ void VarParams():
     )
 }
 
-// STATEPARAMS              = auto | simulated
+// STATEPARAMS = auto | simulated
 // Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
 void StateParams():
 {}
@@ -1970,7 +1966,7 @@ void StateParams():
     "auto"
 }
 
-// CONSTFUNCPARAMS          = final | iterator | latent | simulated | singular | static |
+// CONSTFUNCPARAMS = final | iterator | latent | simulated | singular | static |
 //                            exec | protected | private
 // Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
 void ConstFuncParams():
@@ -1993,7 +1989,7 @@ void StateAndConstFuncParams():
     "simulated"
 }
 
-// BASICTYPE                = byte | int | float | string | bool | name | class
+// BASICTYPE = byte | int | float | string | bool | name | class
 // Moved "class" to BasicClassType() to prevent choice confilcts with ClassType
 void BasicType():
 {}
@@ -2020,48 +2016,53 @@ void BasicTypeOrClassType():
     BasicTypeSimple() | ( "class" (ClassTypeEnd())? )
 }
 
-// FUNCTIONTYPE             = function | event | delegate
+// FUNCTIONTYPE = function | event | delegate
 void FunctionType():
 {}
 {
   "function" | "event" | "delegate"
 }
 
-/*
-OPERATORNAMES            = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
-                           '-' | '=' | '+' | '|' | '\' | ':' | '<' | '>' | '/' |
-                           '?' | '`' |
-                           '<<' | '>>' | '!=' | '<=' | '>=' | '++' | '--' | '?-' | '+=' |
-                           '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
-                           '~=' | '@=' | '>>>'
-*/
+
+//OPERATORNAMES  = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
+//                 '-' | '=' | '+' | '|' | '\' | ':' | '<' | '>' | '/' |
+//                 '?' | '`' |
+//                 '<<' | '>>' | '!=' | '<=' | '>=' | '++' | '--' | '?-' | '+=' |
+//                 '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
+//                 '~=' | '@=' | '>>>'
+// http://udn.epicgames.com/Two/UnrealScriptReference.html#Built-in%20operators%20and%20their%20precedence
 void OperatorNames():
 {}
 {
-    "~" | "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" |
-    "-" | "=" | "+" | "|" | "\\" | ":" | "<" | ">" | "/" |
-    "?" | "`" |
-    "<<" | ">>" | "!=" | "<=" | ">=" | "++" | "--" | "?-" | "+=" |
-    "-=" | "*=" | "/=" | "&&" | "||" | "^^" | "==" | "**" |
-    "~=" | "@=" | ">>>"
+    "@" | "$" |
+    "||" | "&&" | "^^" |
+    "&" | "|" | "^" |
+    "!=" | "==" | "<" | GT() | "<=" | ">=" | "~=" |
+    "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() |
+    "+" | "-" | "%" | "*" | "/" |
+    "dot" | "cross" | "**" | "clockwisefrom" |
+    "~" | "!" | "#" | "\\" | ":" | "?" | "`" | "++" | "--" | "?-" |
+    AssignmentOperator()
+}
+
+void AssignmentOperator():
+{}
+{
+    "@=" | "$=" |
+    "&=" | "^=" | "|="
+    "<<=" | ">>=" | ">>>=" |
+    "+=" | "-=" | "%=" | "*=" | "/=" |
+    "="
 }
 
 // Java Rules
-/*void ResultType():
+void ResultType():
 {}
 {
   "void" | BasicType()
 }
 
-
-
-void AssignmentOperator():
-{}
-{
-  "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|="
-}
-
-void ConditionalExpression():
+/*void ConditionalExpression():
 {}
 {
   ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
@@ -2137,7 +2138,7 @@ void UnaryExpression():
   PreDecrementExpression()
 |
   UnaryExpressionNotPlusMinus()
-}
+}*/
 
 void PreIncrementExpression():
 {}
@@ -2151,7 +2152,7 @@ void PreDecrementExpression():
   "--" PrimaryExpression()
 }
 
-void UnaryExpressionNotPlusMinus():
+/*void UnaryExpressionNotPlusMinus():
 {}
 {
   ( "~" | "!" ) UnaryExpression()
@@ -2190,113 +2191,39 @@ void CastExpression():
   "(" BasicType() ")" UnaryExpression()
 |
   "(" BasicType() ")" UnaryExpressionNotPlusMinus()
-}
+}*/
 
 void PrimaryExpression():
 {}
 {
-  PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
-}
-
-void MemberSelector():
-{}
-{
-  "." TypeArguments() <IDENTIFIER>
-}
-
-void Type():
-{}
-{
-   LOOKAHEAD(2) ReferenceType()
- |
-   BasicType()
-}
-
-void ReferenceType():
-{}
-{
-   BasicType() ( LOOKAHEAD(2) "[" "]" )+
-  |
-   ( ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" )*
-}
-
-void ClassOrInterfaceType():
-{}
-{
-  <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ]
-  ( LOOKAHEAD(2) "." <IDENTIFIER> [ LOOKAHEAD(2) TypeArguments() ] )*
-}
-
-void TypeArguments():
-{}
-{
-   "<" TypeArgument() ( "," TypeArgument() )* ">"
-}
-
-void TypeArgument():
-{}
-{
-   ReferenceType()
- |
-   "?" [ WildcardBounds() ]
-}
-
-void WildcardBounds():
-{}
-{
-   "extends" ReferenceType()
- |
-   "super" ReferenceType()
+    //PrimaryPrefix() ( PrimarySuffix() )*
+    LOOKAHEAD(2) PrimaryPrefix() | FuncCallOrQualifiedIdentifier()
 }
 
 void PrimaryPrefix():
 {}
 {
-  Literal()
-|
-  "super" "." <IDENTIFIER>
-|
-  "(" Expression() ")"
-|
-  AllocationExpression()
-|
-  LOOKAHEAD( ResultType() "." "class" )
-  ResultType() "." "class"
-|
-  <IDENTIFIER>
+    Literal() |
+    "super" "." <IDENTIFIER> |
+    "(" Expression() ")" |
+    //<IDENTIFIER>
+    BasicCast()
 }
 
-void PrimarySuffix():
+void BasicCast():
 {}
 {
-  LOOKAHEAD("." "super" ".")
-  "." "super"
-|
-  LOOKAHEAD(2)
-  "." AllocationExpression()
-|
-  LOOKAHEAD(3)
-  MemberSelector()
-|
-  "[" Expression() "]"
-|
-  "." <IDENTIFIER>
-|
-  FunctionArgs()
+    BasicTypeOrClassType() "(" Expression() ")"
 }
 
-void AllocationExpression():
+/*void PrimarySuffix():
 {}
 {
-  LOOKAHEAD(2)
-  "new" BasicType() ArrayDimsAndInits()
-|
-  "new" ClassOrInterfaceType() [ TypeArguments() ]
-    (
-      ArrayDimsAndInits()
-    )
-}
+    "." <IDENTIFIER> |
+    FunctionArgs()
+}*/
 
+/*
 
 // The third LOOKAHEAD specification below is to parse to PrimarySuffix
 // if there is an expression between the "[...]".
@@ -2342,11 +2269,9 @@ void NoneLiteral():
   "none"
 }
 
-
-
 // We use productions to match >>>, >> and > so that we can keep the
 // type declaration syntax with generics clean
-/*void RUNSIGNEDSHIFT():
+void RUNSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
@@ -2363,4 +2288,12 @@ void RSIGNEDSHIFT():
   ">" ">"
   )
 }
-*/
+
+void GT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == GT} )
+  ">"
+  )
+}

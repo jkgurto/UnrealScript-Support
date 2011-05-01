@@ -117,6 +117,161 @@ replication
 
 }
 
+// Example of "for" loop.
+function ForExample()
+{
+   local int i;
+   log( "Demonstrating the for loop" );
+   for( i=0; i<4; i++ )
+   {
+      log( "The value of i is " $ i );
+   }
+   log( "Completed with i=" $ i);
+}
+
+// Example of "do" loop.
+function DoExample()
+{
+   local int i;
+   log( "Demonstrating the do loop" );
+   do
+   {
+      log( "The value of i is " $ i );
+      i = i + 1;
+   } until( i == 4 );
+   log( "Completed with i=" $ i);
+}
+
+// Example of "while" loop.
+function WhileExample()
+{
+   local int i;
+   log( "Demonstrating the while loop" );
+   while( i < 4 )
+   {
+
+      log( "The value of i is " $ i );
+      i = i + 1;
+   }
+   log( "Completed with i=" $ i);
+}
+
+function BreakExample()
+{
+   local int i;
+   log( "Demonstrating break" );
+   for( i=0; i<10; i++ )
+   {
+      if( i == 3 )
+         break;
+      log( "The value of i is " $ i );
+   }
+   log( "Completed with i=" $ i );
+}
+
+function ContinueExample()
+{
+   local int i;
+   log( "Demonstrating continue" );
+   for( i=0; i<10; i++ )
+   {
+      if( i == 2 )
+         continue;
+      log( "The value of i is " $ i );
+   }
+   log( "Completed with i=" $ i );
+}
+
+// Example of "goto".
+function GotoExample()
+{
+       log( "Starting GotoExample" );
+       goto Hither;
+    Yon:
+       log( "At Yon" );
+       goto Elsewhere;
+    Hither:
+       log( "At Hither" );
+       goto Yon;
+    Elsewhere:
+       log( "At Elsewhere" );
+}
+
+
+function IfElseExample() {
+    // Example of simple "if".
+    if( LightBrightness < 20 )
+       log( "My light is dim" );
+
+    // Example of "if-else".
+    if( LightBrightness < 20 )
+       log( "My light is dim" );
+    else
+       log( "My light is bright" );
+
+    // Example if "if-else if-else".
+    if( LightBrightness < 20 )
+       log( "My light is dim" );
+    else if( LightBrightness < 40 )
+       log( "My light is medium" );
+    else if( LightBrightness < 60 )
+       log( "My light is kinda bright" );
+    else
+       log( "My light is very bright" );
+
+    // Example if "if" with brackets.
+    if( LightType == LT_Steady )
+    {
+       log( "Light is steady" );
+    }
+    else
+    {
+       log( "Light is not steady" );
+    }
+
+}
+
+// Example of switch-case.
+function TestSwitch()
+{
+   // Executed one of the case statements below, based on
+   // the value in LightType.
+   switch( LightType )
+   {
+      case LT_None:
+         log( "There is no lighting" );
+         break;
+      case LT_Steady:
+         log( "There is steady lighting" );
+         break;
+      case LT_Backdrop:
+         log( "There is backdrop lighting" );
+         break;
+      default:
+         log( "There is dynamic" );
+         break;
+   }
+}
+
+
+// Example of switch-case.
+function TestSwitch2()
+{
+   switch( LightType )
+   {
+      case LT_None:
+         log( "There is no lighting" );
+         break;
+      case LT_Steady:   // will "fall though" to the LT_Backdrop case
+      case LT_Backdrop:
+         log( "There is lighting" );
+         break;
+      default:
+         log( "Something else" );
+         break;
+   }
+}
+
 function IterateThroughArray(array<string> SomeArray)
 {
     local string ArrayItem;
@@ -133,14 +288,11 @@ function IterateThroughArray(array<string> SomeArray)
 
 function TestShift() {
     if (a > b) ;
-    a >> b;
-    a >>> b;
-    a >>>> b;
+    c = a >> b;
+    c = a >>> b;
 
     if (a < b) ;
-    a << b;
-    a <<< b;
-    a <<<< b;
+    c = a << b;
 }
 
 function Test()
@@ -156,14 +308,18 @@ function Test()
 
 function Test()
 {
-   local int i;
-   local string s;
-   local vector v, q;
-   local rotation r;
+    local int i;
+    local string s;
+    local vector v, q;
+    local rotation r;
+    local actor a;
 
-   s = string(i);     // Convert integer i to a string, and assign it to s.
-   s = string(v);     // Convert vector v to a string, and assign it to s.
-   v = q + vector(r); // Convert rotation r to a vector, and add q.
+    s = string(i);     // Convert integer i to a string, and assign it to s.
+    s = string(v);     // Convert vector v to a string, and assign it to s.
+    v = q + vector(r); // Convert rotation r to a vector, and add q.
+
+    // casts the result of SomeFunctionCall() a class of type Actor (or subclasses of Actor)
+    a = class<actor>( SomeFunctionCall() );
 }
 
 event InitGame( string Options, out string ErrorMessage );
@@ -192,8 +348,8 @@ function TestActorConversions()
 function Destroyed()
 {
     // Remove from owner's inventory.
-    if( Pawn(Owner)!=None )
-        Pawn(Owner).DeleteInventory( Self );
+    //if( Pawn(Owner)!=None )
+        //Pawn(Owner).DeleteInventory( Self );
 }
 
 // Function to compute the size of a vector.
@@ -214,8 +370,8 @@ function int Factorial( int Number )
 // Called when something touches this actor.
 function Touch( actor Other )
 {
-   Log( "I was touched!")
-   Other.Message( "You touched me!" );
+   Log( "I was touched!");
+   //Other.Message( "You touched me!" );
 }
 
 function int DoSomething( int x )
@@ -240,12 +396,12 @@ function int DoSomethingElse()
 function VectorRange( vector V, out float Min, out float Max )
 {
    // Compute the minimum value.
-   if ( V.X<V.Y &amp;&amp; V.X<V.Z ) Min = V.X;
+   if ( V.X<V.Y && V.X<V.Z ) Min = V.X;
    else if( V.Y<V.Z ) Min = V.Y;
    else Min = V.Z;
 
    // Compute the maximum value.
-   if ( V.X>V.Y &amp;&amp; V.X>V.Z ) Max = V.X;
+   if ( V.X>V.Y && V.X>V.Z ) Max = V.X;
    else if( V.Y>V.Z ) Max = V.Y;
    else Max = V.Z;
 }
@@ -253,8 +409,8 @@ function VectorRange( vector V, out float Min, out float Max )
 function ResetToDefaults()
 {
    // Reset health, and stamina.
-   Health = Default.Health;
-   Stamina = Default.Stamina;
+   //Health = Default.Health;
+   //Stamina = Default.Stamina;
 }
 
 state MyState
