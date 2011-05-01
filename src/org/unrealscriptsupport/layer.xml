@@ -166,5 +166,14 @@
         </folder>
     </folder>
 
+    <folder name="Navigator">
+        <folder name="Panels">
+            <folder name="text">
+                <folder name="x-uc">
+                    <file name="org-unrealscriptsupport-navigator-UnrealScriptNavigatorPanel.instance"/>
+                </folder>
+            </folder>
+        </folder>
+    </folder>
 
 </filesystem>

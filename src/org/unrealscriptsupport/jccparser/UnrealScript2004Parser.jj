@@ -407,7 +407,6 @@ TOKEN :
 }
 
 /* IDENTIFIERS */
-
 TOKEN :
 {
   < IDENTIFIER: <LETTER> (<PART_LETTER>)* >
