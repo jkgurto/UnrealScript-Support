@@ -875,24 +875,98 @@ defaultproperties
 
     // Simple Types (Ints, Floats, Bools, Bytes):
     VarName=Value
+    VarName=1
+    VarName=2.0
+    VarName=true
+    VarName=class'SeqEvent_TakeDamage'
+    VarName=None
+    VarName='name'
+    VarName=ObjectClass'ObjectName'
 
     //Static Array:
+    ArrayProp(i)=Value1
     ArrayProp(0)=Value1
-    ArrayProp(1)=Value2
+    ArrayProp(1)=1
+    ArrayProp(2)=+2.0f
+    ArrayProp(3)=true
+    ArrayProp(4)=class'SeqEvent_TakeDamage'
+    ArrayProp(5)=None
+    ArrayProp(6)='name'
+    ArrayProp(7)=ObjectClass'ObjectName'
     // OR
-    ArrayProp[0]=Value1
-    ArrayProp[1]=Value2
+    ArrayProp[i]=Value1
+    ArrayProp[0]=Value2
+    ArrayProp[1]=1
+    ArrayProp[2]=+2.0f
+    ArrayProp[3]=true
+    ArrayProp[4]=class'SeqEvent_TakeDamage'
+    ArrayProp[5]=None
+    ArrayProp[6]='name'
+    ArrayProp[7]=ObjectClass'ObjectName'
 
     //Dynamic Arrays:
     ArrayProp=(Value1,Value2,Value3)
+    ArrayProp=(Value1,
+               1,
+               +2.0f,
+               true,
+               class'SeqEvent_TakeDamage',
+               None,
+               'name',
+               ObjectClass'ObjectName')
     //OR
     ArrayProp(0)=Value1
     ArrayProp(1)=Value2
     ArrayProp(2)=Value3
     //OR
     ArrayProp.Add(Value1)
-    ArrayProp.Add(Value2)
-    ArrayProp.Add(Value3)
+    ArrayProp.Add(1)
+    ArrayProp.Add(+2.0f)
+    ArrayProp.Add(true)
+    ArrayProp.Add(class'SeqEvent_TakeDamage')
+    ArrayProp.Add(None)
+    ArrayProp.Add('name')
+    ArrayProp.Add(ObjectClass'ObjectName')
+
+    // Structs (including Vectors):
+    StructProperty=(InnerStructPropertyA=Value1,InnerStructPropertyB=Value2)
+    StructProperty=(a=Value1,
+                    b=1,
+                    c=+2.0f,
+                    d=true,
+                    e=class'SeqEvent_TakeDamage',
+                    f=None,
+                    g='name',
+                    h=ObjectClass'ObjectName')
+    // OR
+    StructProperty={(
+                InnerStructPropertyA=Value1,
+                InnerStructPropertyB=Value2
+                )}
+    StructProperty={(
+                a=Value1,
+                b=1,
+                c=+2.0f,
+                d=true,
+                e=class'SeqEvent_TakeDamage',
+                f=None,
+                g='name',
+                h=ObjectClass'ObjectName'
+                )}
+
+    // Subobjects
+    Begin Object Class=ObjectClass Name=ObjectName
+        VarName=Value
+        e=Value
+        VarName=1
+        VarName=+2.0f
+        VarName=true
+        VarName=class'SeqEvent_TakeDamage'
+        VarName=None
+        VarName='name'
+        VarName=Obj
+    End Object
+    ObjectProperty=ObjectName
 
     // Names
     NameProp='Value'
@@ -901,18 +975,4 @@ defaultproperties
 
     // Objects
     ObjectProp=ObjectClass'ObjectName'
-
-    // Subobjects
-    Begin Object Class=ObjectClass Name=ObjectName
-        VarName=Value
-    End Object
-    ObjectProperty=ObjectName
-
-    // Structs (including Vectors):
-    StructProperty=(InnerStructPropertyA=Value1,InnerStructPropertyB=Value2)
-    // OR
-    StructProperty={(
-                InnerStructPropertyA=Value1,
-                InnerStructPropertyB=Value2
-                )}
 }

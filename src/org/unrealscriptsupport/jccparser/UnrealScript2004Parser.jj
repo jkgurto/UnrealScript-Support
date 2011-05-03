@@ -2121,33 +2121,80 @@ void DefProp():
 void DefProp2():
 {}
 {
-    DefPropIdentifier() ( "="
+    DefPropIdentifier()
 
-        ( DefPropValue() ) |
+    (LOOKAHEAD("=")
+        ( "="
 
-        ("{" "("
-            <IDENTIFIER> "=" DefPropValue() ("," <IDENTIFIER> "=" DefPropValue())*
-            ")" "}") |
+            (LOOKAHEAD("{" "(") DefPropStruct2() |
+            (LOOKAHEAD("(" <IDENTIFIER> "=") DefPropStruct1() |
+            (LOOKAHEAD("(" <IDENTIFIER>) DefPropArray1() |
+            DefPropValue()
+            )
+            )
+            )
+        ) |
 
-        ("("
-            <IDENTIFIER> "=" DefPropValue() ("," <IDENTIFIER> "=" DefPropValue())*
-            ")")
-    ) |
-
-    ("." <IDENTIFIER> "(" DefPropValue() ")")
+        DefPropArray3())
 }
 
 // DEFPROPIDENTIFIER = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
 void DefPropIdentifier():
 {}
 {
-    <IDENTIFIER> ( ("(" ArrayIndex() ")") | ("[" ArrayIndex() "]") )?
+    <IDENTIFIER> ( LOOKAHEAD(3)(("(" ArrayIndex() ")") | ("[" ArrayIndex() "]")) )?
 }
 
 void ArrayIndex():
 {}
 {
-    (<INTEGER_LITERAL> | <IDENTIFIER>)
+    (<IDENTIFIER> | <INTEGER_LITERAL>)
+}
+
+// Default properties block
+// Filling dynamic array type 1
+// ArrayProp=(Value1,Value2,Value3)
+void DefPropArray1():
+{}
+{
+    "("
+        DefPropValue() ("," DefPropValue())*
+    ")"
+}
+
+// ArrayProp(0)=Value1
+// See DefPropIdentifier()
+
+// ArrayProp.Add(Value1)
+void DefPropArray3():
+{}
+{
+    "." <IDENTIFIER> "(" DefPropValue() ")"
+}
+
+
+// StructProperty={(
+//                    InnerStructPropertyA=Value1,
+//                    InnerStructPropertyB=Value2
+//                    )}
+
+// Default properties block
+// Filling struct type 1
+// StructProperty=(InnerStructPropertyA=Value1,InnerStructPropertyB=Value2)
+void DefPropStruct1():
+{}
+{
+    "("
+        <IDENTIFIER> "=" DefPropValue() ("," <IDENTIFIER> "=" DefPropValue())*
+    ")"
+}
+
+void DefPropStruct2():
+{}
+{
+    "{" "("
+        <IDENTIFIER> "=" DefPropValue() ("," <IDENTIFIER> "=" DefPropValue())*
+    ")" "}"
 }
 
 void DefPropValue():
