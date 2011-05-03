@@ -245,6 +245,7 @@ TOKEN :
   < ABSTRACT: "abstract" >
 | < ARRAY: "array" >
 | < AUTO: "auto" >
+| < BEGIN: "begin" >
 | < BOOLEAN: "bool" >
 | < BREAK: "break" >
 | < BYTE: "byte" >
@@ -272,6 +273,7 @@ TOKEN :
 | < EDITINLINENEW: "editinlinenew" >
 | < EDITINLINEUSE: "editinlineuse" >
 | < ELSE: "else" >
+| < END: "end" >
 | < ENUM: "enum" >
 | < EVENT: "event" >
 | < EXEC: "exec" >
@@ -284,6 +286,7 @@ TOKEN :
 | < FOR: "for" >
 | < FOREACH: "foreach" >
 | < FUNCTION: "function" >
+| < GLOBAL: "global" >
 | < GLOBALCONFIG: "globalconfig" >
 | < GOTO: "goto" >
 | < GUID: "guid" >
@@ -306,6 +309,7 @@ TOKEN :
 | < NOEXPORT: "noexport">
 | < NONE: "none" >
 | < NOTPLACEABLE: "notplaceable">
+| < OBJECT: "object">
 | < OPERATOR: "operator">
 | < OPTIONAL: "optional">
 | < OUT: "out">
@@ -690,7 +694,7 @@ TOKEN :
       [  // all chars for which Character.isIdentifierPart is true
          "\u0000"-"\u0008",
          "\u000e"-"\u001b",
-         "$",
+         //"$",
          "0"-"9",
          "A"-"Z",
          "_",
@@ -1208,7 +1212,7 @@ void ClassParams():
 void PackageIdentifier():
 {}
 {
-    <IDENTIFIER> PackageIdentifierEnd()
+    (<IDENTIFIER> | "object") PackageIdentifierEnd()
 }
 
 // Workaround for choice conflicts
@@ -1216,7 +1220,13 @@ void PackageIdentifier():
 void PackageIdentifierEnd():
 {}
 {
-    ("." <IDENTIFIER>)?
+    ("." (<IDENTIFIER> | "object"))?
+}
+
+void ClassIdentifierStart():
+{}
+{
+    "class" <NAME_LITERAL> "."
 }
 
 // QUALIFIEDIDENTIFIER = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT default DOT IDENTIFIER )
@@ -1225,7 +1235,7 @@ void PackageIdentifierEnd():
 void QualifiedIdentifier():
 {}
 {
-    (QualifiedIdentifierStart())? <IDENTIFIER> ("."  <IDENTIFIER>)*
+    (ClassIdentifierStart() QualifiedIdentifierStart())? <IDENTIFIER> ("."  <IDENTIFIER>)*
 }
 
 void QualifiedIdentifierStart():
@@ -1233,7 +1243,7 @@ void QualifiedIdentifierStart():
 {
     /// @todo FIXME
     //( "class" "'" PackageIdentifier() "'" "." "default" "." <IDENTIFIER> ) |
-    "class" <NAME_LITERAL> "." "default" "." 
+    ("default" | "const") "."
 }
 
 // FUNCCALL = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT static DOT )
@@ -1243,7 +1253,7 @@ void QualifiedIdentifierStart():
 void FuncCall():
 {}
 {   
-    (FuncCallStart())? <IDENTIFIER> ("."  <IDENTIFIER>)* FuncCallEnd()
+    (ClassIdentifierStart() FuncCallStart())? <IDENTIFIER> ("."  <IDENTIFIER>)* FuncCallEnd()
 }
 
 void FuncCallStart():
@@ -1251,7 +1261,7 @@ void FuncCallStart():
 {
     /// @todo FIXME
     //( ( "class" "'" PackageIdentifier() "'" "." "static" "." )
-    "class" <NAME_LITERAL> "." "static" "."
+    "static" "."
 }
 
 void FuncCallEnd():
@@ -1263,9 +1273,9 @@ void FuncCallEnd():
 void FuncCallOrQualifiedIdentifier():
 {}
 {
-    ( ("class" <NAME_LITERAL> ".")
-        ( ("static" "." <IDENTIFIER> ("."  <IDENTIFIER>)* FuncCallEnd()) |
-          ("default" "." <IDENTIFIER> ("."  <IDENTIFIER>)*) )
+    ( ClassIdentifierStart()
+        ( (FuncCallStart() <IDENTIFIER> ("."  <IDENTIFIER>)* FuncCallEnd()) |
+          (QualifiedIdentifierStart() <IDENTIFIER> ("." <IDENTIFIER>)*) )
     ) |
     (<IDENTIFIER> ("."  <IDENTIFIER>)* (FuncCallEnd())? )
 
@@ -1277,9 +1287,14 @@ void FuncCallOrQualifiedIdentifier():
 void IdentifierList():
 {}
 {
-    ( <IDENTIFIER> ( "," <IDENTIFIER> )* )
+    <IDENTIFIER> ( "," <IDENTIFIER> )*
 }
 
+void FuncCallAndIdentifierList():
+{}
+{
+    FuncCallOrQualifiedIdentifier() ("," FuncCallOrQualifiedIdentifier())*
+}
 
 // STRINGVAL = DQUOTE PRINTABLE DQUOTE
 // INTVAL = ( DIGIT+ | ( '0x' ( HEXDIGIT )+ ) )
@@ -1426,14 +1441,14 @@ void ReplicationBlock():
     "replication" "{" (ReplicationBody())* "}"
 }
 
-
+// "reliable" and "unreliable" not required in UE3
 // REPLICATIONBODY = ( reliable | unreliable ) if LBRACK EXPR RBRACK
 //                            IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
 void ReplicationBody():
 {}
 {
-    ("reliable" | "unreliable") "if" "(" Expression() ")"
-                           <IDENTIFIER> ("," <IDENTIFIER>)* ";"
+    ("reliable" | "unreliable")? "if" "(" Expression() ")"
+                           FuncCallAndIdentifierList() ";"
 }
 
 // Body parts
@@ -1486,48 +1501,62 @@ void FunctionDecl():
 }
 
 // Moved (FunctionParams())* here to prevent choice conflicts
+// FUNCTIONPARAMS = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
+// Native functions can have const after them
+// native function int doSomething(string myData) const;
 void NormalOrOperatorFunc():
 {}
 {
-    (FunctionParams())* ( NormalFuncEnd() | OperatorFuncEnd() )
+    LOOKAHEAD(8, (ConstFuncParams())* "native")
+    ( NativeFuncParams() FuncEnd() ("const")? FunctionBody() ) |
+    ( (ConstFuncParams())* FuncEnd() FunctionBody() )
+}
+
+void NativeFuncParams():
+{}
+{
+    (ConstFuncParams())*
+    "native" ("(" <INTEGER_LITERAL> ")")?
+    (ConstFuncParams())*
+}
+
+void FuncEnd():
+{}
+{
+    NormalFuncEnd() | OperatorFuncEnd()
 }
 
 // NORMALFUNC = ( FUNCTIONPARAMS )* FUNCTIONTYPE ( LOCALTYPE )?
-//                            IDENTIFIER LBRACK ( FUNCTIONARGS ( COMMA FUNCTIONARGS )* )? RBRACK
-//                            FUNCTIONBODY
+//              IDENTIFIER
+//              LBRACK ( FUNCTIONARGS ( COMMA FUNCTIONARGS )* )? RBRACK
+//              FUNCTIONBODY
 void NormalFuncEnd():
 {}
 {
      FunctionType()
-        LocalTypeThenIdentifier() "(" ( FunctionArgs() ("," FunctionArgs())* )? ")"
-        FunctionBody()
+        ReturnTypeThenIdentifier() "(" ( FunctionArgs() ("," FunctionArgs())* )? ")"
 }
 
 // Prevent choice conflict
 // If is a PackageIdentifier() in LocalType(), and then <IDENTIFIER>
 // Instead of:
 // ( LocalType() )? <IDENTIFIER>
-void LocalTypeThenIdentifier():
+// LocalTypeThenIdentifier
+void ReturnTypeThenIdentifier():
 {}
 {
     LOOKAHEAD(2)
     ( PackageIdentifierOrArrayDecl() <IDENTIFIER> ) |
     ( LocalTypeEnd() <IDENTIFIER> ) |
+    ( "void" <IDENTIFIER> ) |
     ( <IDENTIFIER> )
-}
-
-// FUNCTIONPARAMS = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
-void FunctionParams():
-{}
-{
-    ( ConstFuncParams() | ( "native" ("(" <INTEGER_LITERAL> ")")? ) )
 }
 
 // OPERATORFUNC = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
 void OperatorFuncEnd():
 {}
 {
-    OperatorType() FunctionBody()
+    OperatorType()
 }
 
 // OPERATORTYPE = ( BINARYOPERATOR | UNARYOPERATOR )
@@ -1543,7 +1572,7 @@ void OperatorType():
 void BinaryOperator():
 {}
 {
-    "operator" "(" <INTEGER_LITERAL> ")" PackageIdentifier() OpIdentifier()
+    "operator" "(" (<INTEGER_LITERAL> | <IDENTIFIER>) ")" (PackageIdentifier() | LocalTypeEnd()) OpIdentifier()
                            "(" FunctionArgs() "," FunctionArgs() ")"
 }
 
@@ -1553,15 +1582,26 @@ void BinaryOperator():
 void UnaryOperator():
 {}
 {
-    ( "preoperator" | "postoperator" ) PackageIdentifier() OpIdentifier()
+    ( "preoperator" | "postoperator" ) (PackageIdentifier() | LocalTypeEnd()) OpIdentifier()
                            "(" FunctionArgs() ")"
 }
 
 // FUNCTIONARGS = ( optional | out | coerce )? FUNCTIONARGTYPE IDENTIFIER
+// "optional" can have default value in UE3
+// eg.
+// function myFunc(optional int x = -1) {};
 void FunctionArgs():
 {}
 {
-    ("optional" | "out" | "coerce")? FunctionArgType() <IDENTIFIER>
+    //("optional" | "out" | "coerce")? FunctionArgType() <IDENTIFIER>
+    ( "optional" FunctionArgTypeAndName() ("=" UnaryExpression())? ) |
+    ( ("out" | "coerce")? FunctionArgTypeAndName() )
+}
+
+void FunctionArgTypeAndName():
+{}
+{
+    FunctionArgType() <IDENTIFIER>
 }
 
 // FUNCTIONARGTYPE = BASICTYPE | PACKAGEIDENTIFIER
@@ -1620,7 +1660,7 @@ void CodeLine():
     //   | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
     try {
         CodeBlock() |
-        (LOOKAHEAD(2) Statement() | LOOKAHEAD(2)(StatementExpression() ";") |
+        (LOOKAHEAD(2)(Expression() ";") | LOOKAHEAD(2) Statement() |
                       LabelStatement() ) |
         EmptyStatement() |
         SwitchStatement() |
@@ -1731,7 +1771,7 @@ void GotoStatement():
 void LabelStatement():
 {}
 {
-    <IDENTIFIER> ":" (LOOKAHEAD(1) CodeLine())*
+    (<IDENTIFIER> | "begin" | "end") ":" (LOOKAHEAD(1) CodeLine())*
 }
 
 // FOREACHLOOP = foreach FUNCCALL CODEBLOCK
@@ -1783,48 +1823,260 @@ void ForUpdate():
 void Expression():
 {}
 {
-    Operand() ( LOOKAHEAD(2) OpIdentifier() Operand() )*
+    //ConditionalExpression() (LOOKAHEAD(2) AssignmentOperator() Expression())?
+    //Operand() ( LOOKAHEAD(2) OpIdentifier() Operand() )*
+    //ConditionalExpression()
+    LOOKAHEAD(3) NewExpression() | BinaryExpression()
 }
 
-/*void Expression():
+void TernaryExpression():
 {}
 {
-  ConditionalExpression()
-  [
-    LOOKAHEAD(2)
-    AssignmentOperator() Expression()
-  ]
+    ConditionalExpression()
+}
+
+void ConditionalExpression():
+{}
+{
+    BinaryExpression() ( "?" BinaryExpression() ":" BinaryExpression() )?
+}
+
+/*void BinaryExpression():
+{}
+{
+    UnaryExpression() (LOOKAHEAD(2) OperatorNames() UnaryExpressionNotPlusMinus())*
 }*/
 
-// OPERAND = ( CONSTVALUE | QUALIFIEDIDENTIFIER | FUNCCALL )
-void Operand():
+void BinaryExpression():
 {}
 {
-    Literal() | FuncCallOrQualifiedIdentifier()
+    exp2() (OperatorNames2() exp2())*
 }
+
+void exp2():
+{}
+{
+    ( "+" | "-" | "++" | "--" | "~" | "!")?
+    exp1()
+    ("++" | "--")?
+}
+
+void exp1():
+{}
+{
+    "(" Expression() ")" |
+    (LOOKAHEAD(3) CastExpression() | LOOKAHEAD(3) FuncCallOrIdentifierSpecifier() | Literal())
+}
+
+// new operator in UE3
+// ObjectVar = new[(InOuter, InName, InFlags)] <class'InClass'>[(InTemplate)];
+void NewExpression():
+{}
+{
+    <IDENTIFIER> "="
+    "new" (
+        ( ( "(" (<IDENTIFIER> | "none") ("," <NAME_LITERAL> ("," (<INTEGER_LITERAL> | <IDENTIFIER>))? )? ")")?
+        "class" <NAME_LITERAL> ("(" <IDENTIFIER> (<NAME_LITERAL>)? ")")? ) |
+
+        <IDENTIFIER>
+    )
+}
+
 
 // OPIDENTIFIER = IDENTIFIER | OPERATORNAMES
 void OpIdentifier():
 {}
 {
-    <IDENTIFIER> | OperatorNames()
+    OperatorNames() | <IDENTIFIER>
+}
+
+void OpIdentifier2():
+{}
+{
+    OperatorNames2() | <IDENTIFIER>
+}
+
+//OPERATORNAMES  = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
+//                 '-' | '=' | '+' | '|' | '\' | ':' | '<' | '>' | '/' |
+//                 '?' | '`' |
+//                 '<<' | '>>' | '!=' | '<=' | '>=' | '++' | '--' | '?-' | '+=' |
+//                 '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
+//                 '~=' | '@=' | '>>>'
+// http://udn.epicgames.com/Two/UnrealScriptReference.html#Built-in%20operators%20and%20their%20precedence
+void OperatorNames():
+{}
+{
+    ":" | "?" |
+
+    "@" | "$" |
+    "||" | "&&" | "^^" |
+    "&" | "|" | "^" |
+    "!=" | "==" | "<" | GT() | "<=" | ">=" | "~=" |
+    "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() |
+    "+" | "-" |
+    "%" | "*" | "/" |
+    "dot" | "cross" | "**" | "clockwisefrom" |
+    "#" | "\\" | "`" | "?-" |
+
+    "@=" | "$=" |
+    "&=" | "^=" | "|="
+    "<<=" | ">>=" | ">>>=" |
+    "+=" | "-=" | "%=" | "*=" | "/=" |
+    "=" |
+
+    "++" | "--" |
+    "~" | "!"
+}
+
+void OperatorNames2():
+{}
+{
+    ":" | "?" |
+
+    "@" | "$" |
+    "||" | "&&" | "^^" |
+    "&" | "|" | "^" |
+    "!=" | "==" | "<" | GT() | "<=" | ">=" | "~=" |
+    "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() |
+    "+" | "-" |
+    "%" | "*" | "/" |
+    "dot" | "cross" | "**" | "clockwisefrom" |
+    "#" | "\\" | "`" | "?-" |
+
+    "@=" | "$=" |
+    "&=" | "^=" | "|="
+    "<<=" | ">>=" | ">>>=" |
+    "+=" | "-=" | "%=" | "*=" | "/=" |
+    "=" /*|
+
+    "++" | "--" |
+    "~" | "!"*/
+}
+
+void TernaryOperatorNames():
+{}
+{
+    ":" | "?"
+}
+
+void BinaryOperatorNames():
+{}
+{
+    "@" | "$" |
+    "||" | "&&" | "^^" |
+    "&" | "|" | "^" |
+    "!=" | "==" | "<" | GT() | "<=" | ">=" | "~=" |
+    "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() |
+    "+" | "-" |
+    "%" | "*" | "/" |
+    "dot" | "cross" | "**" | "clockwisefrom" |
+    "#" | "\\" | "`" | "?-" |
+    AssignmentOperatorNames()
+}
+
+void AssignmentOperatorNames():
+{}
+{
+    "@=" | "$=" |
+    "&=" | "^=" | "|="
+    "<<=" | ">>=" | ">>>=" |
+    "+=" | "-=" | "%=" | "*=" | "/=" |
+    "="
+}
+
+void UnaryOperatorNames():
+{}
+{
+    "++" | "--" |
+    "+" | "-" |
+    "~" | "!"
+}
+
+void UnaryExpression():
+{}
+{
+    PreIncrementExpression() |
+    PreDecrementExpression() |
+    ( "+" | "-" ) PrimaryExpression() |
+    UnaryExpressionNotPlusMinus()
+}
+
+void PreIncrementExpression():
+{}
+{
+    "++" PrimaryExpression()
+}
+
+void PreDecrementExpression():
+{}
+{
+    "--" PrimaryExpression()
+}
+
+void UnaryExpressionNotPlusMinus():
+{}
+{
+    ( "~" | "!" ) PrimaryExpression() |
+    (LOOKAHEAD(2) CastExpression() | PostfixExpression())
+}
+
+void CastExpression():
+{}
+{
+    BasicTypeOrClassType() "(" PrimaryPrefix() ")"
+}
+
+void PostfixExpression():
+{}
+{
+    PrimaryExpression() ("++" | "--")?
+}
+
+// OPERAND = ( CONSTVALUE | QUALIFIEDIDENTIFIER | FUNCCALL )
+void PrimaryExpression():
+{}
+{
+    //PrimaryPrefix() ( PrimarySuffix() )*
+    PrimaryPrefix()
+}
+
+void PrimaryPrefix():
+{}
+{
+    "(" Expression() ")" |
+    (LOOKAHEAD(3) Literal() | FuncCallOrIdentifierSpecifier())
+}
+
+/*void PrimarySuffix():
+{}
+{
+    "." <IDENTIFIER> |
+    FunctionArgs()
+}*/
+
+// Function Calling Specifiers
+// Super(Pawn).Touch( Other );
+// Global.Touch( Other );
+// Super.Touch( Other );
+void FuncCallOrIdentifierSpecifier():
+{}
+{
+    ("super" ("(" <IDENTIFIER> ")")? "." | "global" ".")?
+    FuncCallOrQualifiedIdentifier()
 }
 
 void EmptyStatement():
 {}
 {
-  ";"
+    ";"
 }
 
-// The last expansion of this production accepts more than the legal
-// Java expansions for StatementExpression.  This expansion does not
-// use PostfixExpression for performance reasons.
 void StatementExpression():
 {}
 {
     PreIncrementExpression() |
     PreDecrementExpression() |
-    PrimaryExpression() ( "++" | "--" | AssignmentOperator()
+    PrimaryExpression() ( "++" | "--" | AssignmentOperatorNames()
                           (LOOKAHEAD(3) Expression() | StatementExpression()) )?
 }
 
@@ -1859,14 +2111,49 @@ void StructDefaultPropertiesBlock():
 void DefProp():
 {}
 {
-    DefPropIdentifier() "=" Expression()
+    ("begin" "object" "class" "=" <IDENTIFIER> "name" "=" <IDENTIFIER>
+    (DefProp2())*
+    "end" "object") |
+
+    DefProp2()
+}
+
+void DefProp2():
+{}
+{
+    DefPropIdentifier() ( "="
+
+        ( DefPropValue() ) |
+
+        ("{" "("
+            <IDENTIFIER> "=" DefPropValue() ("," <IDENTIFIER> "=" DefPropValue())*
+            ")" "}") |
+
+        ("("
+            <IDENTIFIER> "=" DefPropValue() ("," <IDENTIFIER> "=" DefPropValue())*
+            ")")
+    ) |
+
+    ("." <IDENTIFIER> "(" DefPropValue() ")")
 }
 
 // DEFPROPIDENTIFIER = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
 void DefPropIdentifier():
 {}
 {
-    <IDENTIFIER> ( ("(" <INTEGER_LITERAL> ")") | ("[" <INTEGER_LITERAL> "]") )?
+    <IDENTIFIER> ( ("(" ArrayIndex() ")") | ("[" ArrayIndex() "]") )?
+}
+
+void ArrayIndex():
+{}
+{
+    (<INTEGER_LITERAL> | <IDENTIFIER>)
+}
+
+void DefPropValue():
+{}
+{
+    (LOOKAHEAD(3)(<IDENTIFIER> <NAME_LITERAL>) | Expression())
 }
 
 /*
@@ -1931,13 +2218,12 @@ void BooleanLiteral():
 }
 
 // VARPARAMS = config | const | editconst | export | globalconfig | input |
-//                            localized | native | private | protected | transient | travel |
-//                            // available from warfare and up:
-//                            editinline | deprecated | edfindable | editinlineuse
+//             localized | native | private | protected | transient | travel |
+//             // available from warfare and up:
+//             editinline | deprecated | edfindable | editinlineuse
 void VarParams():
 {}
 {
-    (
     "config" |
     "const" |
     "edfindable" |
@@ -1954,7 +2240,6 @@ void VarParams():
     "protected" |
     "transient" |
     "travel"
-    )
 }
 
 // STATEPARAMS = auto | simulated
@@ -1966,7 +2251,7 @@ void StateParams():
 }
 
 // CONSTFUNCPARAMS = final | iterator | latent | simulated | singular | static |
-//                            exec | protected | private
+//                   exec | protected | private
 // Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
 void ConstFuncParams():
 {}
@@ -1999,7 +2284,7 @@ void BasicType():
 void BasicTypeSimple():
 {}
 {
-    "bool" | "byte" | "float" | "int" | "string" | "name"
+    "bool" | "byte" | "float" | "int" | "string" | "name" | "object"
 }
 
 void BasicClassType():
@@ -2012,7 +2297,7 @@ void BasicClassType():
 void BasicTypeOrClassType():
 {}
 {
-    BasicTypeSimple() | ( "class" (ClassTypeEnd())? )
+    BasicTypeSimple() | ( "class" ( LOOKAHEAD(2) ClassTypeEnd())? )
 }
 
 // FUNCTIONTYPE = function | event | delegate
@@ -2022,232 +2307,11 @@ void FunctionType():
   "function" | "event" | "delegate"
 }
 
-
-//OPERATORNAMES  = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
-//                 '-' | '=' | '+' | '|' | '\' | ':' | '<' | '>' | '/' |
-//                 '?' | '`' |
-//                 '<<' | '>>' | '!=' | '<=' | '>=' | '++' | '--' | '?-' | '+=' |
-//                 '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
-//                 '~=' | '@=' | '>>>'
-// http://udn.epicgames.com/Two/UnrealScriptReference.html#Built-in%20operators%20and%20their%20precedence
-void OperatorNames():
-{}
-{
-    "@" | "$" |
-    "||" | "&&" | "^^" |
-    "&" | "|" | "^" |
-    "!=" | "==" | "<" | GT() | "<=" | ">=" | "~=" |
-    "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() |
-    "+" | "-" | "%" | "*" | "/" |
-    "dot" | "cross" | "**" | "clockwisefrom" |
-    "~" | "!" | "#" | "\\" | ":" | "?" | "`" | "++" | "--" | "?-" |
-    AssignmentOperator()
-}
-
-void AssignmentOperator():
-{}
-{
-    "@=" | "$=" |
-    "&=" | "^=" | "|="
-    "<<=" | ">>=" | ">>>=" |
-    "+=" | "-=" | "%=" | "*=" | "/=" |
-    "="
-}
-
-// Java Rules
 void ResultType():
 {}
 {
   "void" | BasicType()
 }
-
-/*void ConditionalExpression():
-{}
-{
-  ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
-}
-
-void ConditionalOrExpression():
-{}
-{
-  ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
-}
-
-void ConditionalAndExpression():
-{}
-{
-  InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
-}
-
-void InclusiveOrExpression():
-{}
-{
-  ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
-}
-
-void ExclusiveOrExpression():
-{}
-{
-  AndExpression() ( "^" AndExpression() )*
-}
-
-void AndExpression():
-{}
-{
-  EqualityExpression() ( "&" EqualityExpression() )*
-}
-
-void EqualityExpression():
-{}
-{
-  RelationalExpression() ( ( "==" | "!=" ) RelationalExpression() )*
-}
-
-void RelationalExpression():
-{}
-{
-  ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression() )*
-}
-
-void ShiftExpression():
-{}
-{
-  AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
-}
-
-void AdditiveExpression():
-{}
-{
-  MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
-}
-
-void MultiplicativeExpression():
-{}
-{
-  UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
-}
-
-void UnaryExpression():
-{}
-{
-  ( "+" | "-" ) UnaryExpression()
-|
-  PreIncrementExpression()
-|
-  PreDecrementExpression()
-|
-  UnaryExpressionNotPlusMinus()
-}*/
-
-void PreIncrementExpression():
-{}
-{
-  "++" PrimaryExpression()
-}
-
-void PreDecrementExpression():
-{}
-{
-  "--" PrimaryExpression()
-}
-
-/*void UnaryExpressionNotPlusMinus():
-{}
-{
-  ( "~" | "!" ) UnaryExpression()
-|
-  LOOKAHEAD( CastLookahead() )
-  CastExpression()
-|
-  PostfixExpression()
-}
-
-// This production is to determine lookahead only.  The LOOKAHEAD specifications
-// below are not used, but they are there just to indicate that we know about
-// this.
-void CastLookahead():
-{}
-{
-  LOOKAHEAD(2)
-  "(" BasicType()
-|
-  LOOKAHEAD("(" BasicType() "[")
-  "(" BasicType() "[" "]"
-|
-  "(" BasicType() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "super" | "new" | Literal() )
-}
-
-void PostfixExpression():
-{}
-{
-  PrimaryExpression() [ "++" | "--" ]
-}
-
-void CastExpression():
-{}
-{
-  LOOKAHEAD("(" BasicType())
-  "(" BasicType() ")" UnaryExpression()
-|
-  "(" BasicType() ")" UnaryExpressionNotPlusMinus()
-}*/
-
-void PrimaryExpression():
-{}
-{
-    //PrimaryPrefix() ( PrimarySuffix() )*
-    LOOKAHEAD(2) PrimaryPrefix() | FuncCallOrQualifiedIdentifier()
-}
-
-void PrimaryPrefix():
-{}
-{
-    Literal() |
-    "super" "." <IDENTIFIER> |
-    "(" Expression() ")" |
-    //<IDENTIFIER>
-    BasicCast()
-}
-
-void BasicCast():
-{}
-{
-    BasicTypeOrClassType() "(" Expression() ")"
-}
-
-/*void PrimarySuffix():
-{}
-{
-    "." <IDENTIFIER> |
-    FunctionArgs()
-}*/
-
-/*
-
-// The third LOOKAHEAD specification below is to parse to PrimarySuffix
-// if there is an expression between the "[...]".
-void ArrayDimsAndInits():
-{}
-{
-  LOOKAHEAD(2)
-  ( LOOKAHEAD(2) "[" Expression() "]" )+ ( LOOKAHEAD(2) "[" "]" )*
-|
-  ( "[" "]" )+ ArrayInitializer()
-}
-
-void VariableInitializer():
-{}
-{
-  ArrayInitializer()
-|
-  Expression()
-}
-
-void ArrayInitializer():
-{}
-{
-  "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
-}*/
 
 void Literal():
 {}
@@ -2255,6 +2319,7 @@ void Literal():
   <INTEGER_LITERAL> |
   <FLOATING_POINT_LITERAL> |
   <NAME_LITERAL> |
+  ("class" <NAME_LITERAL>) |
   <STRING_LITERAL> |
   BooleanLiteral() |
   NoneLiteral()
@@ -2273,8 +2338,10 @@ void NoneLiteral():
 void RUNSIGNEDSHIFT():
 {}
 {
-  ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
+  ( LOOKAHEAD({
+        ( getToken(1).kind == GT ) &&
+        ( ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT )
+    })
    ">" ">" ">"
   )
 }
@@ -2282,8 +2349,10 @@ void RUNSIGNEDSHIFT():
 void RSIGNEDSHIFT():
 {}
 {
-  ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
+  ( LOOKAHEAD({
+        ( getToken(1).kind == GT ) &&
+        ( ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT)
+    })
   ">" ">"
   )
 }
@@ -2291,8 +2360,10 @@ void RSIGNEDSHIFT():
 void GT():
 {}
 {
-  ( LOOKAHEAD({ getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).realKind == GT} )
+  ( LOOKAHEAD({
+        ( getToken(1).kind == GT ) &&
+        ( ((Token.GTToken)getToken(1)).realKind == GT )
+    })
   ">"
   )
 }

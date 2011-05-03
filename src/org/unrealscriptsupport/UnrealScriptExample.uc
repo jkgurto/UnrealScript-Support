@@ -73,7 +73,7 @@ function Tick( float DeltaTime )
    }
    if( !bDelayFullOn )
       LightBrightness = Alpha * InitialBrightness;
-   else if( (Direction>0 &amp;amp;amp;&amp;amp;amp; Alpha!=1) || Alpha==0 )
+   else if( (Direction>0 && Alpha!=1) || Alpha==0 )
       LightBrightness = 0;
    else
       LightBrightness = InitialBrightness;

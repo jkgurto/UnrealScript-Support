@@ -13,24 +13,27 @@ public class Token implements java.io.Serializable {
      * class changes.
      */
     private static final long serialVersionUID = 1L;
+    
     /**
      * An integer that describes the kind of this token.  This numbering
      * system is determined by JavaCCParser, and a table of these numbers is
      * stored in the file ...Constants.java.
      */
-    public int kind;
+    public int kind = -1;
     /** The line number of the first character of this Token. */
-    public int beginLine;
+    public int beginLine = 0;
     /** The column number of the first character of this Token. */
-    public int beginColumn;
+    public int beginColumn = 0;
     /** The line number of the last character of this Token. */
-    public int endLine;
+    public int endLine = 0;
     /** The column number of the last character of this Token. */
-    public int endColumn;
+    public int endColumn = 0;
+
     /**
      * The string image of the token.
      */
-    public String image;
+    public String image = null;
+
     /**
      * A reference to the next regular (non-special) token from the input
      * stream.  If this is the last token from the input stream, or if the
@@ -39,7 +42,8 @@ public class Token implements java.io.Serializable {
      * token.  Otherwise, see below for a description of the contents of
      * this field.
      */
-    public Token next;
+    public Token next = null;
+
     /**
      * This field is used to access special tokens that occur prior to this
      * token, but after the immediately preceding regular (non-special) token.
@@ -52,7 +56,31 @@ public class Token implements java.io.Serializable {
      * immediately follow it (without an intervening regular token).  If there
      * is no such token, this field is null.
      */
-    public Token specialToken;
+    public Token specialToken = null;
+
+    
+    /**
+     * No-argument constructor
+     */
+    public Token() {
+    }
+
+    // Constructors are private
+    // Can only create by using newToken()
+    /**
+     * Constructs a new token for the specified Image.
+     */
+    private Token(int kind) {
+        this(kind, null);
+    }
+
+    /**
+     * Constructs a new token for the specified Image and Kind.
+     */
+    private Token(int kind, String image) {
+        this.kind = kind;
+        this.image = image;
+    }
 
     /**
      * An optional attribute value of the Token.
@@ -64,27 +92,6 @@ public class Token implements java.io.Serializable {
      */
     public Object getValue() {
         return null;
-    }
-
-    /**
-     * No-argument constructor
-     */
-    public Token() {
-    }
-
-    /**
-     * Constructs a new token for the specified Image.
-     */
-    public Token(int kind) {
-        this(kind, null);
-    }
-
-    /**
-     * Constructs a new token for the specified Image and Kind.
-     */
-    public Token(int kind, String image) {
-        this.kind = kind;
-        this.image = image;
     }
 
     /**
@@ -108,25 +115,29 @@ public class Token implements java.io.Serializable {
      * variable to the appropriate type and use it in your lexical actions.
      */
     public static Token newToken(int ofKind, String image) {
-        switch (ofKind) {
-            case UnrealScriptParserConstants.RUNSIGNEDSHIFT:
-                return new GTToken(ofKind, image, UnrealScriptParserConstants.RUNSIGNEDSHIFT);
-            case UnrealScriptParserConstants.RSIGNEDSHIFT:
-                return new GTToken(ofKind, image, UnrealScriptParserConstants.RSIGNEDSHIFT);
-            case UnrealScriptParserConstants.GT:
-                return new GTToken(ofKind, image, UnrealScriptParserConstants.GT);
-
-            default:
-                return new Token(ofKind, image);
+        
+        if (ofKind == UnrealScriptParserConstants.RUNSIGNEDSHIFT) {
+            return new GTToken(image,
+                               ofKind);
         }
+        else if (ofKind == UnrealScriptParserConstants.RSIGNEDSHIFT) {
+            return new GTToken(image,
+                               ofKind);
+        }
+        else if (ofKind == UnrealScriptParserConstants.GT) {
+            return new GTToken(image,
+                               ofKind);
+        }
+        
+        return new Token(ofKind, image);
     }
 
     public static class GTToken extends Token {
 
         int realKind;
 
-        public GTToken(int kind, String image, int realKind) {
-            super(kind, image);
+        public GTToken(String image, int realKind) {
+            super(UnrealScriptParserConstants.GT, image);
             this.realKind = realKind;
         }
     }

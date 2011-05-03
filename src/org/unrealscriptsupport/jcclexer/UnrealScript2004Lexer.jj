@@ -168,6 +168,7 @@ TOKEN :
   < ABSTRACT: "abstract" >
 | < ARRAY: "array" >
 | < AUTO: "auto" >
+| < BEGIN: "begin" >
 | < BOOLEAN: "bool" >
 | < BREAK: "break" >
 | < BYTE: "byte" >
@@ -195,6 +196,7 @@ TOKEN :
 | < EDITINLINENEW: "editinlinenew" >
 | < EDITINLINEUSE: "editinlineuse" >
 | < ELSE: "else" >
+| < END: "end" >
 | < ENUM: "enum" >
 | < EVENT: "event" >
 | < EXEC: "exec" >
@@ -207,6 +209,7 @@ TOKEN :
 | < FOR: "for" >
 | < FOREACH: "foreach" >
 | < FUNCTION: "function" >
+| < GLOBAL: "global" >
 | < GLOBALCONFIG: "globalconfig" >
 | < GOTO: "goto" >
 | < GUID: "guid" >
@@ -229,6 +232,7 @@ TOKEN :
 | < NOEXPORT: "noexport">
 | < NONE: "none" >
 | < NOTPLACEABLE: "notplaceable">
+| < OBJECT: "object">
 | < OPERATOR: "operator">
 | < OPTIONAL: "optional">
 | < OUT: "out">

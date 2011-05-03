@@ -249,7 +249,18 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // packagename.classname or classname.structname
 // PACKAGEIDENTIFIER = ( IDENTIFIER DOT )? IDENTIFIER
   final public void PackageIdentifier() throws ParseException {
-    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    case OBJECT:
+      jj_consume_token(OBJECT);
+      break;
+    default:
+      jj_la1[7] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     PackageIdentifierEnd();
   }
 
@@ -259,12 +270,29 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DOT:
       jj_consume_token(DOT);
-      jj_consume_token(IDENTIFIER);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        jj_consume_token(IDENTIFIER);
+        break;
+      case OBJECT:
+        jj_consume_token(OBJECT);
+        break;
+      default:
+        jj_la1[8] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
       break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[9] = jj_gen;
       ;
     }
+  }
+
+  final public void ClassIdentifierStart() throws ParseException {
+    jj_consume_token(CLASS);
+    jj_consume_token(NAME_LITERAL);
+    jj_consume_token(DOT);
   }
 
 // QUALIFIEDIDENTIFIER = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT default DOT IDENTIFIER )
@@ -273,10 +301,11 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void QualifiedIdentifier() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CLASS:
+      ClassIdentifierStart();
       QualifiedIdentifierStart();
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[10] = jj_gen;
       ;
     }
     jj_consume_token(IDENTIFIER);
@@ -287,7 +316,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[11] = jj_gen;
         break label_3;
       }
       jj_consume_token(DOT);
@@ -296,10 +325,18 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   }
 
   final public void QualifiedIdentifierStart() throws ParseException {
-    jj_consume_token(CLASS);
-    jj_consume_token(NAME_LITERAL);
-    jj_consume_token(DOT);
-    jj_consume_token(_DEFAULT);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case _DEFAULT:
+      jj_consume_token(_DEFAULT);
+      break;
+    case CONST:
+      jj_consume_token(CONST);
+      break;
+    default:
+      jj_la1[12] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     jj_consume_token(DOT);
   }
 
@@ -310,10 +347,11 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void FuncCall() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CLASS:
+      ClassIdentifierStart();
       FuncCallStart();
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[13] = jj_gen;
       ;
     }
     jj_consume_token(IDENTIFIER);
@@ -324,7 +362,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[14] = jj_gen;
         break label_4;
       }
       jj_consume_token(DOT);
@@ -334,9 +372,6 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   }
 
   final public void FuncCallStart() throws ParseException {
-    jj_consume_token(CLASS);
-    jj_consume_token(NAME_LITERAL);
-    jj_consume_token(DOT);
     jj_consume_token(STATIC);
     jj_consume_token(DOT);
   }
@@ -346,13 +381,29 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case BOOLEAN:
+    case BYTE:
     case CLASS:
     case FALSE:
+    case FLOAT:
+    case GLOBAL:
+    case INT:
+    case NAME:
     case NONE:
+    case OBJECT:
+    case STRING:
+    case SUPER:
     case TRUE:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
+    case LPAREN:
+    case BANG:
+    case TILDE:
+    case INCR:
+    case DECR:
+    case PLUS:
+    case MINUS:
       Expression();
       label_5:
       while (true) {
@@ -361,7 +412,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           ;
           break;
         default:
-          jj_la1[12] = jj_gen;
+          jj_la1[15] = jj_gen;
           break label_5;
         }
         jj_consume_token(COMMA);
@@ -369,7 +420,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       }
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -378,13 +429,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void FuncCallOrQualifiedIdentifier() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CLASS:
-      jj_consume_token(CLASS);
-      jj_consume_token(NAME_LITERAL);
-      jj_consume_token(DOT);
+      ClassIdentifierStart();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STATIC:
-        jj_consume_token(STATIC);
-        jj_consume_token(DOT);
+        FuncCallStart();
         jj_consume_token(IDENTIFIER);
         label_6:
         while (true) {
@@ -393,7 +441,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
             ;
             break;
           default:
-            jj_la1[14] = jj_gen;
+            jj_la1[17] = jj_gen;
             break label_6;
           }
           jj_consume_token(DOT);
@@ -401,9 +449,9 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         }
         FuncCallEnd();
         break;
+      case CONST:
       case _DEFAULT:
-        jj_consume_token(_DEFAULT);
-        jj_consume_token(DOT);
+        QualifiedIdentifierStart();
         jj_consume_token(IDENTIFIER);
         label_7:
         while (true) {
@@ -412,7 +460,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
             ;
             break;
           default:
-            jj_la1[15] = jj_gen;
+            jj_la1[18] = jj_gen;
             break label_7;
           }
           jj_consume_token(DOT);
@@ -420,7 +468,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         }
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[19] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -434,7 +482,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           ;
           break;
         default:
-          jj_la1[17] = jj_gen;
+          jj_la1[20] = jj_gen;
           break label_8;
         }
         jj_consume_token(DOT);
@@ -445,12 +493,12 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         FuncCallEnd();
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[21] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[22] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -466,11 +514,28 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[23] = jj_gen;
         break label_9;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
+    }
+  }
+
+  final public void FuncCallAndIdentifierList() throws ParseException {
+    FuncCallOrQualifiedIdentifier();
+    label_10:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[24] = jj_gen;
+        break label_10;
+      }
+      jj_consume_token(COMMA);
+      FuncCallOrQualifiedIdentifier();
     }
   }
 
@@ -497,7 +562,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       StructDecl();
       break;
     default:
-      jj_la1[21] = jj_gen;
+      jj_la1[25] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -522,10 +587,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ConfigGroup();
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[26] = jj_gen;
       ;
     }
-    label_10:
+    label_11:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case CONFIG:
@@ -547,22 +612,22 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[23] = jj_gen;
-        break label_10;
+        jj_la1[27] = jj_gen;
+        break label_11;
       }
       VarParams();
     }
     VarType();
     jj_consume_token(IDENTIFIER);
-    label_11:
+    label_12:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[24] = jj_gen;
-        break label_11;
+        jj_la1[28] = jj_gen;
+        break label_12;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
@@ -577,7 +642,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[29] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -605,11 +670,12 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case FLOAT:
     case INT:
     case NAME:
+    case OBJECT:
     case STRING:
       BasicTypeOrClassType();
       break;
     default:
-      jj_la1[26] = jj_gen;
+      jj_la1[30] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -634,6 +700,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     jj_consume_token(ARRAY);
     jj_consume_token(LT);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OBJECT:
     case IDENTIFIER:
       PackageIdentifier();
       break;
@@ -647,7 +714,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       BasicTypeOrClassType();
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[31] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -680,15 +747,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // ENUMOPTIONS = IDENTIFIER ( COMMA IDENTIFIER )*
   final public void EnumOptions() throws ParseException {
     jj_consume_token(IDENTIFIER);
-    label_12:
+    label_13:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[28] = jj_gen;
-        break label_12;
+        jj_la1[32] = jj_gen;
+        break label_13;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
@@ -699,7 +766,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 //                            LCBRACK STRUCTBODY RCBRACK
   final public void StructDecl() throws ParseException {
     jj_consume_token(STRUCT);
-    label_13:
+    label_14:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EXPORT:
@@ -707,8 +774,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[29] = jj_gen;
-        break label_13;
+        jj_la1[33] = jj_gen;
+        break label_14;
       }
       StructParams();
     }
@@ -719,7 +786,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       PackageIdentifier();
       break;
     default:
-      jj_la1[30] = jj_gen;
+      jj_la1[34] = jj_gen;
       ;
     }
     jj_consume_token(LBRACE);
@@ -737,7 +804,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(EXPORT);
       break;
     default:
-      jj_la1[31] = jj_gen;
+      jj_la1[35] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -745,7 +812,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // STRUCTBODY = ( VARDECL SEMICOLON )+
   final public void StructBody() throws ParseException {
-    label_14:
+    label_15:
     while (true) {
       VarDecl();
       jj_consume_token(SEMICOLON);
@@ -754,8 +821,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[32] = jj_gen;
-        break label_14;
+        jj_la1[36] = jj_gen;
+        break label_15;
       }
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -763,7 +830,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       StructDefaultPropertiesBlock();
       break;
     default:
-      jj_la1[33] = jj_gen;
+      jj_la1[37] = jj_gen;
       ;
     }
   }
@@ -773,55 +840,52 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void ReplicationBlock() throws ParseException {
     jj_consume_token(REPLICATION);
     jj_consume_token(LBRACE);
-    label_15:
+    label_16:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IF:
       case RELIABLE:
       case UNRELIABLE:
         ;
         break;
       default:
-        jj_la1[34] = jj_gen;
-        break label_15;
+        jj_la1[38] = jj_gen;
+        break label_16;
       }
       ReplicationBody();
     }
     jj_consume_token(RBRACE);
   }
 
+// "reliable" and "unreliable" not required in UE3
 // REPLICATIONBODY = ( reliable | unreliable ) if LBRACK EXPR RBRACK
 //                            IDENTIFIER ( COMMA IDENTIFIER )* SEMICOLON
   final public void ReplicationBody() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case RELIABLE:
-      jj_consume_token(RELIABLE);
-      break;
     case UNRELIABLE:
-      jj_consume_token(UNRELIABLE);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case RELIABLE:
+        jj_consume_token(RELIABLE);
+        break;
+      case UNRELIABLE:
+        jj_consume_token(UNRELIABLE);
+        break;
+      default:
+        jj_la1[39] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
       break;
     default:
-      jj_la1[35] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+      jj_la1[40] = jj_gen;
+      ;
     }
     jj_consume_token(IF);
     jj_consume_token(LPAREN);
     Expression();
     jj_consume_token(RPAREN);
-    jj_consume_token(IDENTIFIER);
-    label_16:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
-        ;
-        break;
-      default:
-        jj_la1[36] = jj_gen;
-        break label_16;
-      }
-      jj_consume_token(COMMA);
-      jj_consume_token(IDENTIFIER);
-    }
+    FuncCallAndIdentifierList();
     jj_consume_token(SEMICOLON);
   }
 
@@ -852,7 +916,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[37] = jj_gen;
+        jj_la1[41] = jj_gen;
         break label_17;
       }
       StateOrFunctionDecl();
@@ -868,7 +932,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[38] = jj_gen;
+        jj_la1[42] = jj_gen;
         break label_18;
       }
       StateAndConstFuncParams();
@@ -896,7 +960,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       FunctionDecl();
       break;
     default:
-      jj_la1[39] = jj_gen;
+      jj_la1[43] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -912,7 +976,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[40] = jj_gen;
+        jj_la1[44] = jj_gen;
         break label_19;
       }
       StateParams();
@@ -924,7 +988,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[41] = jj_gen;
+      jj_la1[45] = jj_gen;
       ;
     }
     jj_consume_token(IDENTIFIER);
@@ -933,7 +997,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ConfigGroup();
       break;
     default:
-      jj_la1[42] = jj_gen;
+      jj_la1[46] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -942,7 +1006,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[43] = jj_gen;
+      jj_la1[47] = jj_gen;
       ;
     }
     StateBody();
@@ -956,7 +1020,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       StateIgnore();
       break;
     default:
-      jj_la1[44] = jj_gen;
+      jj_la1[48] = jj_gen;
       ;
     }
     label_20:
@@ -980,7 +1044,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[45] = jj_gen;
+        jj_la1[49] = jj_gen;
         break label_20;
       }
       FunctionDecl();
@@ -988,11 +1052,13 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     label_21:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case BEGIN:
+      case END:
       case IDENTIFIER:
         ;
         break;
       default:
-        jj_la1[46] = jj_gen;
+        jj_la1[50] = jj_gen;
         break label_21;
       }
       LabelStatement();
@@ -1011,7 +1077,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[47] = jj_gen;
+        jj_la1[51] = jj_gen;
         break label_22;
       }
       jj_consume_token(COMMA);
@@ -1028,15 +1094,76 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   }
 
 // Moved (FunctionParams())* here to prevent choice conflicts
+// FUNCTIONPARAMS = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
+// Native functions can have const after them
+// native function int doSomething(string myData) const;
   final public void NormalOrOperatorFunc() throws ParseException {
-    label_23:
+    if (jj_2_1(8)) {
+      NativeFuncParams();
+      FuncEnd();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CONST:
+        jj_consume_token(CONST);
+        break;
+      default:
+        jj_la1[52] = jj_gen;
+        ;
+      }
+      FunctionBody();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DELEGATE:
+      case EVENT:
+      case EXEC:
+      case FINAL:
+      case FUNCTION:
+      case ITERATOR:
+      case LATENT:
+      case OPERATOR:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case SINGULAR:
+      case STATIC:
+        label_23:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case EXEC:
+          case FINAL:
+          case ITERATOR:
+          case LATENT:
+          case PRIVATE:
+          case PROTECTED:
+          case SINGULAR:
+          case STATIC:
+            ;
+            break;
+          default:
+            jj_la1[53] = jj_gen;
+            break label_23;
+          }
+          ConstFuncParams();
+        }
+        FuncEnd();
+        FunctionBody();
+        break;
+      default:
+        jj_la1[54] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+  }
+
+  final public void NativeFuncParams() throws ParseException {
+    label_24:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EXEC:
       case FINAL:
       case ITERATOR:
       case LATENT:
-      case NATIVE:
       case PRIVATE:
       case PROTECTED:
       case SINGULAR:
@@ -1044,11 +1171,44 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[48] = jj_gen;
-        break label_23;
+        jj_la1[55] = jj_gen;
+        break label_24;
       }
-      FunctionParams();
+      ConstFuncParams();
     }
+    jj_consume_token(NATIVE);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      jj_consume_token(INTEGER_LITERAL);
+      jj_consume_token(RPAREN);
+      break;
+    default:
+      jj_la1[56] = jj_gen;
+      ;
+    }
+    label_25:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case EXEC:
+      case FINAL:
+      case ITERATOR:
+      case LATENT:
+      case PRIVATE:
+      case PROTECTED:
+      case SINGULAR:
+      case STATIC:
+        ;
+        break;
+      default:
+        jj_la1[57] = jj_gen;
+        break label_25;
+      }
+      ConstFuncParams();
+    }
+  }
+
+  final public void FuncEnd() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DELEGATE:
     case EVENT:
@@ -1061,18 +1221,19 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       OperatorFuncEnd();
       break;
     default:
-      jj_la1[49] = jj_gen;
+      jj_la1[58] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
 // NORMALFUNC = ( FUNCTIONPARAMS )* FUNCTIONTYPE ( LOCALTYPE )?
-//                            IDENTIFIER LBRACK ( FUNCTIONARGS ( COMMA FUNCTIONARGS )* )? RBRACK
-//                            FUNCTIONBODY
+//              IDENTIFIER
+//              LBRACK ( FUNCTIONARGS ( COMMA FUNCTIONARGS )* )? RBRACK
+//              FUNCTIONBODY
   final public void NormalFuncEnd() throws ParseException {
     FunctionType();
-    LocalTypeThenIdentifier();
+    ReturnTypeThenIdentifier();
     jj_consume_token(LPAREN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ARRAY:
@@ -1083,39 +1244,40 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case FLOAT:
     case INT:
     case NAME:
+    case OBJECT:
     case OPTIONAL:
     case OUT:
     case STRING:
     case IDENTIFIER:
       FunctionArgs();
-      label_24:
+      label_26:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case COMMA:
           ;
           break;
         default:
-          jj_la1[50] = jj_gen;
-          break label_24;
+          jj_la1[59] = jj_gen;
+          break label_26;
         }
         jj_consume_token(COMMA);
         FunctionArgs();
       }
       break;
     default:
-      jj_la1[51] = jj_gen;
+      jj_la1[60] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
-    FunctionBody();
   }
 
 // Prevent choice conflict
 // If is a PackageIdentifier() in LocalType(), and then <IDENTIFIER>
 // Instead of:
 // ( LocalType() )? <IDENTIFIER>
-  final public void LocalTypeThenIdentifier() throws ParseException {
-    if (jj_2_1(2)) {
+// LocalTypeThenIdentifier
+  final public void ReturnTypeThenIdentifier() throws ParseException {
+    if (jj_2_2(2)) {
       PackageIdentifierOrArrayDecl();
       jj_consume_token(IDENTIFIER);
     } else {
@@ -1126,58 +1288,29 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case FLOAT:
       case INT:
       case NAME:
+      case OBJECT:
       case STRING:
         LocalTypeEnd();
+        jj_consume_token(IDENTIFIER);
+        break;
+      case VOID:
+        jj_consume_token(VOID);
         jj_consume_token(IDENTIFIER);
         break;
       case IDENTIFIER:
         jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[52] = jj_gen;
+        jj_la1[61] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
     }
   }
 
-// FUNCTIONPARAMS = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
-  final public void FunctionParams() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case EXEC:
-    case FINAL:
-    case ITERATOR:
-    case LATENT:
-    case PRIVATE:
-    case PROTECTED:
-    case SINGULAR:
-    case STATIC:
-      ConstFuncParams();
-      break;
-    case NATIVE:
-      jj_consume_token(NATIVE);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case LPAREN:
-        jj_consume_token(LPAREN);
-        jj_consume_token(INTEGER_LITERAL);
-        jj_consume_token(RPAREN);
-        break;
-      default:
-        jj_la1[53] = jj_gen;
-        ;
-      }
-      break;
-    default:
-      jj_la1[54] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-  }
-
 // OPERATORFUNC = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
   final public void OperatorFuncEnd() throws ParseException {
     OperatorType();
-    FunctionBody();
   }
 
 // OPERATORTYPE = ( BINARYOPERATOR | UNARYOPERATOR )
@@ -1191,7 +1324,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       UnaryOperator();
       break;
     default:
-      jj_la1[55] = jj_gen;
+      jj_la1[62] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1203,9 +1336,38 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void BinaryOperator() throws ParseException {
     jj_consume_token(OPERATOR);
     jj_consume_token(LPAREN);
-    jj_consume_token(INTEGER_LITERAL);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INTEGER_LITERAL:
+      jj_consume_token(INTEGER_LITERAL);
+      break;
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[63] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     jj_consume_token(RPAREN);
-    PackageIdentifier();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OBJECT:
+    case IDENTIFIER:
+      PackageIdentifier();
+      break;
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      LocalTypeEnd();
+      break;
+    default:
+      jj_la1[64] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     OpIdentifier();
     jj_consume_token(LPAREN);
     FunctionArgs();
@@ -1226,11 +1388,29 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(POSTOPERATOR);
       break;
     default:
-      jj_la1[56] = jj_gen;
+      jj_la1[65] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    PackageIdentifier();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OBJECT:
+    case IDENTIFIER:
+      PackageIdentifier();
+      break;
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      LocalTypeEnd();
+      break;
+    default:
+      jj_la1[66] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     OpIdentifier();
     jj_consume_token(LPAREN);
     FunctionArgs();
@@ -1238,31 +1418,66 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   }
 
 // FUNCTIONARGS = ( optional | out | coerce )? FUNCTIONARGTYPE IDENTIFIER
+// "optional" can have default value in UE3
+// eg.
+// function myFunc(optional int x = -1) {};
   final public void FunctionArgs() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case COERCE:
     case OPTIONAL:
-    case OUT:
+      jj_consume_token(OPTIONAL);
+      FunctionArgTypeAndName();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case OPTIONAL:
-        jj_consume_token(OPTIONAL);
-        break;
-      case OUT:
-        jj_consume_token(OUT);
-        break;
-      case COERCE:
-        jj_consume_token(COERCE);
+      case ASSIGN:
+        jj_consume_token(ASSIGN);
+        UnaryExpression();
         break;
       default:
-        jj_la1[57] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
+        jj_la1[67] = jj_gen;
+        ;
       }
       break;
+    case ARRAY:
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case COERCE:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case OBJECT:
+    case OUT:
+    case STRING:
+    case IDENTIFIER:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COERCE:
+      case OUT:
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case OUT:
+          jj_consume_token(OUT);
+          break;
+        case COERCE:
+          jj_consume_token(COERCE);
+          break;
+        default:
+          jj_la1[68] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        break;
+      default:
+        jj_la1[69] = jj_gen;
+        ;
+      }
+      FunctionArgTypeAndName();
+      break;
     default:
-      jj_la1[58] = jj_gen;
-      ;
+      jj_la1[70] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+  }
+
+  final public void FunctionArgTypeAndName() throws ParseException {
     FunctionArgType();
     jj_consume_token(IDENTIFIER);
   }
@@ -1276,6 +1491,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case FLOAT:
     case INT:
     case NAME:
+    case OBJECT:
     case STRING:
       BasicType();
       break;
@@ -1286,7 +1502,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       DynArrayDecl();
       break;
     default:
-      jj_la1[59] = jj_gen;
+      jj_la1[71] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1300,38 +1516,42 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       break;
     case LBRACE:
       jj_consume_token(LBRACE);
-      label_25:
+      label_27:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case LOCAL:
           ;
           break;
         default:
-          jj_la1[60] = jj_gen;
-          break label_25;
+          jj_la1[72] = jj_gen;
+          break label_27;
         }
         LocalDecl();
       }
-      label_26:
+      label_28:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case STRING_LITERAL:
         case NAME_LITERAL:
+        case BEGIN:
         case BOOLEAN:
         case BREAK:
         case BYTE:
         case CLASS:
         case CONTINUE:
         case DO:
+        case END:
         case FALSE:
         case FLOAT:
         case FOR:
         case FOREACH:
+        case GLOBAL:
         case GOTO:
         case IF:
         case INT:
         case NAME:
         case NONE:
+        case OBJECT:
         case RETURN:
         case STRING:
         case SUPER:
@@ -1344,20 +1564,24 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         case LPAREN:
         case LBRACE:
         case SEMICOLON:
+        case BANG:
+        case TILDE:
         case INCR:
         case DECR:
+        case PLUS:
+        case MINUS:
           ;
           break;
         default:
-          jj_la1[61] = jj_gen;
-          break label_26;
+          jj_la1[73] = jj_gen;
+          break label_28;
         }
         CodeLine();
       }
       jj_consume_token(RBRACE);
       break;
     default:
-      jj_la1[62] = jj_gen;
+      jj_la1[74] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1368,15 +1592,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     jj_consume_token(LOCAL);
     LocalType();
     jj_consume_token(IDENTIFIER);
-    label_27:
+    label_29:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[63] = jj_gen;
-        break label_27;
+        jj_la1[75] = jj_gen;
+        break label_29;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
@@ -1396,11 +1620,12 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case FLOAT:
     case INT:
     case NAME:
+    case OBJECT:
     case STRING:
       LocalTypeEnd();
       break;
     default:
-      jj_la1[64] = jj_gen;
+      jj_la1[76] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1420,7 +1645,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ArrayDeclEnd();
       break;
     default:
-      jj_la1[65] = jj_gen;
+      jj_la1[77] = jj_gen;
       PackageIdentifierEnd();
     }
   }
@@ -1436,14 +1661,18 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         break;
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case BEGIN:
       case BOOLEAN:
       case BYTE:
       case CLASS:
+      case END:
       case FALSE:
       case FLOAT:
+      case GLOBAL:
       case INT:
       case NAME:
       case NONE:
+      case OBJECT:
       case STRING:
       case SUPER:
       case TRUE:
@@ -1451,20 +1680,26 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case FLOATING_POINT_LITERAL:
       case IDENTIFIER:
       case LPAREN:
+      case BANG:
+      case TILDE:
       case INCR:
       case DECR:
-        if (jj_2_2(2)) {
-          Statement();
-        } else if (jj_2_3(2)) {
-          StatementExpression();
+      case PLUS:
+      case MINUS:
+        if (jj_2_3(2)) {
+          Expression();
           jj_consume_token(SEMICOLON);
+        } else if (jj_2_4(2)) {
+          Statement();
         } else {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case BEGIN:
+          case END:
           case IDENTIFIER:
             LabelStatement();
             break;
           default:
-            jj_la1[66] = jj_gen;
+            jj_la1[78] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
@@ -1504,7 +1739,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         GotoStatement();
         break;
       default:
-        jj_la1[67] = jj_gen;
+        jj_la1[79] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1516,26 +1751,30 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // CODEBLOCK = ( CODELINE | ( LCBRACK ( CODELINE )* RCBRACK ) )
   final public void CodeBlock() throws ParseException {
     jj_consume_token(LBRACE);
-    label_28:
+    label_30:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case BEGIN:
       case BOOLEAN:
       case BREAK:
       case BYTE:
       case CLASS:
       case CONTINUE:
       case DO:
+      case END:
       case FALSE:
       case FLOAT:
       case FOR:
       case FOREACH:
+      case GLOBAL:
       case GOTO:
       case IF:
       case INT:
       case NAME:
       case NONE:
+      case OBJECT:
       case RETURN:
       case STRING:
       case SUPER:
@@ -1548,13 +1787,17 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case LPAREN:
       case LBRACE:
       case SEMICOLON:
+      case BANG:
+      case TILDE:
       case INCR:
       case DECR:
+      case PLUS:
+      case MINUS:
         ;
         break;
       default:
-        jj_la1[68] = jj_gen;
-        break label_28;
+        jj_la1[80] = jj_gen;
+        break label_30;
       }
       CodeLine();
     }
@@ -1591,7 +1834,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       CodeLine();
       break;
     default:
-      jj_la1[69] = jj_gen;
+      jj_la1[81] = jj_gen;
       ;
     }
   }
@@ -1623,15 +1866,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     Expression();
     jj_consume_token(RPAREN);
     jj_consume_token(LBRACE);
-    label_29:
+    label_31:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case CASE:
         ;
         break;
       default:
-        jj_la1[70] = jj_gen;
-        break label_29;
+        jj_la1[82] = jj_gen;
+        break label_31;
       }
       SwitchLabel();
     }
@@ -1640,7 +1883,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       DefaultLabel();
       break;
     default:
-      jj_la1[71] = jj_gen;
+      jj_la1[83] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
@@ -1658,31 +1901,35 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       QualifiedIdentifier();
       break;
     default:
-      jj_la1[72] = jj_gen;
+      jj_la1[84] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     jj_consume_token(COLON);
-    label_30:
+    label_32:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case BEGIN:
       case BOOLEAN:
       case BREAK:
       case BYTE:
       case CLASS:
       case CONTINUE:
       case DO:
+      case END:
       case FALSE:
       case FLOAT:
       case FOR:
       case FOREACH:
+      case GLOBAL:
       case GOTO:
       case IF:
       case INT:
       case NAME:
       case NONE:
+      case OBJECT:
       case RETURN:
       case STRING:
       case SUPER:
@@ -1695,13 +1942,17 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case LPAREN:
       case LBRACE:
       case SEMICOLON:
+      case BANG:
+      case TILDE:
       case INCR:
       case DECR:
+      case PLUS:
+      case MINUS:
         ;
         break;
       default:
-        jj_la1[73] = jj_gen;
-        break label_30;
+        jj_la1[85] = jj_gen;
+        break label_32;
       }
       CodeLine();
     }
@@ -1711,27 +1962,31 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void DefaultLabel() throws ParseException {
     jj_consume_token(_DEFAULT);
     jj_consume_token(COLON);
-    label_31:
+    label_33:
     while (true) {
       CodeLine();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case BEGIN:
       case BOOLEAN:
       case BREAK:
       case BYTE:
       case CLASS:
       case CONTINUE:
       case DO:
+      case END:
       case FALSE:
       case FLOAT:
       case FOR:
       case FOREACH:
+      case GLOBAL:
       case GOTO:
       case IF:
       case INT:
       case NAME:
       case NONE:
+      case OBJECT:
       case RETURN:
       case STRING:
       case SUPER:
@@ -1744,13 +1999,17 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case LPAREN:
       case LBRACE:
       case SEMICOLON:
+      case BANG:
+      case TILDE:
       case INCR:
       case DECR:
+      case PLUS:
+      case MINUS:
         ;
         break;
       default:
-        jj_la1[74] = jj_gen;
-        break label_31;
+        jj_la1[86] = jj_gen;
+        break label_33;
       }
     }
   }
@@ -1761,17 +2020,33 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case BOOLEAN:
+    case BYTE:
     case CLASS:
     case FALSE:
+    case FLOAT:
+    case GLOBAL:
+    case INT:
+    case NAME:
     case NONE:
+    case OBJECT:
+    case STRING:
+    case SUPER:
     case TRUE:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
+    case LPAREN:
+    case BANG:
+    case TILDE:
+    case INCR:
+    case DECR:
+    case PLUS:
+    case MINUS:
       Expression();
       break;
     default:
-      jj_la1[75] = jj_gen;
+      jj_la1[87] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -1797,7 +2072,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[76] = jj_gen;
+      jj_la1[88] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1806,28 +2081,46 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // STATELABELS = ( IDENTIFIER COLON ( CODELINE )* )*
   final public void LabelStatement() throws ParseException {
-    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    case BEGIN:
+      jj_consume_token(BEGIN);
+      break;
+    case END:
+      jj_consume_token(END);
+      break;
+    default:
+      jj_la1[89] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     jj_consume_token(COLON);
-    label_32:
+    label_34:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case BEGIN:
       case BOOLEAN:
       case BREAK:
       case BYTE:
       case CLASS:
       case CONTINUE:
       case DO:
+      case END:
       case FALSE:
       case FLOAT:
       case FOR:
       case FOREACH:
+      case GLOBAL:
       case GOTO:
       case IF:
       case INT:
       case NAME:
       case NONE:
+      case OBJECT:
       case RETURN:
       case STRING:
       case SUPER:
@@ -1840,13 +2133,17 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case LPAREN:
       case LBRACE:
       case SEMICOLON:
+      case BANG:
+      case TILDE:
       case INCR:
       case DECR:
+      case PLUS:
+      case MINUS:
         ;
         break;
       default:
-        jj_la1[77] = jj_gen;
-        break label_32;
+        jj_la1[90] = jj_gen;
+        break label_34;
       }
       CodeLine();
     }
@@ -1866,15 +2163,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
-    case BOOLEAN:
-    case BYTE:
     case CLASS:
     case FALSE:
-    case FLOAT:
-    case INT:
-    case NAME:
+    case GLOBAL:
     case NONE:
-    case STRING:
     case SUPER:
     case TRUE:
     case INTEGER_LITERAL:
@@ -1886,24 +2178,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ForInit();
       break;
     default:
-      jj_la1[78] = jj_gen;
-      ;
-    }
-    jj_consume_token(SEMICOLON);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case STRING_LITERAL:
-    case NAME_LITERAL:
-    case CLASS:
-    case FALSE:
-    case NONE:
-    case TRUE:
-    case INTEGER_LITERAL:
-    case FLOATING_POINT_LITERAL:
-    case IDENTIFIER:
-      Expression();
-      break;
-    default:
-      jj_la1[79] = jj_gen;
+      jj_la1[91] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -1915,10 +2190,38 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case CLASS:
     case FALSE:
     case FLOAT:
+    case GLOBAL:
     case INT:
     case NAME:
     case NONE:
+    case OBJECT:
     case STRING:
+    case SUPER:
+    case TRUE:
+    case INTEGER_LITERAL:
+    case FLOATING_POINT_LITERAL:
+    case IDENTIFIER:
+    case LPAREN:
+    case BANG:
+    case TILDE:
+    case INCR:
+    case DECR:
+    case PLUS:
+    case MINUS:
+      Expression();
+      break;
+    default:
+      jj_la1[92] = jj_gen;
+      ;
+    }
+    jj_consume_token(SEMICOLON);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case STRING_LITERAL:
+    case NAME_LITERAL:
+    case CLASS:
+    case FALSE:
+    case GLOBAL:
+    case NONE:
     case SUPER:
     case TRUE:
     case INTEGER_LITERAL:
@@ -1930,7 +2233,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ForUpdate();
       break;
     default:
-      jj_la1[80] = jj_gen;
+      jj_la1[93] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -1943,15 +2246,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
   final public void StatementExpressionList() throws ParseException {
     StatementExpression();
-    label_33:
+    label_35:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[81] = jj_gen;
-        break label_33;
+        jj_la1[94] = jj_gen;
+        break label_35;
       }
       jj_consume_token(COMMA);
       StatementExpression();
@@ -1971,47 +2274,283 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // a primary expression.  Consider adding a semantic predicate to work
 // around this.
   final public void Expression() throws ParseException {
-    Operand();
-    label_34:
-    while (true) {
-      if (jj_2_4(2)) {
-        ;
-      } else {
-        break label_34;
+    if (jj_2_5(3)) {
+      NewExpression();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case STRING_LITERAL:
+      case NAME_LITERAL:
+      case BOOLEAN:
+      case BYTE:
+      case CLASS:
+      case FALSE:
+      case FLOAT:
+      case GLOBAL:
+      case INT:
+      case NAME:
+      case NONE:
+      case OBJECT:
+      case STRING:
+      case SUPER:
+      case TRUE:
+      case INTEGER_LITERAL:
+      case FLOATING_POINT_LITERAL:
+      case IDENTIFIER:
+      case LPAREN:
+      case BANG:
+      case TILDE:
+      case INCR:
+      case DECR:
+      case PLUS:
+      case MINUS:
+        BinaryExpression();
+        break;
+      default:
+        jj_la1[95] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      OpIdentifier();
-      Operand();
     }
   }
 
-/*void Expression():
+  final public void TernaryExpression() throws ParseException {
+    ConditionalExpression();
+  }
+
+  final public void ConditionalExpression() throws ParseException {
+    BinaryExpression();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case HOOK:
+      jj_consume_token(HOOK);
+      BinaryExpression();
+      jj_consume_token(COLON);
+      BinaryExpression();
+      break;
+    default:
+      jj_la1[96] = jj_gen;
+      ;
+    }
+  }
+
+/*void BinaryExpression():
 {}
 {
-  ConditionalExpression()
-  [
-    LOOKAHEAD(2)
-    AssignmentOperator() Expression()
-  ]
+    UnaryExpression() (LOOKAHEAD(2) OperatorNames() UnaryExpressionNotPlusMinus())*
 }*/
+  final public void BinaryExpression() throws ParseException {
+    exp2();
+    label_36:
+    while (true) {
+      if (jj_2_6(1)) {
+        ;
+      } else {
+        break label_36;
+      }
+      OperatorNames2();
+      exp2();
+    }
+  }
 
-// OPERAND = ( CONSTVALUE | QUALIFIEDIDENTIFIER | FUNCCALL )
-  final public void Operand() throws ParseException {
+  final public void exp2() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BANG:
+    case TILDE:
+    case INCR:
+    case DECR:
+    case PLUS:
+    case MINUS:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PLUS:
+        jj_consume_token(PLUS);
+        break;
+      case MINUS:
+        jj_consume_token(MINUS);
+        break;
+      case INCR:
+        jj_consume_token(INCR);
+        break;
+      case DECR:
+        jj_consume_token(DECR);
+        break;
+      case TILDE:
+        jj_consume_token(TILDE);
+        break;
+      case BANG:
+        jj_consume_token(BANG);
+        break;
+      default:
+        jj_la1[97] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    default:
+      jj_la1[98] = jj_gen;
+      ;
+    }
+    exp1();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INCR:
+    case DECR:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case INCR:
+        jj_consume_token(INCR);
+        break;
+      case DECR:
+        jj_consume_token(DECR);
+        break;
+      default:
+        jj_la1[99] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    default:
+      jj_la1[100] = jj_gen;
+      ;
+    }
+  }
+
+  final public void exp1() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      Expression();
+      jj_consume_token(RPAREN);
+      break;
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
     case FALSE:
+    case FLOAT:
+    case GLOBAL:
+    case INT:
+    case NAME:
     case NONE:
+    case OBJECT:
+    case STRING:
+    case SUPER:
     case TRUE:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
-      Literal();
-      break;
-    case CLASS:
     case IDENTIFIER:
-      FuncCallOrQualifiedIdentifier();
+      if (jj_2_7(3)) {
+        CastExpression();
+      } else if (jj_2_8(3)) {
+        FuncCallOrIdentifierSpecifier();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case STRING_LITERAL:
+        case NAME_LITERAL:
+        case CLASS:
+        case FALSE:
+        case NONE:
+        case TRUE:
+        case INTEGER_LITERAL:
+        case FLOATING_POINT_LITERAL:
+          Literal();
+          break;
+        default:
+          jj_la1[101] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+      }
       break;
     default:
-      jj_la1[82] = jj_gen;
+      jj_la1[102] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+// new operator in UE3
+// ObjectVar = new[(InOuter, InName, InFlags)] <class'InClass'>[(InTemplate)];
+  final public void NewExpression() throws ParseException {
+    jj_consume_token(IDENTIFIER);
+    jj_consume_token(ASSIGN);
+    jj_consume_token(NEW);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CLASS:
+    case LPAREN:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LPAREN:
+        jj_consume_token(LPAREN);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case IDENTIFIER:
+          jj_consume_token(IDENTIFIER);
+          break;
+        case NONE:
+          jj_consume_token(NONE);
+          break;
+        default:
+          jj_la1[103] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case COMMA:
+          jj_consume_token(COMMA);
+          jj_consume_token(NAME_LITERAL);
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case COMMA:
+            jj_consume_token(COMMA);
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case INTEGER_LITERAL:
+              jj_consume_token(INTEGER_LITERAL);
+              break;
+            case IDENTIFIER:
+              jj_consume_token(IDENTIFIER);
+              break;
+            default:
+              jj_la1[104] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+            break;
+          default:
+            jj_la1[105] = jj_gen;
+            ;
+          }
+          break;
+        default:
+          jj_la1[106] = jj_gen;
+          ;
+        }
+        jj_consume_token(RPAREN);
+        break;
+      default:
+        jj_la1[107] = jj_gen;
+        ;
+      }
+      jj_consume_token(CLASS);
+      jj_consume_token(NAME_LITERAL);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LPAREN:
+        jj_consume_token(LPAREN);
+        jj_consume_token(IDENTIFIER);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case NAME_LITERAL:
+          jj_consume_token(NAME_LITERAL);
+          break;
+        default:
+          jj_la1[108] = jj_gen;
+          ;
+        }
+        jj_consume_token(RPAREN);
+        break;
+      default:
+        jj_la1[109] = jj_gen;
+        ;
+      }
+      break;
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[110] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2019,28 +2558,849 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // OPIDENTIFIER = IDENTIFIER | OPERATORNAMES
   final public void OpIdentifier() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENTIFIER:
-      jj_consume_token(IDENTIFIER);
-      break;
-    default:
-      jj_la1[83] = jj_gen;
-      if (jj_2_5(1)) {
-        OperatorNames();
-      } else {
+    if (jj_2_9(1)) {
+      OperatorNames();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        jj_consume_token(IDENTIFIER);
+        break;
+      default:
+        jj_la1[111] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
     }
   }
 
+  final public void OpIdentifier2() throws ParseException {
+    if (jj_2_10(1)) {
+      OperatorNames2();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        jj_consume_token(IDENTIFIER);
+        break;
+      default:
+        jj_la1[112] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+  }
+
+//OPERATORNAMES  = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
+//                 '-' | '=' | '+' | '|' | '\' | ':' | '<' | '>' | '/' |
+//                 '?' | '`' |
+//                 '<<' | '>>' | '!=' | '<=' | '>=' | '++' | '--' | '?-' | '+=' |
+//                 '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
+//                 '~=' | '@=' | '>>>'
+// http://udn.epicgames.com/Two/UnrealScriptReference.html#Built-in%20operators%20and%20their%20precedence
+  final public void OperatorNames() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case COLON:
+      jj_consume_token(COLON);
+      break;
+    case HOOK:
+      jj_consume_token(HOOK);
+      break;
+    case AT:
+      jj_consume_token(AT);
+      break;
+    case DOLLARS:
+      jj_consume_token(DOLLARS);
+      break;
+    case SC_OR:
+      jj_consume_token(SC_OR);
+      break;
+    case SC_AND:
+      jj_consume_token(SC_AND);
+      break;
+    case 180:
+      jj_consume_token(180);
+      break;
+    case BIT_AND:
+      jj_consume_token(BIT_AND);
+      break;
+    case BIT_OR:
+      jj_consume_token(BIT_OR);
+      break;
+    case XOR:
+      jj_consume_token(XOR);
+      break;
+    case NE:
+      jj_consume_token(NE);
+      break;
+    case EQ:
+      jj_consume_token(EQ);
+      break;
+    case LT:
+      jj_consume_token(LT);
+      break;
+    default:
+      jj_la1[113] = jj_gen;
+      if (jj_2_11(1)) {
+        GT();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case LE:
+          jj_consume_token(LE);
+          break;
+        case GE:
+          jj_consume_token(GE);
+          break;
+        case 181:
+          jj_consume_token(181);
+          break;
+        case LSHIFT:
+          jj_consume_token(LSHIFT);
+          break;
+        default:
+          jj_la1[114] = jj_gen;
+          if (jj_2_12(1)) {
+            RSIGNEDSHIFT();
+          } else if (jj_2_13(1)) {
+            RUNSIGNEDSHIFT();
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case PLUS:
+              jj_consume_token(PLUS);
+              break;
+            case MINUS:
+              jj_consume_token(MINUS);
+              break;
+            case REM:
+              jj_consume_token(REM);
+              break;
+            case STAR:
+              jj_consume_token(STAR);
+              break;
+            case SLASH:
+              jj_consume_token(SLASH);
+              break;
+            case DOTPRODUCT:
+              jj_consume_token(DOTPRODUCT);
+              break;
+            case CROSS:
+              jj_consume_token(CROSS);
+              break;
+            case EXPONENT:
+              jj_consume_token(EXPONENT);
+              break;
+            case CLOCKWISEFROM:
+              jj_consume_token(CLOCKWISEFROM);
+              break;
+            case 182:
+              jj_consume_token(182);
+              break;
+            case 183:
+              jj_consume_token(183);
+              break;
+            case 184:
+              jj_consume_token(184);
+              break;
+            case 185:
+              jj_consume_token(185);
+              break;
+            case ATASSIGN:
+              jj_consume_token(ATASSIGN);
+              break;
+            case DOLLARSASSIGN:
+              jj_consume_token(DOLLARSASSIGN);
+              break;
+            case ANDASSIGN:
+              jj_consume_token(ANDASSIGN);
+              break;
+            case XORASSIGN:
+              jj_consume_token(XORASSIGN);
+              break;
+            case ORASSIGN:
+              jj_consume_token(ORASSIGN);
+              jj_consume_token(LSHIFTASSIGN);
+              break;
+            case RSIGNEDSHIFTASSIGN:
+              jj_consume_token(RSIGNEDSHIFTASSIGN);
+              break;
+            case RUNSIGNEDSHIFTASSIGN:
+              jj_consume_token(RUNSIGNEDSHIFTASSIGN);
+              break;
+            case PLUSASSIGN:
+              jj_consume_token(PLUSASSIGN);
+              break;
+            case MINUSASSIGN:
+              jj_consume_token(MINUSASSIGN);
+              break;
+            case REMASSIGN:
+              jj_consume_token(REMASSIGN);
+              break;
+            case STARASSIGN:
+              jj_consume_token(STARASSIGN);
+              break;
+            case SLASHASSIGN:
+              jj_consume_token(SLASHASSIGN);
+              break;
+            case ASSIGN:
+              jj_consume_token(ASSIGN);
+              break;
+            case INCR:
+              jj_consume_token(INCR);
+              break;
+            case DECR:
+              jj_consume_token(DECR);
+              break;
+            case TILDE:
+              jj_consume_token(TILDE);
+              break;
+            case BANG:
+              jj_consume_token(BANG);
+              break;
+            default:
+              jj_la1[115] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
+        }
+      }
+    }
+  }
+
+  final public void OperatorNames2() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case COLON:
+      jj_consume_token(COLON);
+      break;
+    case HOOK:
+      jj_consume_token(HOOK);
+      break;
+    case AT:
+      jj_consume_token(AT);
+      break;
+    case DOLLARS:
+      jj_consume_token(DOLLARS);
+      break;
+    case SC_OR:
+      jj_consume_token(SC_OR);
+      break;
+    case SC_AND:
+      jj_consume_token(SC_AND);
+      break;
+    case 180:
+      jj_consume_token(180);
+      break;
+    case BIT_AND:
+      jj_consume_token(BIT_AND);
+      break;
+    case BIT_OR:
+      jj_consume_token(BIT_OR);
+      break;
+    case XOR:
+      jj_consume_token(XOR);
+      break;
+    case NE:
+      jj_consume_token(NE);
+      break;
+    case EQ:
+      jj_consume_token(EQ);
+      break;
+    case LT:
+      jj_consume_token(LT);
+      break;
+    default:
+      jj_la1[116] = jj_gen;
+      if (jj_2_14(1)) {
+        GT();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case LE:
+          jj_consume_token(LE);
+          break;
+        case GE:
+          jj_consume_token(GE);
+          break;
+        case 181:
+          jj_consume_token(181);
+          break;
+        case LSHIFT:
+          jj_consume_token(LSHIFT);
+          break;
+        default:
+          jj_la1[117] = jj_gen;
+          if (jj_2_15(1)) {
+            RSIGNEDSHIFT();
+          } else if (jj_2_16(1)) {
+            RUNSIGNEDSHIFT();
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case PLUS:
+              jj_consume_token(PLUS);
+              break;
+            case MINUS:
+              jj_consume_token(MINUS);
+              break;
+            case REM:
+              jj_consume_token(REM);
+              break;
+            case STAR:
+              jj_consume_token(STAR);
+              break;
+            case SLASH:
+              jj_consume_token(SLASH);
+              break;
+            case DOTPRODUCT:
+              jj_consume_token(DOTPRODUCT);
+              break;
+            case CROSS:
+              jj_consume_token(CROSS);
+              break;
+            case EXPONENT:
+              jj_consume_token(EXPONENT);
+              break;
+            case CLOCKWISEFROM:
+              jj_consume_token(CLOCKWISEFROM);
+              break;
+            case 182:
+              jj_consume_token(182);
+              break;
+            case 183:
+              jj_consume_token(183);
+              break;
+            case 184:
+              jj_consume_token(184);
+              break;
+            case 185:
+              jj_consume_token(185);
+              break;
+            case ATASSIGN:
+              jj_consume_token(ATASSIGN);
+              break;
+            case DOLLARSASSIGN:
+              jj_consume_token(DOLLARSASSIGN);
+              break;
+            case ANDASSIGN:
+              jj_consume_token(ANDASSIGN);
+              break;
+            case XORASSIGN:
+              jj_consume_token(XORASSIGN);
+              break;
+            case ORASSIGN:
+              jj_consume_token(ORASSIGN);
+              jj_consume_token(LSHIFTASSIGN);
+              break;
+            case RSIGNEDSHIFTASSIGN:
+              jj_consume_token(RSIGNEDSHIFTASSIGN);
+              break;
+            case RUNSIGNEDSHIFTASSIGN:
+              jj_consume_token(RUNSIGNEDSHIFTASSIGN);
+              break;
+            case PLUSASSIGN:
+              jj_consume_token(PLUSASSIGN);
+              break;
+            case MINUSASSIGN:
+              jj_consume_token(MINUSASSIGN);
+              break;
+            case REMASSIGN:
+              jj_consume_token(REMASSIGN);
+              break;
+            case STARASSIGN:
+              jj_consume_token(STARASSIGN);
+              break;
+            case SLASHASSIGN:
+              jj_consume_token(SLASHASSIGN);
+              break;
+            case ASSIGN:
+              jj_consume_token(ASSIGN);
+              break;
+            default:
+              jj_la1[118] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
+        }
+      }
+    }
+  }
+
+  final public void TernaryOperatorNames() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case COLON:
+      jj_consume_token(COLON);
+      break;
+    case HOOK:
+      jj_consume_token(HOOK);
+      break;
+    default:
+      jj_la1[119] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void BinaryOperatorNames() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case AT:
+      jj_consume_token(AT);
+      break;
+    case DOLLARS:
+      jj_consume_token(DOLLARS);
+      break;
+    case SC_OR:
+      jj_consume_token(SC_OR);
+      break;
+    case SC_AND:
+      jj_consume_token(SC_AND);
+      break;
+    case 180:
+      jj_consume_token(180);
+      break;
+    case BIT_AND:
+      jj_consume_token(BIT_AND);
+      break;
+    case BIT_OR:
+      jj_consume_token(BIT_OR);
+      break;
+    case XOR:
+      jj_consume_token(XOR);
+      break;
+    case NE:
+      jj_consume_token(NE);
+      break;
+    case EQ:
+      jj_consume_token(EQ);
+      break;
+    case LT:
+      jj_consume_token(LT);
+      break;
+    default:
+      jj_la1[120] = jj_gen;
+      if (jj_2_17(1)) {
+        GT();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case LE:
+          jj_consume_token(LE);
+          break;
+        case GE:
+          jj_consume_token(GE);
+          break;
+        case 181:
+          jj_consume_token(181);
+          break;
+        case LSHIFT:
+          jj_consume_token(LSHIFT);
+          break;
+        default:
+          jj_la1[121] = jj_gen;
+          if (jj_2_18(1)) {
+            RSIGNEDSHIFT();
+          } else if (jj_2_19(1)) {
+            RUNSIGNEDSHIFT();
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case PLUS:
+              jj_consume_token(PLUS);
+              break;
+            case MINUS:
+              jj_consume_token(MINUS);
+              break;
+            case REM:
+              jj_consume_token(REM);
+              break;
+            case STAR:
+              jj_consume_token(STAR);
+              break;
+            case SLASH:
+              jj_consume_token(SLASH);
+              break;
+            case DOTPRODUCT:
+              jj_consume_token(DOTPRODUCT);
+              break;
+            case CROSS:
+              jj_consume_token(CROSS);
+              break;
+            case EXPONENT:
+              jj_consume_token(EXPONENT);
+              break;
+            case CLOCKWISEFROM:
+              jj_consume_token(CLOCKWISEFROM);
+              break;
+            case 182:
+              jj_consume_token(182);
+              break;
+            case 183:
+              jj_consume_token(183);
+              break;
+            case 184:
+              jj_consume_token(184);
+              break;
+            case 185:
+              jj_consume_token(185);
+              break;
+            case ASSIGN:
+            case ATASSIGN:
+            case DOLLARSASSIGN:
+            case PLUSASSIGN:
+            case MINUSASSIGN:
+            case STARASSIGN:
+            case SLASHASSIGN:
+            case ANDASSIGN:
+            case ORASSIGN:
+            case XORASSIGN:
+            case REMASSIGN:
+            case RSIGNEDSHIFTASSIGN:
+            case RUNSIGNEDSHIFTASSIGN:
+              AssignmentOperatorNames();
+              break;
+            default:
+              jj_la1[122] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
+        }
+      }
+    }
+  }
+
+  final public void AssignmentOperatorNames() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ATASSIGN:
+      jj_consume_token(ATASSIGN);
+      break;
+    case DOLLARSASSIGN:
+      jj_consume_token(DOLLARSASSIGN);
+      break;
+    case ANDASSIGN:
+      jj_consume_token(ANDASSIGN);
+      break;
+    case XORASSIGN:
+      jj_consume_token(XORASSIGN);
+      break;
+    case ORASSIGN:
+      jj_consume_token(ORASSIGN);
+      jj_consume_token(LSHIFTASSIGN);
+      break;
+    case RSIGNEDSHIFTASSIGN:
+      jj_consume_token(RSIGNEDSHIFTASSIGN);
+      break;
+    case RUNSIGNEDSHIFTASSIGN:
+      jj_consume_token(RUNSIGNEDSHIFTASSIGN);
+      break;
+    case PLUSASSIGN:
+      jj_consume_token(PLUSASSIGN);
+      break;
+    case MINUSASSIGN:
+      jj_consume_token(MINUSASSIGN);
+      break;
+    case REMASSIGN:
+      jj_consume_token(REMASSIGN);
+      break;
+    case STARASSIGN:
+      jj_consume_token(STARASSIGN);
+      break;
+    case SLASHASSIGN:
+      jj_consume_token(SLASHASSIGN);
+      break;
+    case ASSIGN:
+      jj_consume_token(ASSIGN);
+      break;
+    default:
+      jj_la1[123] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void UnaryOperatorNames() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INCR:
+      jj_consume_token(INCR);
+      break;
+    case DECR:
+      jj_consume_token(DECR);
+      break;
+    case PLUS:
+      jj_consume_token(PLUS);
+      break;
+    case MINUS:
+      jj_consume_token(MINUS);
+      break;
+    case TILDE:
+      jj_consume_token(TILDE);
+      break;
+    case BANG:
+      jj_consume_token(BANG);
+      break;
+    default:
+      jj_la1[124] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void UnaryExpression() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INCR:
+      PreIncrementExpression();
+      break;
+    case DECR:
+      PreDecrementExpression();
+      break;
+    case PLUS:
+    case MINUS:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PLUS:
+        jj_consume_token(PLUS);
+        break;
+      case MINUS:
+        jj_consume_token(MINUS);
+        break;
+      default:
+        jj_la1[125] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      PrimaryExpression();
+      break;
+    case STRING_LITERAL:
+    case NAME_LITERAL:
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FALSE:
+    case FLOAT:
+    case GLOBAL:
+    case INT:
+    case NAME:
+    case NONE:
+    case OBJECT:
+    case STRING:
+    case SUPER:
+    case TRUE:
+    case INTEGER_LITERAL:
+    case FLOATING_POINT_LITERAL:
+    case IDENTIFIER:
+    case LPAREN:
+    case BANG:
+    case TILDE:
+      UnaryExpressionNotPlusMinus();
+      break;
+    default:
+      jj_la1[126] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void PreIncrementExpression() throws ParseException {
+    jj_consume_token(INCR);
+    PrimaryExpression();
+  }
+
+  final public void PreDecrementExpression() throws ParseException {
+    jj_consume_token(DECR);
+    PrimaryExpression();
+  }
+
+  final public void UnaryExpressionNotPlusMinus() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BANG:
+    case TILDE:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case TILDE:
+        jj_consume_token(TILDE);
+        break;
+      case BANG:
+        jj_consume_token(BANG);
+        break;
+      default:
+        jj_la1[127] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      PrimaryExpression();
+      break;
+    case STRING_LITERAL:
+    case NAME_LITERAL:
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FALSE:
+    case FLOAT:
+    case GLOBAL:
+    case INT:
+    case NAME:
+    case NONE:
+    case OBJECT:
+    case STRING:
+    case SUPER:
+    case TRUE:
+    case INTEGER_LITERAL:
+    case FLOATING_POINT_LITERAL:
+    case IDENTIFIER:
+    case LPAREN:
+      if (jj_2_20(2)) {
+        CastExpression();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case STRING_LITERAL:
+        case NAME_LITERAL:
+        case CLASS:
+        case FALSE:
+        case GLOBAL:
+        case NONE:
+        case SUPER:
+        case TRUE:
+        case INTEGER_LITERAL:
+        case FLOATING_POINT_LITERAL:
+        case IDENTIFIER:
+        case LPAREN:
+          PostfixExpression();
+          break;
+        default:
+          jj_la1[128] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+      }
+      break;
+    default:
+      jj_la1[129] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void CastExpression() throws ParseException {
+    BasicTypeOrClassType();
+    jj_consume_token(LPAREN);
+    PrimaryPrefix();
+    jj_consume_token(RPAREN);
+  }
+
+  final public void PostfixExpression() throws ParseException {
+    PrimaryExpression();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INCR:
+    case DECR:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case INCR:
+        jj_consume_token(INCR);
+        break;
+      case DECR:
+        jj_consume_token(DECR);
+        break;
+      default:
+        jj_la1[130] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    default:
+      jj_la1[131] = jj_gen;
+      ;
+    }
+  }
+
+// OPERAND = ( CONSTVALUE | QUALIFIEDIDENTIFIER | FUNCCALL )
+  final public void PrimaryExpression() throws ParseException {
+    PrimaryPrefix();
+  }
+
+  final public void PrimaryPrefix() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      Expression();
+      jj_consume_token(RPAREN);
+      break;
+    case STRING_LITERAL:
+    case NAME_LITERAL:
+    case CLASS:
+    case FALSE:
+    case GLOBAL:
+    case NONE:
+    case SUPER:
+    case TRUE:
+    case INTEGER_LITERAL:
+    case FLOATING_POINT_LITERAL:
+    case IDENTIFIER:
+      if (jj_2_21(3)) {
+        Literal();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case CLASS:
+        case GLOBAL:
+        case SUPER:
+        case IDENTIFIER:
+          FuncCallOrIdentifierSpecifier();
+          break;
+        default:
+          jj_la1[132] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+      }
+      break;
+    default:
+      jj_la1[133] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+/*void PrimarySuffix():
+{}
+{
+    "." <IDENTIFIER> |
+    FunctionArgs()
+}*/
+
+// Function Calling Specifiers
+// Super(Pawn).Touch( Other );
+// Global.Touch( Other );
+// Super.Touch( Other );
+  final public void FuncCallOrIdentifierSpecifier() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case GLOBAL:
+    case SUPER:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case SUPER:
+        jj_consume_token(SUPER);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case LPAREN:
+          jj_consume_token(LPAREN);
+          jj_consume_token(IDENTIFIER);
+          jj_consume_token(RPAREN);
+          break;
+        default:
+          jj_la1[134] = jj_gen;
+          ;
+        }
+        jj_consume_token(DOT);
+        break;
+      case GLOBAL:
+        jj_consume_token(GLOBAL);
+        jj_consume_token(DOT);
+        break;
+      default:
+        jj_la1[135] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    default:
+      jj_la1[136] = jj_gen;
+      ;
+    }
+    FuncCallOrQualifiedIdentifier();
+  }
+
   final public void EmptyStatement() throws ParseException {
     jj_consume_token(SEMICOLON);
   }
 
-// The last expansion of this production accepts more than the legal
-// Java expansions for StatementExpression.  This expansion does not
-// use PostfixExpression for performance reasons.
   final public void StatementExpression() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INCR:
@@ -2051,15 +3411,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       break;
     case STRING_LITERAL:
     case NAME_LITERAL:
-    case BOOLEAN:
-    case BYTE:
     case CLASS:
     case FALSE:
-    case FLOAT:
-    case INT:
-    case NAME:
+    case GLOBAL:
     case NONE:
-    case STRING:
     case SUPER:
     case TRUE:
     case INTEGER_LITERAL:
@@ -2103,22 +3458,17 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         case REMASSIGN:
         case RSIGNEDSHIFTASSIGN:
         case RUNSIGNEDSHIFTASSIGN:
-          AssignmentOperator();
-          if (jj_2_6(3)) {
+          AssignmentOperatorNames();
+          if (jj_2_22(3)) {
             Expression();
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case STRING_LITERAL:
             case NAME_LITERAL:
-            case BOOLEAN:
-            case BYTE:
             case CLASS:
             case FALSE:
-            case FLOAT:
-            case INT:
-            case NAME:
+            case GLOBAL:
             case NONE:
-            case STRING:
             case SUPER:
             case TRUE:
             case INTEGER_LITERAL:
@@ -2130,25 +3480,25 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
               StatementExpression();
               break;
             default:
-              jj_la1[84] = jj_gen;
+              jj_la1[137] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
           }
           break;
         default:
-          jj_la1[85] = jj_gen;
+          jj_la1[138] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[86] = jj_gen;
+        jj_la1[139] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[87] = jj_gen;
+      jj_la1[140] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2169,15 +3519,17 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void DefaultPropertiesBlock() throws ParseException {
     jj_consume_token(_DEFAULTPROPERTIES);
     jj_consume_token(LBRACE);
-    label_35:
+    label_37:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case BEGIN:
       case IDENTIFIER:
+      case DOT:
         ;
         break;
       default:
-        jj_la1[88] = jj_gen;
-        break label_35;
+        jj_la1[141] = jj_gen;
+        break label_37;
       }
       DefProp();
     }
@@ -2187,15 +3539,17 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void StructDefaultPropertiesBlock() throws ParseException {
     jj_consume_token(STRUCTDEFAULTPROPERTIES);
     jj_consume_token(LBRACE);
-    label_36:
+    label_38:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case BEGIN:
       case IDENTIFIER:
+      case DOT:
         ;
         break;
       default:
-        jj_la1[89] = jj_gen;
-        break label_36;
+        jj_la1[142] = jj_gen;
+        break label_38;
       }
       DefProp();
     }
@@ -2204,9 +3558,116 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // DEFPROP = DEFPROPIDENTIFIER EQUALS PRINTABLE
   final public void DefProp() throws ParseException {
-    DefPropIdentifier();
-    jj_consume_token(ASSIGN);
-    Expression();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BEGIN:
+      jj_consume_token(BEGIN);
+      jj_consume_token(OBJECT);
+      jj_consume_token(CLASS);
+      jj_consume_token(ASSIGN);
+      jj_consume_token(IDENTIFIER);
+      jj_consume_token(NAME);
+      jj_consume_token(ASSIGN);
+      jj_consume_token(IDENTIFIER);
+      label_39:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case IDENTIFIER:
+        case DOT:
+          ;
+          break;
+        default:
+          jj_la1[143] = jj_gen;
+          break label_39;
+        }
+        DefProp2();
+      }
+      jj_consume_token(END);
+      jj_consume_token(OBJECT);
+      break;
+    case IDENTIFIER:
+    case DOT:
+      DefProp2();
+      break;
+    default:
+      jj_la1[144] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void DefProp2() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      DefPropIdentifier();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ASSIGN:
+        jj_consume_token(ASSIGN);
+        DefPropValue();
+        break;
+      case LBRACE:
+        jj_consume_token(LBRACE);
+        jj_consume_token(LPAREN);
+        jj_consume_token(IDENTIFIER);
+        jj_consume_token(ASSIGN);
+        DefPropValue();
+        label_40:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case COMMA:
+            ;
+            break;
+          default:
+            jj_la1[145] = jj_gen;
+            break label_40;
+          }
+          jj_consume_token(COMMA);
+          jj_consume_token(IDENTIFIER);
+          jj_consume_token(ASSIGN);
+          DefPropValue();
+        }
+        jj_consume_token(RPAREN);
+        jj_consume_token(RBRACE);
+        break;
+      case LPAREN:
+        jj_consume_token(LPAREN);
+        jj_consume_token(IDENTIFIER);
+        jj_consume_token(ASSIGN);
+        DefPropValue();
+        label_41:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case COMMA:
+            ;
+            break;
+          default:
+            jj_la1[146] = jj_gen;
+            break label_41;
+          }
+          jj_consume_token(COMMA);
+          jj_consume_token(IDENTIFIER);
+          jj_consume_token(ASSIGN);
+          DefPropValue();
+        }
+        jj_consume_token(RPAREN);
+        break;
+      default:
+        jj_la1[147] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    case DOT:
+      jj_consume_token(DOT);
+      jj_consume_token(IDENTIFIER);
+      jj_consume_token(LPAREN);
+      DefPropValue();
+      jj_consume_token(RPAREN);
+      break;
+    default:
+      jj_la1[148] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
   }
 
 // DEFPROPIDENTIFIER = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
@@ -2218,23 +3679,79 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LPAREN:
         jj_consume_token(LPAREN);
-        jj_consume_token(INTEGER_LITERAL);
+        ArrayIndex();
         jj_consume_token(RPAREN);
         break;
       case LBRACKET:
         jj_consume_token(LBRACKET);
-        jj_consume_token(INTEGER_LITERAL);
+        ArrayIndex();
         jj_consume_token(RBRACKET);
         break;
       default:
-        jj_la1[90] = jj_gen;
+        jj_la1[149] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[91] = jj_gen;
+      jj_la1[150] = jj_gen;
       ;
+    }
+  }
+
+  final public void ArrayIndex() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INTEGER_LITERAL:
+      jj_consume_token(INTEGER_LITERAL);
+      break;
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[151] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void DefPropValue() throws ParseException {
+    if (jj_2_23(3)) {
+      jj_consume_token(IDENTIFIER);
+      jj_consume_token(NAME_LITERAL);
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case STRING_LITERAL:
+      case NAME_LITERAL:
+      case BOOLEAN:
+      case BYTE:
+      case CLASS:
+      case FALSE:
+      case FLOAT:
+      case GLOBAL:
+      case INT:
+      case NAME:
+      case NONE:
+      case OBJECT:
+      case STRING:
+      case SUPER:
+      case TRUE:
+      case INTEGER_LITERAL:
+      case FLOATING_POINT_LITERAL:
+      case IDENTIFIER:
+      case LPAREN:
+      case BANG:
+      case TILDE:
+      case INCR:
+      case DECR:
+      case PLUS:
+      case MINUS:
+        Expression();
+        break;
+      default:
+        jj_la1[152] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     }
   }
 
@@ -2307,7 +3824,7 @@ See above
       jj_consume_token(NOTPLACEABLE);
       break;
     default:
-      jj_la1[92] = jj_gen;
+      jj_la1[153] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2323,16 +3840,16 @@ See above
       jj_consume_token(FALSE);
       break;
     default:
-      jj_la1[93] = jj_gen;
+      jj_la1[154] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
 // VARPARAMS = config | const | editconst | export | globalconfig | input |
-//                            localized | native | private | protected | transient | travel |
-//                            // available from warfare and up:
-//                            editinline | deprecated | edfindable | editinlineuse
+//             localized | native | private | protected | transient | travel |
+//             // available from warfare and up:
+//             editinline | deprecated | edfindable | editinlineuse
   final public void VarParams() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CONFIG:
@@ -2384,7 +3901,7 @@ See above
       jj_consume_token(TRAVEL);
       break;
     default:
-      jj_la1[94] = jj_gen;
+      jj_la1[155] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2397,7 +3914,7 @@ See above
   }
 
 // CONSTFUNCPARAMS = final | iterator | latent | simulated | singular | static |
-//                            exec | protected | private
+//                   exec | protected | private
 // Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
   final public void ConstFuncParams() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2426,7 +3943,7 @@ See above
       jj_consume_token(PRIVATE);
       break;
     default:
-      jj_la1[95] = jj_gen;
+      jj_la1[156] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2446,6 +3963,7 @@ See above
     case FLOAT:
     case INT:
     case NAME:
+    case OBJECT:
     case STRING:
       BasicTypeSimple();
       break;
@@ -2453,7 +3971,7 @@ See above
       BasicClassType();
       break;
     default:
-      jj_la1[96] = jj_gen;
+      jj_la1[157] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2479,8 +3997,11 @@ See above
     case NAME:
       jj_consume_token(NAME);
       break;
+    case OBJECT:
+      jj_consume_token(OBJECT);
+      break;
     default:
-      jj_la1[97] = jj_gen;
+      jj_la1[158] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2498,22 +4019,20 @@ See above
     case FLOAT:
     case INT:
     case NAME:
+    case OBJECT:
     case STRING:
       BasicTypeSimple();
       break;
     case CLASS:
       jj_consume_token(CLASS);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case LT:
+      if (jj_2_24(2)) {
         ClassTypeEnd();
-        break;
-      default:
-        jj_la1[98] = jj_gen;
+      } else {
         ;
       }
       break;
     default:
-      jj_la1[99] = jj_gen;
+      jj_la1[159] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2532,213 +4051,12 @@ See above
       jj_consume_token(DELEGATE);
       break;
     default:
-      jj_la1[100] = jj_gen;
+      jj_la1[160] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
-//OPERATORNAMES  = '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' |
-//                 '-' | '=' | '+' | '|' | '\' | ':' | '<' | '>' | '/' |
-//                 '?' | '`' |
-//                 '<<' | '>>' | '!=' | '<=' | '>=' | '++' | '--' | '?-' | '+=' |
-//                 '-=' | '*=' | '/=' | '&&' | '||' | '^^' | '==' | '**' |
-//                 '~=' | '@=' | '>>>'
-// http://udn.epicgames.com/Two/UnrealScriptReference.html#Built-in%20operators%20and%20their%20precedence
-  final public void OperatorNames() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case AT:
-      jj_consume_token(AT);
-      break;
-    case DOLLARS:
-      jj_consume_token(DOLLARS);
-      break;
-    case SC_OR:
-      jj_consume_token(SC_OR);
-      break;
-    case SC_AND:
-      jj_consume_token(SC_AND);
-      break;
-    case 176:
-      jj_consume_token(176);
-      break;
-    case BIT_AND:
-      jj_consume_token(BIT_AND);
-      break;
-    case BIT_OR:
-      jj_consume_token(BIT_OR);
-      break;
-    case XOR:
-      jj_consume_token(XOR);
-      break;
-    case NE:
-      jj_consume_token(NE);
-      break;
-    case EQ:
-      jj_consume_token(EQ);
-      break;
-    case LT:
-      jj_consume_token(LT);
-      break;
-    default:
-      jj_la1[101] = jj_gen;
-      if (jj_2_7(1)) {
-        GT();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case LE:
-          jj_consume_token(LE);
-          break;
-        case GE:
-          jj_consume_token(GE);
-          break;
-        case 177:
-          jj_consume_token(177);
-          break;
-        case LSHIFT:
-          jj_consume_token(LSHIFT);
-          break;
-        default:
-          jj_la1[102] = jj_gen;
-          if (jj_2_8(1)) {
-            RSIGNEDSHIFT();
-          } else if (jj_2_9(1)) {
-            RUNSIGNEDSHIFT();
-          } else {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case PLUS:
-              jj_consume_token(PLUS);
-              break;
-            case MINUS:
-              jj_consume_token(MINUS);
-              break;
-            case REM:
-              jj_consume_token(REM);
-              break;
-            case STAR:
-              jj_consume_token(STAR);
-              break;
-            case SLASH:
-              jj_consume_token(SLASH);
-              break;
-            case DOTPRODUCT:
-              jj_consume_token(DOTPRODUCT);
-              break;
-            case CROSS:
-              jj_consume_token(CROSS);
-              break;
-            case EXPONENT:
-              jj_consume_token(EXPONENT);
-              break;
-            case CLOCKWISEFROM:
-              jj_consume_token(CLOCKWISEFROM);
-              break;
-            case TILDE:
-              jj_consume_token(TILDE);
-              break;
-            case BANG:
-              jj_consume_token(BANG);
-              break;
-            case 178:
-              jj_consume_token(178);
-              break;
-            case 179:
-              jj_consume_token(179);
-              break;
-            case COLON:
-              jj_consume_token(COLON);
-              break;
-            case HOOK:
-              jj_consume_token(HOOK);
-              break;
-            case 180:
-              jj_consume_token(180);
-              break;
-            case INCR:
-              jj_consume_token(INCR);
-              break;
-            case DECR:
-              jj_consume_token(DECR);
-              break;
-            case 181:
-              jj_consume_token(181);
-              break;
-            case ASSIGN:
-            case ATASSIGN:
-            case DOLLARSASSIGN:
-            case PLUSASSIGN:
-            case MINUSASSIGN:
-            case STARASSIGN:
-            case SLASHASSIGN:
-            case ANDASSIGN:
-            case ORASSIGN:
-            case XORASSIGN:
-            case REMASSIGN:
-            case RSIGNEDSHIFTASSIGN:
-            case RUNSIGNEDSHIFTASSIGN:
-              AssignmentOperator();
-              break;
-            default:
-              jj_la1[103] = jj_gen;
-              jj_consume_token(-1);
-              throw new ParseException();
-            }
-          }
-        }
-      }
-    }
-  }
-
-  final public void AssignmentOperator() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ATASSIGN:
-      jj_consume_token(ATASSIGN);
-      break;
-    case DOLLARSASSIGN:
-      jj_consume_token(DOLLARSASSIGN);
-      break;
-    case ANDASSIGN:
-      jj_consume_token(ANDASSIGN);
-      break;
-    case XORASSIGN:
-      jj_consume_token(XORASSIGN);
-      break;
-    case ORASSIGN:
-      jj_consume_token(ORASSIGN);
-      jj_consume_token(LSHIFTASSIGN);
-      break;
-    case RSIGNEDSHIFTASSIGN:
-      jj_consume_token(RSIGNEDSHIFTASSIGN);
-      break;
-    case RUNSIGNEDSHIFTASSIGN:
-      jj_consume_token(RUNSIGNEDSHIFTASSIGN);
-      break;
-    case PLUSASSIGN:
-      jj_consume_token(PLUSASSIGN);
-      break;
-    case MINUSASSIGN:
-      jj_consume_token(MINUSASSIGN);
-      break;
-    case REMASSIGN:
-      jj_consume_token(REMASSIGN);
-      break;
-    case STARASSIGN:
-      jj_consume_token(STARASSIGN);
-      break;
-    case SLASHASSIGN:
-      jj_consume_token(SLASHASSIGN);
-      break;
-    case ASSIGN:
-      jj_consume_token(ASSIGN);
-      break;
-    default:
-      jj_la1[104] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-  }
-
-// Java Rules
   final public void ResultType() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VOID:
@@ -2750,237 +4068,17 @@ See above
     case FLOAT:
     case INT:
     case NAME:
+    case OBJECT:
     case STRING:
       BasicType();
       break;
     default:
-      jj_la1[105] = jj_gen;
+      jj_la1[161] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
-/*void ConditionalExpression():
-{}
-{
-  ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
-}
-
-void ConditionalOrExpression():
-{}
-{
-  ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
-}
-
-void ConditionalAndExpression():
-{}
-{
-  InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
-}
-
-void InclusiveOrExpression():
-{}
-{
-  ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
-}
-
-void ExclusiveOrExpression():
-{}
-{
-  AndExpression() ( "^" AndExpression() )*
-}
-
-void AndExpression():
-{}
-{
-  EqualityExpression() ( "&" EqualityExpression() )*
-}
-
-void EqualityExpression():
-{}
-{
-  RelationalExpression() ( ( "==" | "!=" ) RelationalExpression() )*
-}
-
-void RelationalExpression():
-{}
-{
-  ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression() )*
-}
-
-void ShiftExpression():
-{}
-{
-  AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
-}
-
-void AdditiveExpression():
-{}
-{
-  MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
-}
-
-void MultiplicativeExpression():
-{}
-{
-  UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
-}
-
-void UnaryExpression():
-{}
-{
-  ( "+" | "-" ) UnaryExpression()
-|
-  PreIncrementExpression()
-|
-  PreDecrementExpression()
-|
-  UnaryExpressionNotPlusMinus()
-}*/
-  final public void PreIncrementExpression() throws ParseException {
-    jj_consume_token(INCR);
-    PrimaryExpression();
-  }
-
-  final public void PreDecrementExpression() throws ParseException {
-    jj_consume_token(DECR);
-    PrimaryExpression();
-  }
-
-/*void UnaryExpressionNotPlusMinus():
-{}
-{
-  ( "~" | "!" ) UnaryExpression()
-|
-  LOOKAHEAD( CastLookahead() )
-  CastExpression()
-|
-  PostfixExpression()
-}
-
-// This production is to determine lookahead only.  The LOOKAHEAD specifications
-// below are not used, but they are there just to indicate that we know about
-// this.
-void CastLookahead():
-{}
-{
-  LOOKAHEAD(2)
-  "(" BasicType()
-|
-  LOOKAHEAD("(" BasicType() "[")
-  "(" BasicType() "[" "]"
-|
-  "(" BasicType() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "super" | "new" | Literal() )
-}
-
-void PostfixExpression():
-{}
-{
-  PrimaryExpression() [ "++" | "--" ]
-}
-
-void CastExpression():
-{}
-{
-  LOOKAHEAD("(" BasicType())
-  "(" BasicType() ")" UnaryExpression()
-|
-  "(" BasicType() ")" UnaryExpressionNotPlusMinus()
-}*/
-  final public void PrimaryExpression() throws ParseException {
-    if (jj_2_10(2)) {
-      PrimaryPrefix();
-    } else {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case CLASS:
-      case IDENTIFIER:
-        FuncCallOrQualifiedIdentifier();
-        break;
-      default:
-        jj_la1[106] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    }
-  }
-
-  final public void PrimaryPrefix() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case STRING_LITERAL:
-    case NAME_LITERAL:
-    case FALSE:
-    case NONE:
-    case TRUE:
-    case INTEGER_LITERAL:
-    case FLOATING_POINT_LITERAL:
-      Literal();
-      break;
-    case SUPER:
-      jj_consume_token(SUPER);
-      jj_consume_token(DOT);
-      jj_consume_token(IDENTIFIER);
-      break;
-    case LPAREN:
-      jj_consume_token(LPAREN);
-      Expression();
-      jj_consume_token(RPAREN);
-      break;
-    case BOOLEAN:
-    case BYTE:
-    case CLASS:
-    case FLOAT:
-    case INT:
-    case NAME:
-    case STRING:
-      BasicCast();
-      break;
-    default:
-      jj_la1[107] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-  }
-
-  final public void BasicCast() throws ParseException {
-    BasicTypeOrClassType();
-    jj_consume_token(LPAREN);
-    Expression();
-    jj_consume_token(RPAREN);
-  }
-
-/*void PrimarySuffix():
-{}
-{
-    "." <IDENTIFIER> |
-    FunctionArgs()
-}*/
-
-/*
-
-// The third LOOKAHEAD specification below is to parse to PrimarySuffix
-// if there is an expression between the "[...]".
-void ArrayDimsAndInits():
-{}
-{
-  LOOKAHEAD(2)
-  ( LOOKAHEAD(2) "[" Expression() "]" )+ ( LOOKAHEAD(2) "[" "]" )*
-|
-  ( "[" "]" )+ ArrayInitializer()
-}
-
-void VariableInitializer():
-{}
-{
-  ArrayInitializer()
-|
-  Expression()
-}
-
-void ArrayInitializer():
-{}
-{
-  "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
-}*/
   final public void Literal() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INTEGER_LITERAL:
@@ -2990,6 +4088,10 @@ void ArrayInitializer():
       jj_consume_token(FLOATING_POINT_LITERAL);
       break;
     case NAME_LITERAL:
+      jj_consume_token(NAME_LITERAL);
+      break;
+    case CLASS:
+      jj_consume_token(CLASS);
       jj_consume_token(NAME_LITERAL);
       break;
     case STRING_LITERAL:
@@ -3003,7 +4105,7 @@ void ArrayInitializer():
       NoneLiteral();
       break;
     default:
-      jj_la1[108] = jj_gen;
+      jj_la1[162] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3016,8 +4118,8 @@ void ArrayInitializer():
 // We use productions to match >>>, >> and > so that we can keep the
 // type declaration syntax with generics clean
   final public void RUNSIGNEDSHIFT() throws ParseException {
-    if (getToken(1).kind == GT &&
-                    ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT) {
+    if (( getToken(1).kind == GT ) &&
+            ( ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT )) {
 
     } else {
       jj_consume_token(-1);
@@ -3029,8 +4131,8 @@ void ArrayInitializer():
   }
 
   final public void RSIGNEDSHIFT() throws ParseException {
-    if (getToken(1).kind == GT &&
-                    ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT) {
+    if (( getToken(1).kind == GT ) &&
+            ( ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT)) {
 
     } else {
       jj_consume_token(-1);
@@ -3041,8 +4143,8 @@ void ArrayInitializer():
   }
 
   final public void GT() throws ParseException {
-    if (getToken(1).kind == GT &&
-                    ((Token.GTToken)getToken(1)).realKind == GT) {
+    if (( getToken(1).kind == GT ) &&
+            ( ((Token.GTToken)getToken(1)).realKind == GT )) {
 
     } else {
       jj_consume_token(-1);
@@ -3121,485 +4223,106 @@ void ArrayInitializer():
     finally { jj_save(9, xla); }
   }
 
-  private boolean jj_3R_45() {
-    jj_lookingAhead = true;
-    jj_semLA = getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT;
-    jj_lookingAhead = false;
-    if (!jj_semLA || jj_3R_58()) return true;
-    if (jj_scan_token(GT)) return true;
-    if (jj_scan_token(GT)) return true;
-    return false;
+  private boolean jj_2_11(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_11(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(10, xla); }
   }
 
-  private boolean jj_3_1() {
-    if (jj_3R_37()) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
+  private boolean jj_2_12(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_12(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(11, xla); }
   }
 
-  private boolean jj_3R_46() {
-    jj_lookingAhead = true;
-    jj_semLA = getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT;
-    jj_lookingAhead = false;
-    if (!jj_semLA || jj_3R_59()) return true;
-    if (jj_scan_token(GT)) return true;
-    if (jj_scan_token(GT)) return true;
-    return false;
+  private boolean jj_2_13(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_13(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(12, xla); }
   }
 
-  private boolean jj_3R_90() {
-    if (jj_3R_68()) return true;
-    return false;
+  private boolean jj_2_14(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_14(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(13, xla); }
   }
 
-  private boolean jj_3R_81() {
-    if (jj_3R_86()) return true;
-    return false;
+  private boolean jj_2_15(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_15(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(14, xla); }
   }
 
-  private boolean jj_3R_84() {
-    if (jj_scan_token(ORASSIGN)) return true;
-    if (jj_scan_token(LSHIFTASSIGN)) return true;
-    return false;
+  private boolean jj_2_16(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_16(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(15, xla); }
   }
 
-  private boolean jj_3_9() {
-    if (jj_3R_46()) return true;
-    return false;
+  private boolean jj_2_17(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_17(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(16, xla); }
   }
 
-  private boolean jj_3R_73() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(113)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(117)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(14)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(11)) {
-    jj_scanpos = xsp;
-    if (jj_3R_81()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(77)) return true;
-    }
-    }
-    }
-    }
-    }
-    return false;
+  private boolean jj_2_18(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_18(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(17, xla); }
   }
 
-  private boolean jj_3_7() {
-    if (jj_3R_44()) return true;
-    return false;
+  private boolean jj_2_19(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_19(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(18, xla); }
   }
 
-  private boolean jj_3R_80() {
-    if (jj_3R_75()) return true;
-    return false;
+  private boolean jj_2_20(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_20(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(19, xla); }
   }
 
-  private boolean jj_3R_75() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(160)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(161)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(166)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(168)) {
-    jj_scanpos = xsp;
-    if (jj_3R_84()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(171)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(172)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(162)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(163)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(169)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(164)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(165)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(134)) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
+  private boolean jj_2_21(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_21(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(20, xla); }
   }
 
-  private boolean jj_3R_89() {
-    if (jj_scan_token(DOT)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
+  private boolean jj_2_22(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_22(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(21, xla); }
+  }
+
+  private boolean jj_2_23(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_23(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(22, xla); }
+  }
+
+  private boolean jj_2_24(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_24(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(23, xla); }
   }
 
   private boolean jj_3_8() {
-    if (jj_3R_45()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_92() {
-    if (jj_3R_93()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_56() {
-    if (jj_3R_75()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_67() {
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_6() {
-    if (jj_3R_43()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_72() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(148)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(149)) {
-    jj_scanpos = xsp;
-    if (jj_3R_80()) return true;
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_79() {
-    if (jj_3R_74()) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_3R_39()) return true;
-    if (jj_scan_token(SEMICOLON)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_42() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(135)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(136)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(146)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(147)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(176)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(154)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(155)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(156)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(145)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(142)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(137)) {
-    jj_scanpos = xsp;
-    if (jj_3_7()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(143)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(144)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(177)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(158)) {
-    jj_scanpos = xsp;
-    if (jj_3_8()) {
-    jj_scanpos = xsp;
-    if (jj_3_9()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(150)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(151)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(157)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(152)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(153)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(38)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(30)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(159)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(24)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(139)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(138)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(178)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(179)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(141)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(140)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(180)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(148)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(149)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(181)) {
-    jj_scanpos = xsp;
-    if (jj_3R_56()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_88() {
-    if (jj_scan_token(CLASS)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_92()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_38() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_83() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_89()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_3R_90()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_94() {
-    if (jj_3R_43()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_82() {
-    if (jj_scan_token(CLASS)) return true;
-    if (jj_scan_token(NAME_LITERAL)) return true;
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_74() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_82()) {
-    jj_scanpos = xsp;
-    if (jj_3R_83()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_68() {
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_94()) jj_scanpos = xsp;
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_76() {
-    if (jj_3R_85()) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_49() {
-    if (jj_3R_65()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_78() {
-    if (jj_scan_token(CLASS)) return true;
-    if (jj_scan_token(NAME_LITERAL)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_53() {
-    if (jj_3R_71()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_72()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_63() {
-    if (jj_3R_76()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_52() {
-    if (jj_3R_70()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_51() {
-    if (jj_3R_69()) return true;
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    if (jj_3R_42()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_39() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_51()) {
-    jj_scanpos = xsp;
-    if (jj_3R_52()) {
-    jj_scanpos = xsp;
-    if (jj_3R_53()) return true;
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_62() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_43()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_87() {
-    if (jj_3R_91()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_85() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_87()) {
-    jj_scanpos = xsp;
-    if (jj_3R_88()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_61() {
-    if (jj_scan_token(SUPER)) return true;
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_60() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_47() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_60()) {
-    jj_scanpos = xsp;
-    if (jj_3R_61()) {
-    jj_scanpos = xsp;
-    if (jj_3R_62()) {
-    jj_scanpos = xsp;
-    if (jj_3R_63()) return true;
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_66() {
-    if (jj_3R_78()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_50() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_66()) jj_scanpos = xsp;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_67()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_3R_68()) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_3R_38()) return true;
+    if (jj_3R_49()) return true;
     return false;
   }
 
@@ -3608,87 +4331,18 @@ void ArrayInitializer():
     return false;
   }
 
-  private boolean jj_3R_71() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_10()) {
-    jj_scanpos = xsp;
-    if (jj_3R_79()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_48() {
-    if (jj_3R_64()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_55() {
-    if (jj_3R_74()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_91() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(18)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(20)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(53)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(66)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(99)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(71)) return true;
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_40() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(122)) {
-    jj_scanpos = xsp;
-    if (jj_3_5()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_54() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_41() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_54()) {
-    jj_scanpos = xsp;
-    if (jj_3R_55()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_37() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_48()) {
-    jj_scanpos = xsp;
-    if (jj_3R_49()) return true;
-    }
-    return false;
-  }
-
   private boolean jj_3_4() {
-    if (jj_3R_40()) return true;
-    if (jj_3R_41()) return true;
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  private boolean jj_3_9() {
+    if (jj_3R_50()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_95() {
+    if (jj_3R_78()) return true;
     return false;
   }
 
@@ -3697,74 +4351,906 @@ void ArrayInitializer():
     return false;
   }
 
-  private boolean jj_3R_65() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_77()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_43() {
-    if (jj_3R_41()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_4()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_70() {
-    if (jj_scan_token(DECR)) return true;
-    if (jj_3R_71()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_69() {
-    if (jj_scan_token(INCR)) return true;
-    if (jj_3R_71()) return true;
+  private boolean jj_3R_45() {
+    if (jj_3R_60()) return true;
     return false;
   }
 
   private boolean jj_3R_93() {
-    if (jj_scan_token(LT)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 
-  private boolean jj_3R_86() {
+  private boolean jj_3R_92() {
+    if (jj_3R_49()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_56() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(106)) {
+    if (jj_scan_token(54)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(51)) return true;
+    if (jj_scan_token(70)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(71)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(100)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(102)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(49)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(92)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(91)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
     }
     return false;
   }
 
-  private boolean jj_3R_64() {
-    if (jj_scan_token(LBRACKET)) return true;
+  private boolean jj_3R_46() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_scan_token(NEW)) return true;
     return false;
   }
 
-  private boolean jj_3R_57() {
+  private boolean jj_3R_64() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_83()) {
+    jj_scanpos = xsp;
+    if (jj_3R_84()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_83() {
+    if (jj_scan_token(SUPER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_93()) jj_scanpos = xsp;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_49() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_64()) jj_scanpos = xsp;
+    if (jj_3R_65()) return true;
     return false;
   }
 
   private boolean jj_3R_58() {
+    if (jj_3R_74()) return true;
     return false;
   }
 
-  private boolean jj_3R_44() {
-    jj_lookingAhead = true;
-    jj_semLA = getToken(1).kind == GT &&
-                ((Token.GTToken)getToken(1)).realKind == GT;
-    jj_lookingAhead = false;
-    if (!jj_semLA || jj_3R_57()) return true;
-    if (jj_scan_token(GT)) return true;
+  private boolean jj_3_7() {
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_100() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_7()) {
+    jj_scanpos = xsp;
+    if (jj_3_8()) {
+    jj_scanpos = xsp;
+    if (jj_3R_102()) return true;
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_94() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_99() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_44()) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_97() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_99()) {
+    jj_scanpos = xsp;
+    if (jj_3R_100()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_98() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(152)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(153)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_96() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(154)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(155)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(152)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(153)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(143)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(142)) return true;
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3_6() {
+    if (jj_3R_47()) return true;
+    if (jj_3R_89()) return true;
     return false;
   }
 
   private boolean jj_3R_59() {
+    if (jj_3R_75()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_89() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_96()) jj_scanpos = xsp;
+    if (jj_3R_97()) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_98()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_3R_44()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3_21() {
+    if (jj_3R_54()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_82() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_21()) {
+    jj_scanpos = xsp;
+    if (jj_3R_92()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_57() {
+    if (jj_3R_73()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_63() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_81()) {
+    jj_scanpos = xsp;
+    if (jj_3R_82()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_81() {
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_86() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_94()) { jj_scanpos = xsp; break; }
+    }
+    xsp = jj_scanpos;
+    if (jj_3R_95()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_75() {
+    if (jj_3R_89()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_6()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_101() {
+    if (jj_3R_44()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_65() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_85()) {
+    jj_scanpos = xsp;
+    if (jj_3R_86()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_85() {
+    if (jj_3R_90()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_78() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_101()) jj_scanpos = xsp;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_43() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_57()) {
+    jj_scanpos = xsp;
+    if (jj_3R_58()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_48() {
+    if (jj_3R_62()) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_63()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_87() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(110)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(53)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_76() {
+    if (jj_3R_90()) return true;
+    return false;
+  }
+
+  private boolean jj_3_20() {
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_60() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_76()) jj_scanpos = xsp;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_77()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_3R_78()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_44() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_5()) {
+    jj_scanpos = xsp;
+    if (jj_3R_59()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_5() {
+    if (jj_3R_46()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_90() {
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(NAME_LITERAL)) return true;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_19() {
+    if (jj_3R_53()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_67() {
+    return false;
+  }
+
+  private boolean jj_3R_88() {
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_17() {
+    if (jj_3R_51()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_74() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_88()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_68() {
+    return false;
+  }
+
+  private boolean jj_3R_72() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(126)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(82)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_51() {
+    jj_lookingAhead = true;
+    jj_semLA = ( getToken(1).kind == GT ) &&
+        ( ((Token.GTToken)getToken(1)).realKind == GT );
+    jj_lookingAhead = false;
+    if (!jj_semLA || jj_3R_67()) return true;
+    if (jj_scan_token(GT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_18() {
+    if (jj_3R_52()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_69() {
+    return false;
+  }
+
+  private boolean jj_3R_52() {
+    jj_lookingAhead = true;
+    jj_semLA = ( getToken(1).kind == GT ) &&
+        ( ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT);
+    jj_lookingAhead = false;
+    if (!jj_semLA || jj_3R_68()) return true;
+    if (jj_scan_token(GT)) return true;
+    if (jj_scan_token(GT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_23() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(NAME_LITERAL)) return true;
+    return false;
+  }
+
+  private boolean jj_3_16() {
+    if (jj_3R_53()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_55() {
+    if (jj_scan_token(LT)) return true;
+    if (jj_3R_72()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_61() {
+    if (jj_scan_token(ORASSIGN)) return true;
+    if (jj_scan_token(LSHIFTASSIGN)) return true;
+    return false;
+  }
+
+  private boolean jj_3_14() {
+    if (jj_3R_51()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_53() {
+    jj_lookingAhead = true;
+    jj_semLA = ( getToken(1).kind == GT ) &&
+        ( ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT );
+    jj_lookingAhead = false;
+    if (!jj_semLA || jj_3R_69()) return true;
+    if (jj_scan_token(GT)) return true;
+    if (jj_scan_token(GT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_24() {
+    if (jj_3R_55()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_102() {
+    if (jj_3R_54()) return true;
+    return false;
+  }
+
+  private boolean jj_3_15() {
+    if (jj_3R_52()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_71() {
+    if (jj_3R_87()) return true;
+    return false;
+  }
+
+  private boolean jj_3_13() {
+    if (jj_3R_53()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_73() {
+    if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_70() {
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(NAME_LITERAL)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_80() {
+    if (jj_scan_token(CLASS)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_24()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_66() {
+    if (jj_scan_token(ORASSIGN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_54() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(117)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(121)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(14)) {
+    jj_scanpos = xsp;
+    if (jj_3R_70()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(11)) {
+    jj_scanpos = xsp;
+    if (jj_3R_71()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(80)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_47() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(145)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(144)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(139)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(140)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(150)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(151)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(180)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(158)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(159)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(160)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(149)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(146)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(141)) {
+    jj_scanpos = xsp;
+    if (jj_3_14()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(147)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(148)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(181)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(162)) {
+    jj_scanpos = xsp;
+    if (jj_3_15()) {
+    jj_scanpos = xsp;
+    if (jj_3_16()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(154)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(155)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(161)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(156)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(157)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(39)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(31)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(163)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(25)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(182)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(183)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(184)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(185)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(164)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(165)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(170)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(172)) {
+    jj_scanpos = xsp;
+    if (jj_3R_61()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(175)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(176)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(166)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(167)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(173)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(168)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(169)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(138)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3_11() {
+    if (jj_3R_51()) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_43()) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3_12() {
+    if (jj_3R_52()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_62() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_79()) {
+    jj_scanpos = xsp;
+    if (jj_3R_80()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_79() {
+    if (jj_3R_91()) return true;
+    return false;
+  }
+
+  private boolean jj_3_22() {
+    if (jj_3R_44()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_84() {
+    if (jj_scan_token(GLOBAL)) return true;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_50() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(145)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(144)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(139)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(140)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(150)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(151)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(180)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(158)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(159)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(160)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(149)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(146)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(141)) {
+    jj_scanpos = xsp;
+    if (jj_3_11()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(147)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(148)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(181)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(162)) {
+    jj_scanpos = xsp;
+    if (jj_3_12()) {
+    jj_scanpos = xsp;
+    if (jj_3_13()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(154)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(155)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(161)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(156)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(157)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(39)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(31)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(163)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(25)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(182)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(183)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(184)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(185)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(164)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(165)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(170)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(172)) {
+    jj_scanpos = xsp;
+    if (jj_3R_66()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(175)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(176)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(166)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(167)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(173)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(168)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(169)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(138)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(152)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(153)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(143)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(142)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_42() {
+    if (jj_3R_56()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_91() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(19)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(21)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(55)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(69)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(103)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(74)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(82)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_42()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(NATIVE)) return true;
     return false;
   }
 
@@ -3782,7 +5268,7 @@ void ArrayInitializer():
   private boolean jj_lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[109];
+  final private int[] jj_la1 = new int[163];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -3798,24 +5284,24 @@ void ArrayInitializer():
       jj_la1_init_5();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x10000000,0x0,0x0,0x0,0x8008000,0x0,0x8008000,0x0,0x800000,0x0,0x800000,0x0,0x0,0x804800,0x0,0x0,0x80000000,0x0,0x0,0x800000,0x0,0x10000000,0x0,0x18000000,0x0,0x0,0x950000,0x940000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000,0x0,0x20000,0x20000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2950000,0x940000,0x0,0x0,0x0,0x0,0x2000000,0x2000000,0x950000,0x0,0x209c4800,0x0,0x0,0x940000,0x0,0x0,0x209c4800,0x209c4800,0x0,0x400000,0x80000000,0x800000,0x209c4800,0x209c4800,0x804800,0x4000,0x209c4800,0x944800,0x804800,0x944800,0x0,0x804800,0x0,0x944800,0x0,0x0,0x944800,0x0,0x0,0x0,0x0,0x8000,0x0,0x18000000,0x0,0x940000,0x140000,0x0,0x940000,0x0,0x0,0x0,0x41000000,0x0,0x940000,0x800000,0x944800,0x4800,};
+      jj_la1_0 = new int[] {0x20000000,0x0,0x0,0x0,0x10008000,0x0,0x10008000,0x0,0x0,0x0,0x1000000,0x0,0x20000000,0x1000000,0x0,0x0,0x1284800,0x0,0x0,0x20000000,0x0,0x0,0x1000000,0x0,0x0,0x20000000,0x0,0x30000000,0x0,0x0,0x1290000,0x1280000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000,0x0,0x20000,0x20000,0x0,0x0,0x0,0x0,0x0,0x40000,0x0,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x5290000,0x1280000,0x0,0x0,0x1280000,0x0,0x1280000,0x0,0x4000000,0x4000000,0x5290000,0x1290000,0x0,0x413c4800,0x0,0x0,0x1280000,0x0,0x40000,0x413c4800,0x413c4800,0x0,0x800000,0x0,0x1000000,0x413c4800,0x413c4800,0x1284800,0x4000,0x40000,0x413c4800,0x1004800,0x1284800,0x1004800,0x0,0x1284800,0x0,0x0,0x0,0x0,0x0,0x1004800,0x1284800,0x0,0x0,0x0,0x0,0x0,0x4000,0x0,0x1000000,0x0,0x0,0x0,0x0,0x82000000,0x0,0x0,0x82000000,0x0,0x0,0x0,0x82000000,0x0,0x0,0x0,0x1284800,0x0,0x1004800,0x1284800,0x0,0x0,0x1000000,0x1004800,0x0,0x0,0x0,0x1004800,0x0,0x0,0x1004800,0x40000,0x40000,0x0,0x40000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1284800,0x8000,0x0,0x30000000,0x0,0x1280000,0x280000,0x1280000,0x0,0x1280000,0x1004800,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x2000,0x0,0x1,0x40000,0x18000004,0x0,0x18000004,0x0,0x0,0x0,0x0,0x0,0x0,0x80000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2000,0x0,0x2010b88,0x0,0x0,0x202000,0x200000,0x0,0x10000,0x40000,0x10000,0x0,0x0,0x0,0x0,0x0,0x110c002,0x0,0x110c002,0x0,0x0,0x0,0x40000,0x80000000,0x110c002,0x0,0x0,0x108000,0x1004002,0x0,0x200000,0x200000,0x0,0x108000,0x0,0x0,0x0,0x0,0x200000,0x0,0x44e80010,0x0,0x0,0x200000,0x0,0x0,0x44e80010,0x44e80010,0x1000,0x0,0x0,0x0,0x44e80010,0x44e80010,0x80000,0x0,0x44e80010,0x280000,0x80000,0x280000,0x0,0x80000,0x0,0x280000,0x0,0x0,0x280000,0x0,0x0,0x0,0x0,0x8000000,0x80000,0x2010b88,0x108000,0x200000,0x200000,0x0,0x200000,0x1004002,0x0,0x0,0x40,0x0,0x200000,0x0,0x280000,0x80000,};
+      jj_la1_1 = new int[] {0x8000,0x0,0x2,0x100000,0xc0000008,0x0,0xc0000008,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x8a00000,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x8000,0x0,0x10041710,0x0,0x0,0x808000,0x800000,0x0,0x40000,0x100000,0x40000,0x0,0x0,0x0,0x0,0x0,0x4430004,0x0,0x4430004,0x0,0x0,0x0,0x100000,0x0,0x4430004,0x4000,0x0,0x0,0x420000,0x4430004,0x420000,0x0,0x420000,0x4010004,0x0,0x800000,0x800000,0x0,0x0,0x800000,0x0,0x800000,0x0,0x0,0x0,0x800000,0x800000,0x0,0x2ba04020,0x0,0x0,0x800000,0x0,0x4000,0x2ba04020,0x2ba04020,0x2000,0x0,0x1,0x0,0x2ba04020,0x2ba04020,0x8a00000,0x0,0x4000,0x2ba04020,0x8200000,0x8a00000,0x8200000,0x0,0x8a00000,0x0,0x0,0x0,0x0,0x0,0x200000,0x8a00000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80,0x0,0x0,0x80,0x0,0x0,0x0,0x80,0x0,0x0,0x0,0x8a00000,0x0,0x8200000,0x8a00000,0x0,0x0,0x8000000,0x8200000,0x0,0x8000000,0x8000000,0x8200000,0x0,0x0,0x8200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8a00000,0x40000000,0x200000,0x10041710,0x420000,0x800000,0x800000,0x800000,0x4010004,0x800000,0x200000,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x8000000,0x0,0x0,0x40104300,0x0,0x40104300,0x0,0x0,0x0,0x0,0x0,0x0,0x2000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1800141,0x0,0x0,0x84,0x84,0x0,0x100,0x0,0x100,0x0,0x0,0x4000000,0x4000000,0x0,0x81e08118,0x80000000,0x1e08118,0x0,0x0,0x0,0x0,0x0,0x1e08118,0x0,0x0,0x1800118,0x608000,0x0,0x30084,0x84,0x0,0x1800118,0x608000,0x600000,0x30000,0x30000,0x84,0x20,0x10002084,0x0,0x0,0x84,0x0,0x0,0x10002084,0x10002084,0x0,0x0,0x0,0x0,0x10002084,0x10002084,0x2000,0x0,0x10002084,0x2084,0x2000,0x2084,0x0,0x2000,0x0,0x2084,0x0,0x0,0x2084,0x0,0x0,0x0,0x0,0x104300,0x0,0x1800141,0x1800018,0x84,0x84,0x0,0x84,0x0,0x0,0x0,0x0,0x0,0x84,0x0,0x2084,0x2000,};
+      jj_la1_2 = new int[] {0x0,0x80000000,0x0,0x0,0x1021800,0x0,0x1021800,0x40000,0x40000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x50420,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x18000a08,0x0,0x0,0x40420,0x40420,0x0,0x800,0x0,0x800,0x0,0x0,0x40000002,0x40000000,0x40000000,0x1e0808c0,0x0,0x1e0808c0,0x0,0x0,0x0,0x0,0x4,0x1e0808c0,0x0,0x0,0x0,0x180000c0,0x1e0800c0,0x180000c0,0x0,0x180000c0,0x6080000,0x0,0x340420,0x40420,0x6080000,0x0,0x40420,0x6000000,0x40420,0x0,0x200000,0x200000,0x340420,0x40420,0x100,0x50422,0x0,0x0,0x40420,0x0,0x0,0x50422,0x50422,0x0,0x0,0x0,0x0,0x50422,0x50422,0x50420,0x0,0x0,0x50422,0x10000,0x50420,0x10000,0x0,0x50420,0x0,0x0,0x0,0x0,0x0,0x10000,0x50420,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x50420,0x0,0x10000,0x50420,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x10000,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x50420,0x1021800,0x0,0x18000a08,0x180000c0,0x40420,0x40420,0x40420,0x0,0x40420,0x10000,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x2010,0x0,0x0,0x0,0x8100,0x20000000,0x8100,0x0,0x0,0x0,0x0,0x0,0x0,0x4220400,0x0,0x0,0x4,0x0,0x20000000,0x4000000,0x0,0x2010,0x20000000,0x300,0x0,0x4000000,0x4000018,0x4000008,0x0,0x0,0x0,0x0,0x2000,0x20,0x800,0x800,0x0,0x7,0x0,0x7,0x0,0x20000000,0x20000000,0x0,0x0,0x5,0x4000000,0x0,0x5,0x0,0x0,0x4000008,0x4000008,0x20000000,0x5,0x0,0x0,0x0,0x0,0x4000008,0x0,0xa42304c8,0x80000000,0x0,0x4000008,0x0,0x4000000,0xa42304c8,0xa42304c8,0x0,0x0,0x0,0x4020000,0xa42304c8,0xa42304c8,0x4220400,0x24000000,0xa42304c8,0x24220448,0x4220400,0x24220448,0x0,0x4220400,0x4000000,0x24220448,0x0,0x0,0x24220448,0x4000000,0x4000000,0x20000000,0x20000000,0x100,0x400,0x300,0x5,0x8,0x8,0x0,0x8,0x0,0x0,0x0,0x0,0x0,0x4008,0x4000000,0x20220448,0x220400,};
+      jj_la1_3 = new int[] {0x20100,0x0,0x0,0x0,0x81004,0x0,0x81004,0x40000000,0x40000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x42204480,0x0,0x0,0x40,0x0,0x0,0x40000000,0x0,0x0,0x20100,0x0,0x3000,0x0,0x40000000,0x40000180,0x40000080,0x0,0x0,0x0,0x0,0x20000,0x200,0x8000,0x8000,0x8000,0x78,0x8,0x70,0x0,0x0,0x0,0x0,0x0,0x50,0x40000000,0x0,0x0,0x50,0x50,0x50,0x0,0x50,0x0,0x0,0x40000080,0x40040080,0x0,0x40200000,0x40000080,0x0,0x40000080,0x0,0x0,0x0,0x40000080,0x40000080,0x0,0x42304c81,0x0,0x0,0x40000080,0x0,0x40000000,0x42304c81,0x42304c81,0x0,0x0,0x0,0x40200000,0x42304c81,0x42304c81,0x42204480,0x40000000,0x40000000,0x42304c81,0x42204400,0x42204480,0x42204400,0x0,0x42204480,0x0,0x0,0x0,0x0,0x0,0x2204000,0x42204480,0x40000000,0x40200000,0x0,0x0,0x0,0x0,0x0,0x40000000,0x40000000,0x40000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x42204480,0x0,0x42204400,0x42204480,0x0,0x0,0x40000400,0x42204400,0x0,0x400,0x400,0x42204400,0x0,0x0,0x42204400,0x40000000,0x40000000,0x40000000,0x40000000,0x0,0x0,0x0,0x40000000,0x0,0x0,0x40200000,0x42204480,0x1000,0x4000,0x3000,0x50,0x80,0x80,0x80,0x0,0x40080,0x2204000,};
    }
    private static void jj_la1_init_4() {
-      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20,0x0,0x20,0x0,0x20,0x10,0x0,0x20,0x20,0x0,0x20,0x0,0x0,0x10,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x300008,0x8,0x10,0x0,0x2,0x0,0x300008,0x300008,0x0,0x0,0x0,0x0,0x300008,0x300008,0x0,0x0,0x300008,0x300000,0x0,0x300000,0x10,0x0,0x0,0x300000,0x300040,0x300040,0x300000,0x0,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x200,0x0,0x0,0x1c0e4380,0x40018000,0xa3f03c40,0x40,0x0,0x0,0x0,0x0,};
+      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x200,0x0,0x200,0x0,0x0,0x200,0x100,0xf00c002,0x200,0x200,0x0,0x200,0x2,0x0,0x100,0x100,0x0,0x2,0x0,0x100,0x0,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x400,0x0,0x0,0x0,0x0,0x0,0xf00c08a,0x88,0x100,0x0,0x20,0x0,0xf00c08a,0xf00c08a,0x0,0x0,0x0,0x0,0xf00c08a,0xf00c08a,0xf00c002,0x2,0x0,0xf00c08a,0x3000002,0xf00c002,0x3000002,0x100,0xf00c002,0x10000,0xf00c000,0xf00c000,0x3000000,0x3000000,0x0,0x2,0x0,0x0,0x100,0x100,0x2,0x0,0x2,0x2,0x0,0x0,0xc0e73800,0x180000,0x3f00c400,0xc0e73800,0x180000,0x3c000400,0x30000,0xc0e43800,0x180000,0x3c000400,0x400,0xf00c000,0xc000000,0xf00c002,0xc000,0x2,0xc002,0x3000000,0x3000000,0x0,0x2,0x2,0x0,0x0,0x3000002,0x3000400,0x3000400,0x3000002,0x200,0x200,0x200,0x200,0x100,0x100,0x40a,0x200,0x22,0x22,0x0,0xf00c002,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_init_5() {
-      jj_la1_5 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1bff,0x1bff,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x20000,0x3c1bff,0x1bff,0x0,0x0,0x0,0x0,};
+      jj_la1_5 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100001,0x200004,0x3c1bffa,0x100001,0x200004,0x3c1bffa,0x0,0x100001,0x200004,0x3c1bffa,0x1bff0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1bff0,0x1bff0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[10];
+  final private JJCalls[] jj_2_rtns = new JJCalls[24];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -3830,7 +5316,7 @@ void ArrayInitializer():
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 109; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 163; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3845,7 +5331,7 @@ void ArrayInitializer():
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 109; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 163; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3856,7 +5342,7 @@ void ArrayInitializer():
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 109; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 163; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3867,7 +5353,7 @@ void ArrayInitializer():
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 109; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 163; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3877,7 +5363,7 @@ void ArrayInitializer():
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 109; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 163; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3887,7 +5373,7 @@ void ArrayInitializer():
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 109; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 163; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3999,12 +5485,12 @@ void ArrayInitializer():
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[182];
+    boolean[] la1tokens = new boolean[186];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 109; i++) {
+    for (int i = 0; i < 163; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -4028,7 +5514,7 @@ void ArrayInitializer():
         }
       }
     }
-    for (int i = 0; i < 182; i++) {
+    for (int i = 0; i < 186; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -4055,7 +5541,7 @@ void ArrayInitializer():
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 24; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -4072,6 +5558,20 @@ void ArrayInitializer():
             case 7: jj_3_8(); break;
             case 8: jj_3_9(); break;
             case 9: jj_3_10(); break;
+            case 10: jj_3_11(); break;
+            case 11: jj_3_12(); break;
+            case 12: jj_3_13(); break;
+            case 13: jj_3_14(); break;
+            case 14: jj_3_15(); break;
+            case 15: jj_3_16(); break;
+            case 16: jj_3_17(); break;
+            case 17: jj_3_18(); break;
+            case 18: jj_3_19(); break;
+            case 19: jj_3_20(); break;
+            case 20: jj_3_21(); break;
+            case 21: jj_3_22(); break;
+            case 22: jj_3_23(); break;
+            case 23: jj_3_24(); break;
           }
         }
         p = p.next;

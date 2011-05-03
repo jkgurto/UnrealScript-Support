@@ -99,7 +99,7 @@ var array<class<PlayerController> > Players;
 replication
 {
     // Things the server should send to the client.
-    /*if ( bNetDirty && (Role == Role_Authority) )
+    if ( bNetDirty && (Role == Role_Authority) )
       Score, Deaths, bHasFlag, PlayerLocationHint,
       PlayerName, Team, TeamID, bIsFemale, bAdmin,
       bIsSpectator, bOnlySpectator, bWaitingPlayer, bReadyToPlay,
@@ -107,15 +107,100 @@ replication
     if ( bNetDirty && (Role == Role_Authority) && !bNetOwner )
       PacketLoss, Ping;
     if ( bNetInitial && (Role == Role_Authority) )
-      PlayerID, bBot;*/
+      PlayerID, bBot;
 
     reliable if (bNetDirty)
       PacketLoss, Ping;
 
     unreliable if (bNetDirty)
       PacketLoss, Ping;
-
 }
+
+
+function FunctionExample(actor Other)
+{
+   Super.FunctionExample(other);
+   Super(Pawn).Touch( Other );
+   Global.Touch( Other );
+   Super.Touch( Other );
+}
+
+
+function void OperatorExample() {
+
+    local string str1;
+    local string str2;
+    local int i;
+    local float a;
+    local float b;
+    local bool x;
+    local bool y;
+    local vector v;
+    local actor a;
+
+    str1 = "abc";
+    str2 = "def";
+    i = int(7.0);
+    a = 2.0;
+    b = 3.0;
+    x = true;
+    y = false;
+    v = vector(1.0, 1.0, 1.0);
+    a = actor(obj);
+    a = class'MyClass'.default.variable;
+    a = class'MyClass'.static.funcCall();
+    class'MyClass'.default.variable = 1;
+    a = class'SomeClass'.const.SOMECONST;
+
+    a = b + 1 + b;
+    a = 1 + b + 1;
+
+    str1 = str2@"ghi"@str2;
+    str1 @= "ghi"@str2@"ghi";
+    str1 = "ghi"$str2$"jkl";
+    str1 $= str2$"ghi"$str2;
+    str1 = str2$"ghi"@str2;
+
+    i = ~i;
+
+    a = -3;
+    a = +3;
+    a = -a;
+    a = ++a;
+    a = --a;
+    a = a++;
+    a = a--;
+
+    a *= -2 * (3 * -4.0) / 5.0 + b - (+6);
+    a = a ** 2;
+
+    x = y && true || false ^^ y && !true && !y;
+    y = (a ~= b);
+    y = str1 ~= str2;
+    y = a > b;
+    y = str1 < str2;
+    y = !y;
+
+    v = v >> 5;
+    v = v << 5.0;
+    v = v dot vector(2, 2, 2);
+    v = v cross vector(2, 2, 2);
+
+    return;
+}
+
+// Delegate
+// a negative return value indicates the items should be swapped
+delegate int ExampleSort(ArrayType A, ArrayType B)
+{ return A < B ? -1 : 0; }
+
+// UnrealScript 3
+// Default function arguments
+function myFunc(optional int x = -1) {}
+
+// Native functions
+native(266) final function bool Move( vector Delta );
+native function int doSomething(string myData) const;
 
 // Example of "for" loop.
 function ForExample()
@@ -492,6 +577,242 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant)
     return Super.CheckReplacement(Other, bSuperRelevant);
 }
 
+function void checkNew() {
+
+    local Object O;
+
+    local class<WebApplication> WAClass;
+    local class<Object> OClass;
+    local Object O;
+    local WebApplication WA;
+
+    O = new class'TestClass';
+    O = new(Self) class'TestClass'; // O.Outer == Self
+    O = new(None, 'ExampleObject') class'TestClass'; // O.Name == 'ExampleObject'
+    O = new(None, '', RF_Transient) class'TestClass'; // makes O transient even if TestClass isn't
+    O = new(None, '', 0) class'TestClass' (TestClass'TemplateObject'); // duplicates TemplateObject
+
+    
+
+    WAClass = class'UTServerAdmin';
+    OClass = class'UTServerAdmin';
+
+    WA = new class'UTServerAdmin'; // works because UTServerAdmin extends WebApplication
+    WA = new WAClass; // works because the metaclass of WAClass is WebApplication
+    O  = new WAClass; // works because WebApplication extends Object
+    O  = new OClass;  // works because the metaclass of OClass is Object
+    WA = new OClass;  // type mismatch error (Object doesn't extend WebApplication!)
+}
+
+final operator(18) int : ( int A, int B )
+{
+  return (A + B) / 2;
+}
+
+final postoperator int # (int A)
+{
+  return A / 10;
+}
+
+final postoperator int # ( out int A )
+{   return A /= 10; // Notice how A is modified here
+}
+
+static final postoperator int #( out int A )
+{
+  return A /= 10;
+}
+
+static final operator(22) string * ( coerce string A, int B )
+{
+  local string Build;
+  local int i;
+
+  for(i=0;i<B;i++)
+    Build = Build$A;
+  return Build;
+}
+
+// Extend vector by an unit length
+static final preoperator vector ++ ( out vector A )
+{
+  return A += Normal(A);
+}
+
+// Shrink operator by an unit length
+static final preoperator vector -- ( out vector A )
+{
+  return A -= Normal(A);
+}
+
+// Same thing, but postop
+static final postoperator vector ++ ( out vector A )
+{
+  local vector B;
+  B = A;
+  A += Normal(A);
+  return B;
+}
+
+static final postoperator vector -- ( out vector A )
+{
+  local vector B;
+  B = A;
+  A += Normal(A);
+  return B;
+}
+
+// Lighten color by 1
+static final preoperator color ++ ( out color A )
+{
+  A.R++;
+  A.G++;
+  A.B++;
+  return A;
+}
+
+// Darken color by 1
+static final preoperator color -- ( out color A )
+{
+  A.R--;
+  A.G--;
+  A.B--;
+  return A;
+}
+
+// Postoperator version
+static final postoperator color ++ ( out color A )
+{
+  local color Copy;
+  Copy = A;
+  A.R++;
+  A.G++;
+  A.B++;
+  return Copy;
+}
+
+// Postoperator version
+static final postoperator color -- ( out color A )
+{
+  local color Copy;
+  Copy = A;
+  A.R--;
+  A.G--;
+  A.B--;
+  return Copy;
+}
+
+// Remember that averaging operator we just used? Now it's suddenly useful, so I've copied it into here
+final operator(18) int : ( int A, int B )
+{
+  return (A + B) / 2;
+}
+
+// Interpolate 2 colors
+static final operator(22) color Mix ( color A, color B )
+{
+  local Color Result;
+  Result.R = A.R : B.R;
+  Result.G = A.G : B.G;
+  Result.B = A.B : B.B;
+  return Result;
+}
+
+// UT Provides a * operator for colors, but no /. Ramp a color by a float
+static final operator(16) color / ( color A, float B )
+{
+  local Color Result;
+  Result.R = A.R / B;
+  Result.G = A.G / B;
+  Result.B = A.B / B;
+  return Result;
+}
+
+// Same thing, but this one affects the color
+static final operator(34) color /= ( out color A, float B )
+{
+  A = A / B;
+  return A;
+}
+
+// UT Provides *, not *=, so let's implement it
+static final operator(34) color *= ( out color A, float B )
+{
+  A = A * B;
+  return A;
+}
+
+// Add a byte value to each component
+static final operator(20) color + ( color A, byte B )
+{
+  local Color Result;
+  Result.R = A.R + B;
+  Result.G = A.G + B;
+  Result.B = A.B + B;
+  return Result;
+}
+
+// Subtract a byte value to each component
+static final operator(20) color - ( color A, byte B )
+{
+  local Color Result;
+  Result.R = A.R - B;
+  Result.G = A.G - B;
+  Result.B = A.B - B;
+  return Result;
+}
+
+// Out versions of the operators
+static final operator(34) color += ( out color A, byte B )
+{
+  A = A + B;
+  return A;
+}
+
+static final operator(34) color -= ( out color A, byte B )
+{
+  A = A - B;
+  return A;
+}
+
+// Out version of the operator UT provides
+static final operator(34) color += ( out color A, color B )
+{
+  A = A + B;
+  return A;
+}
+
+static final operator(34) color -= ( out color A, color B )
+{
+  A = A - B;
+  return A;
+}
+
+// We can't use static because we're calling Destroy(), a non-static function
+final postoperator Actor DIEDIEDIE ( out Actor NearlyDead )
+{
+  NearlyDead.Destroy();
+  return NearlyDead;
+}
+
+function testOperator() {
+    local int middle;
+
+    Middle = 10 : 2; // Middle = 6
+    Middle = 10 + 2 : 4; // Middle = (10 + 2) : 4 = 8
+
+    i = 100;
+
+    //b = i#; // b = 10, i = 100 (i is NOT affected)
+
+    i = 100;
+
+    //b = i#; // b = 10, i = 10 (i IS affected, because of the out keyword)
+
+    //i#; // i = 1
+
+    //SomeActor DIEDIEDIE; // It is now dead.
+}
 
 defaultproperties
 {
@@ -499,58 +820,99 @@ defaultproperties
     FriendlyName="Name here"
     Description="Description here."
 
-   // objects
-   MessageClass=class'LocalMessage'
+    // objects
+    MessageClass=class'LocalMessage'
 
     // declare an inline subobject of class SpriteComponent named "Sprite"
-   Begin Object Class=SpriteComponent Name=Sprite
+    Begin Object Class=SpriteComponent Name=Sprite
        // values specified here override SpriteComponent's own defaultproperties
       Sprite=Texture2D'EngineResources.S_Actor'
       HiddenGame=true
-   End Object
-   //todo
-   Components.Add(Sprite)
+    End Object
+    Components.Add(Sprite)
 
     // declare an inline subobject of class CylinderComponent named "CollisionCylinder"
-   Begin Object Class=CylinderComponent Name=CollisionCylinder
+    Begin Object Class=CylinderComponent Name=CollisionCylinder
        // values specified here override CylinderComponent's own defaultproperties
       CollisionRadius=10
       CollisionHeight=10
       AlwaysLoadOnClient=True
       AlwaysLoadOnServer=True
-   End Object
-   //todo
-   Components.Add(CollisionCylinder)
+    End Object
+    Components.Add(CollisionCylinder)
 
-   CollisionComponent=CollisionCylinder
+    CollisionComponent=CollisionCylinder
 
     // floats (leading '+' and trailing 'f' characters are ignored)
-   DrawScale=00001.000000
-   Mass=+00100.000000
-   NetPriority=00001.f
+    DrawScale=00001.000000
+    Mass=+00100.000000
+    NetPriority=00001.f
 
     // ints
-   NetUpdateFrequency=100
+    NetUpdateFrequency=100
 
     // enumerations
-   Role=ROLE_Authority
-   RemoteRole=ROLE_None
+    Role=ROLE_Authority
+    RemoteRole=ROLE_None
 
     // structs
-   DrawScale3D=(X=1,Y=1,Z=1)
+    DrawScale3D=(X=1,Y=1,Z=1)
 
     // bools
-   bJustTeleported=true
-   bMovable=true
-   bHiddenEdGroup=false
-   bReplicateMovement=true
+    bJustTeleported=true
+    bMovable=true
+    bHiddenEdGroup=false
+    bReplicateMovement=true
 
-   // names
-   InitialState=None
+    // names
+    InitialState=None
 
-   // dynamic array (in this case, a dynamic class array)
-   SupportedEvents(0)=class'SeqEvent_Touch'
-   SupportedEvents(1)=class'SeqEvent_UnTouch'
-   SupportedEvents(2)=class'SeqEvent_Destroyed'
-   SupportedEvents(3)=class'SeqEvent_TakeDamage'
+    // dynamic array (in this case, a dynamic class array)
+    SupportedEvents(0)=class'SeqEvent_Touch'
+    SupportedEvents(1)=class'SeqEvent_UnTouch'
+    SupportedEvents(2)=class'SeqEvent_Destroyed'
+    SupportedEvents(3)=class'SeqEvent_TakeDamage'
+
+    // Simple Types (Ints, Floats, Bools, Bytes):
+    VarName=Value
+
+    //Static Array:
+    ArrayProp(0)=Value1
+    ArrayProp(1)=Value2
+    // OR
+    ArrayProp[0]=Value1
+    ArrayProp[1]=Value2
+
+    //Dynamic Arrays:
+    ArrayProp=(Value1,Value2,Value3)
+    //OR
+    ArrayProp(0)=Value1
+    ArrayProp(1)=Value2
+    ArrayProp(2)=Value3
+    //OR
+    ArrayProp.Add(Value1)
+    ArrayProp.Add(Value2)
+    ArrayProp.Add(Value3)
+
+    // Names
+    NameProp='Value'
+    //OR
+    NameProp=Value
+
+    // Objects
+    ObjectProp=ObjectClass'ObjectName'
+
+    // Subobjects
+    Begin Object Class=ObjectClass Name=ObjectName
+        VarName=Value
+    End Object
+    ObjectProperty=ObjectName
+
+    // Structs (including Vectors):
+    StructProperty=(InnerStructPropertyA=Value1,InnerStructPropertyB=Value2)
+    // OR
+    StructProperty={(
+                InnerStructPropertyA=Value1,
+                InnerStructPropertyB=Value2
+                )}
 }
