@@ -18,6 +18,8 @@
     <fontcolor name="name" default="string"/>
     <fontcolor name="class" default="keyword" foreColor="magenta"/>
     <fontcolor name="comment" default="comment"/>
+    <fontcolor name="compiler-directive" default="comment" foreColor="009900"/>
+    <fontcolor name="preprocessor-directive" default="comment" foreColor="009900"/>
     <fontcolor name="error" default="error"/>
     <fontcolor name="javadoc-comment" default="comment" foreColor="006633"/>
     <fontcolor name="identifier" default="identifier"/>

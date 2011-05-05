@@ -78,6 +78,18 @@ TOKEN :
   <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
 }
 
+// Compiler directives
+TOKEN :
+{
+  <COMPILER_DIRECTIVE: "#" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
+}
+
+// Preprocessor
+TOKEN :
+{
+  <PREPROCESSOR_DIRECTIVE: "`" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
+}
+
 // End of Javadoc comment
 <IN_JAVADOC_COMMENT>
 TOKEN :
@@ -181,6 +193,7 @@ TOKEN :
 | < CONFIG: "config" >
 | < CONST: "const" >
 | < CONTINUE: "continue" >
+| < CPPTEXT: "cpptext" >
 | < CROSS: "cross" >
 | < _DEFAULT: "default" >
 | < _DEFAULTPROPERTIES: "defaultproperties" >
@@ -1048,17 +1061,13 @@ TOKEN :
 {
   < RUNSIGNEDSHIFT: ">>>" >
   {
-     matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
+     matchedToken = Token.newToken(RUNSIGNEDSHIFT, ">");
      input_stream.backup(2);
-     matchedToken.image = ">";
   }
 | < RSIGNEDSHIFT: ">>" >
   {
-     matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
-     input_stream.backup(1);
-     matchedToken.image = ">";
+    matchedToken = Token.newToken(RSIGNEDSHIFT, ">");
+    input_stream.backup(1);
   }
 | < GT: ">" >
 }

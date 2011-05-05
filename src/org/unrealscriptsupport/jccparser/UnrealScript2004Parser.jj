@@ -170,6 +170,18 @@ SKIP :
   <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
 }
 
+// Compiler directives
+SKIP :
+{
+  <COMPILER_DIRECTIVE: "#" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
+}
+
+// Preprocessor
+SKIP :
+{
+  <PREPROCESSOR_DIRECTIVE: "`" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
+}
+
 // End of Javadoc comment
 <IN_JAVADOC_COMMENT>
 SKIP :
@@ -238,6 +250,26 @@ TOKEN :
     <NAME_LITERAL: "\'"> : DEFAULT
 }
 
+// Start of cpptext
+/*MORE :
+{
+    "cpptext" : IN_CPPTEXT
+}
+
+// Inside cpptext
+<IN_CPPTEXT>
+SKIP :
+{
+    < ~["}"] >
+}
+
+// End of cpptext
+<IN_CPPTEXT>
+TOKEN :
+{
+    <CPPTEXT: "}"> : DEFAULT
+}*/
+
 /* RESERVED WORDS AND LITERALS */
 
 TOKEN :
@@ -258,6 +290,7 @@ TOKEN :
 | < CONFIG: "config" >
 | < CONST: "const" >
 | < CONTINUE: "continue" >
+| < CPPTEXT: "cpptext" >
 | < CROSS: "cross" >
 | < _DEFAULT: "default" >
 | < _DEFAULTPROPERTIES: "defaultproperties" >
@@ -1117,6 +1150,17 @@ TOKEN :
 | < LSHIFTASSIGN: "<<=" >
 | < RSIGNEDSHIFTASSIGN: ">>=" >
 | < RUNSIGNEDSHIFTASSIGN: ">>>=" >
+// Might be used as custom operators?
+//| < BACKSLASH: "\\">
+//| < HOOKDASH: "?-">
+| < DOUBLEHOOK: "??" >
+| < DASHASSIGNDASH: "-=-" >
+
+// Skipped for now
+// Compiler directives
+//| < HASH: "#">
+// Preprocessor
+//| < BACKQUOTE: "`">
 }
 
 /* >'s need special attention due to generics syntax. */
@@ -1124,19 +1168,18 @@ TOKEN :
 {
   < RUNSIGNEDSHIFT: ">>>" >
   {
-     matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
+     matchedToken = Token.newToken(RUNSIGNEDSHIFT, ">");
      input_stream.backup(2);
-     matchedToken.image = ">";
   }
 | < RSIGNEDSHIFT: ">>" >
   {
-     matchedToken.kind = GT;
-     ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
-     input_stream.backup(1);
-     matchedToken.image = ">";
+    matchedToken = Token.newToken(RSIGNEDSHIFT, ">");
+    input_stream.backup(1);
   }
 | < GT: ">" >
+  {
+    matchedToken = Token.newToken(GT, ">");
+  }
 }
 
 /*************************************************
@@ -1159,6 +1202,7 @@ void CompilationUnit():
     try {
         ClassDeclaration()
         ( Declarations() )*
+        ( CppText() )?
         ( ReplicationBlock() )?
         Body()
         ( DefaultPropertiesBlock() )?
@@ -1166,7 +1210,7 @@ void CompilationUnit():
         // ?
         //( < "\u001a" > )?
         // Anything not yet matched
-        //( <STUFF_TO_IGNORE: ~[]> )?
+        ( <STUFF_TO_IGNORE: ~[]> )?
         // Everything must have been matched by EOF
         <EOF>
     }
@@ -1204,6 +1248,13 @@ void ClassParams():
     )
 }
 
+// IDENTIFIERLIST = IDENTIFIER ( COMMA IDENTIFIER )*
+void IdentifierList():
+{}
+{
+    <IDENTIFIER> ( "," <IDENTIFIER> )*
+}
+
 // IDENTIFIER = ( ALPHA | UNDERSCORE ) ( ALPHA | UNDERSCORE | DIGIT )*
 // See <IDENTIFIER> above
 
@@ -1235,32 +1286,29 @@ void ClassIdentifierStart():
 void QualifiedIdentifier():
 {}
 {
-    (ClassIdentifierStart() QualifiedIdentifierStart())? <IDENTIFIER> ("."  <IDENTIFIER>)*
+    (ClassIdentifierStart() QualifiedIdentifierStart())? IdDotId()
 }
 
 void QualifiedIdentifierStart():
 {}
 {
-    /// @todo FIXME
-    //( "class" "'" PackageIdentifier() "'" "." "default" "." <IDENTIFIER> ) |
     ("default" | "const") "."
 }
 
 // FUNCCALL = ( ( class SQUOTE PACKAGEIDENTIFIER SQUOTE DOT static DOT )
-//                            | ( ( IDENTIFIER DOT )+ )
-//                            )?
-//                            IDENTIFIER LBRACK ( EXPR ( COMMA EXPR )* )? RBRACK
+//               | ( ( IDENTIFIER DOT )+ )
+//               )?
+//               IDENTIFIER LBRACK ( EXPR ( COMMA EXPR )* )? RBRACK
 void FuncCall():
 {}
 {   
-    (ClassIdentifierStart() FuncCallStart())? <IDENTIFIER> ("."  <IDENTIFIER>)* FuncCallEnd()
+    (ClassIdentifierStart() FuncCallStart())?
+    IdDotId() FuncCallEnd()
 }
 
 void FuncCallStart():
 {}
 {
-    /// @todo FIXME
-    //( ( "class" "'" PackageIdentifier() "'" "." "static" "." )
     "static" "."
 }
 
@@ -1274,20 +1322,19 @@ void FuncCallOrQualifiedIdentifier():
 {}
 {
     ( ClassIdentifierStart()
-        ( (FuncCallStart() <IDENTIFIER> ("."  <IDENTIFIER>)* FuncCallEnd()) |
-          (QualifiedIdentifierStart() <IDENTIFIER> ("." <IDENTIFIER>)*) )
+        ( (FuncCallStart() IdDotId() FuncCallEnd()) |
+          (QualifiedIdentifierStart() IdDotId()) )
     ) |
-    (<IDENTIFIER> ("."  <IDENTIFIER>)* (FuncCallEnd())? )
+    ( IdDotId() (LOOKAHEAD("(") FuncCallEnd())? )
 
     //FuncCall() |
     //QualifiedIdentifier()
 }
 
-// IDENTIFIERLIST = IDENTIFIER ( COMMA IDENTIFIER )*
-void IdentifierList():
+void IdDotId():
 {}
 {
-    <IDENTIFIER> ( "," <IDENTIFIER> )*
+    (<IDENTIFIER> | "object") ("."  (<IDENTIFIER> | "object"))*
 }
 
 void FuncCallAndIdentifierList():
@@ -1316,7 +1363,7 @@ void Declarations():
 void ConstDecl():
 {}
 {
-    "const" <IDENTIFIER> "=" Literal()
+    "const" <IDENTIFIER> "=" Expression()
 }
 
 // VARDECL = var ( CONFIGGROUP )? ( VARPARAMS )*
@@ -1325,7 +1372,7 @@ void VarDecl():
 {}
 {
     "var" ( ConfigGroup() )? ( VarParams() )*
-    VarType() <IDENTIFIER> ( "," <IDENTIFIER> )*
+    VarTypeThenIdentifier()
 }
 
 
@@ -1339,14 +1386,36 @@ void ConfigGroup():
 
 // VARTYPE = PACKAGEIDENTIFIER | ENUMDECL | STRUCTDECL | ARRAYDECL | CLASSTYPE | BASICTYPE
 // VARIDENTIFIER = IDENTIFIER
-void VarType():
+void VarTypeThenIdentifier():
 {}
 {
-    PackageIdentifierOrArrayDecl() |
-    DynArrayDecl() |
-    EnumDecl() |
-    StructDecl() |
-    BasicTypeOrClassType()
+    (LOOKAHEAD(2)
+        DynArrayDecl() |
+        EnumDecl() |
+        StructDecl() |
+        BasicTypeOrClassType() |
+        "object" |
+        <IDENTIFIER>
+    )
+    <IDENTIFIER> (ArrayDeclEndOrVarTags())?
+    ("," <IDENTIFIER> (ArrayDeclEndOrVarTags())?)*
+}
+
+void ArrayDeclEndOrVarTags():
+{}
+{
+    ArrayDeclEnd() | VarTags()
+}
+
+// UE3
+// Variable tags
+// Eg.
+// var localized int variablename<tag1=value|tag2=value>;
+void VarTags():
+{}
+{
+    /// @todo FIXME
+    "<" <IDENTIFIER> "=" Expression() ("|" <IDENTIFIER> "=" Expression())* GT()
 }
 
 
@@ -1362,7 +1431,7 @@ void ArrayDecl():
 void ArrayDeclEnd():
 {}
 {
-    "[" <INTEGER_LITERAL> "]"
+    "[" ArrayIndex() "]"
 }
 
 
@@ -1370,7 +1439,7 @@ void ArrayDeclEnd():
 void DynArrayDecl():
 {}
 {
-    "array" "<" (PackageIdentifier() | BasicTypeOrClassType()) ">"
+    "array" "<" (PackageIdentifier() | BasicTypeOrClassType()) GT()
 }
 
 
@@ -1386,7 +1455,7 @@ void ClassType():
 void ClassTypeEnd():
 {}
 {
-    "<" PackageIdentifier() ">"
+    "<" PackageIdentifier() GT()
 }
 
 
@@ -1431,7 +1500,34 @@ void StructBody():
     (VarDecl() ";")+ (StructDefaultPropertiesBlock())?
 }
 
+void CppText():
+{}
+{
+    //<CPPTEXT>
+    "cpptext" "{" (CppFunc() ";")* "}"
+}
 
+void CppFunc():
+{}
+{
+    CppType() <IDENTIFIER> "("
+    ( CppType() <IDENTIFIER> ("," CppType() <IDENTIFIER>)* )?
+    ")"
+}
+
+void CppType():
+{}
+{
+    ("const")?
+    (BasicType() | "void" | "none" | "object" | <IDENTIFIER>)
+    (CppPtrRef())?
+}
+
+void CppPtrRef():
+{}
+{
+    "&" | ("*" ("*")?)
+}
 
 // Replication parts
 // REPLICATIONBLOCK = replication LCBRACK ( REPLICATIONBODY )* RCBRACK
@@ -1545,11 +1641,11 @@ void NormalFuncEnd():
 void ReturnTypeThenIdentifier():
 {}
 {
-    LOOKAHEAD(2)
-    ( PackageIdentifierOrArrayDecl() <IDENTIFIER> ) |
-    ( LocalTypeEnd() <IDENTIFIER> ) |
-    ( "void" <IDENTIFIER> ) |
-    ( <IDENTIFIER> )
+    ("void" <IDENTIFIER>) |
+    (LocalTypeEnd() <IDENTIFIER>) |
+    (LOOKAHEAD(2)
+    (PackageIdentifierOrArrayDecl() <IDENTIFIER>) |
+    <IDENTIFIER>)
 }
 
 // OPERATORFUNC = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
@@ -1647,7 +1743,7 @@ void LocalTypeEnd():
 void PackageIdentifierOrArrayDecl():
 {}
 {
-    <IDENTIFIER> (ArrayDeclEnd() | PackageIdentifierEnd())
+    (<IDENTIFIER> | "object") (ArrayDeclEnd() | PackageIdentifierEnd())
 }
 
 // Code parts
@@ -1838,7 +1934,7 @@ void TernaryExpression():
 void ConditionalExpression():
 {}
 {
-    BinaryExpression() ( "?" BinaryExpression() ":" BinaryExpression() )?
+    BinaryExpression() ( ("?" | "??")? BinaryExpression() ":" BinaryExpression() )?
 }
 
 /*void BinaryExpression():
@@ -1850,15 +1946,15 @@ void ConditionalExpression():
 void BinaryExpression():
 {}
 {
-    exp2() (OperatorNames2() exp2())*
+    exp2() (LOOKAHEAD(2) OperatorNames2() exp2())*
 }
 
 void exp2():
 {}
 {
-    ( "+" | "-" | "++" | "--" | "~" | "!")?
+    ( "+" | "-" | "++" | "--" | "~" | "!" )?
     exp1()
-    ("++" | "--")?
+    ( LOOKAHEAD(1)("++" | "--") )?
 }
 
 void exp1():
@@ -1875,10 +1971,10 @@ void NewExpression():
 {
     <IDENTIFIER> "="
     "new" (
-        ( ( "(" (<IDENTIFIER> | "none") ("," <NAME_LITERAL> ("," (<INTEGER_LITERAL> | <IDENTIFIER>))? )? ")")?
+        ( ( "(" (QualifiedIdentifier() | "none") ("," <NAME_LITERAL> ("," ArrayIndex())? )? ")")?
         "class" <NAME_LITERAL> ("(" <IDENTIFIER> (<NAME_LITERAL>)? ")")? ) |
 
-        <IDENTIFIER>
+        PackageIdentifier()
     )
 }
 
@@ -1916,13 +2012,14 @@ void OperatorNames():
     "+" | "-" |
     "%" | "*" | "/" |
     "dot" | "cross" | "**" | "clockwisefrom" |
-    "#" | "\\" | "`" | "?-" |
 
     "@=" | "$=" |
     "&=" | "^=" | "|="
     "<<=" | ">>=" | ">>>=" |
     "+=" | "-=" | "%=" | "*=" | "/=" |
     "=" |
+
+    "??" | "-=-" |
 
     "++" | "--" |
     "~" | "!"
@@ -1941,22 +2038,29 @@ void OperatorNames2():
     "+" | "-" |
     "%" | "*" | "/" |
     "dot" | "cross" | "**" | "clockwisefrom" |
-    "#" | "\\" | "`" | "?-" |
 
     "@=" | "$=" |
     "&=" | "^=" | "|="
     "<<=" | ">>=" | ">>>=" |
     "+=" | "-=" | "%=" | "*=" | "/=" |
-    "=" /*|
+    "=" |
+
+    "??" | "-=-" /*|
 
     "++" | "--" |
     "~" | "!"*/
 }
 
+/*void CustomOperators():
+{}
+{
+    "#" | "\\" | "`" | "?-"
+}*/
+
 void TernaryOperatorNames():
 {}
 {
-    ":" | "?"
+    ":" | "?" | "??"
 }
 
 void BinaryOperatorNames():
@@ -1970,7 +2074,7 @@ void BinaryOperatorNames():
     "+" | "-" |
     "%" | "*" | "/" |
     "dot" | "cross" | "**" | "clockwisefrom" |
-    "#" | "\\" | "`" | "?-" |
+    "-=-"
     AssignmentOperatorNames()
 }
 
@@ -2020,10 +2124,14 @@ void UnaryExpressionNotPlusMinus():
     (LOOKAHEAD(2) CastExpression() | PostfixExpression())
 }
 
+// Eg.
+// p = Pawn(Owner);
+// Pawn(Owner).Weapon.OutOfAmmo();
 void CastExpression():
 {}
 {
     BasicTypeOrClassType() "(" PrimaryPrefix() ")"
+    (LOOKAHEAD(2) FuncCallOrQualifiedIdentifier())? /// @todo FIXME
 }
 
 void PostfixExpression():
@@ -2233,12 +2341,12 @@ See above
 */
 
 // CONSTCLASSPARAMS = abstract | native | nativereplication | safereplace |
-//                            perobjectconfig | transient | noexport | exportstructs |
-//                            // available but obsolete:
-//                            guid(INTVAL,INTVAL,INTVAL,INTVAL)
-//                            // available from warfare and up:
-//                            collapsecategories | dontcollapsecategories | placeable |
-//                            notplaceable | editinlinenew | noteditinlinenew
+//                    perobjectconfig | transient | noexport | exportstructs |
+//                    // available but obsolete:
+//                    guid(INTVAL,INTVAL,INTVAL,INTVAL)
+//                    // available from warfare and up:
+//                    collapsecategories | dontcollapsecategories | placeable |
+//                    notplaceable | editinlinenew | noteditinlinenew
 void ConstClassParams():
 {}
 {
@@ -2254,7 +2362,10 @@ void ConstClassParams():
 
     "transient" |
     "placeable" |
-    "notplaceable"
+    "notplaceable" |
+
+    "exportstructs" |
+    "editinlinenew"
 }
 
 // BOOLVAL = true | false
@@ -2331,7 +2442,7 @@ void BasicType():
 void BasicTypeSimple():
 {}
 {
-    "bool" | "byte" | "float" | "int" | "string" | "name" | "object"
+    "bool" | "byte" | "float" | "int" | "string" | "name"
 }
 
 void BasicClassType():

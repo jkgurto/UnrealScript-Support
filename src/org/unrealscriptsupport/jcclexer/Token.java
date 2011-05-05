@@ -19,7 +19,7 @@ public class Token implements java.io.Serializable {
      * system is determined by JavaCCParser, and a table of these numbers is
      * stored in the file ...Constants.java.
      */
-    public int kind = -1;
+    public final int kind;
     /** The line number of the first character of this Token. */
     public int beginLine = 0;
     /** The column number of the first character of this Token. */
@@ -63,6 +63,7 @@ public class Token implements java.io.Serializable {
      * No-argument constructor
      */
     public Token() {
+        kind = -1;
     }
 
     // Constructors are private
@@ -116,17 +117,10 @@ public class Token implements java.io.Serializable {
      */
     public static Token newToken(int ofKind, String image) {
 
-        if (ofKind == UnrealScriptParserConstants.RUNSIGNEDSHIFT) {
-            return new GTToken(image,
-                               ofKind);
-        }
-        else if (ofKind == UnrealScriptParserConstants.RSIGNEDSHIFT) {
-            return new GTToken(image,
-                               ofKind);
-        }
-        else if (ofKind == UnrealScriptParserConstants.GT) {
-            return new GTToken(image,
-                               ofKind);
+        if ( (ofKind == UnrealScriptParserConstants.RUNSIGNEDSHIFT) ||
+             (ofKind == UnrealScriptParserConstants.RSIGNEDSHIFT) ||
+             (ofKind == UnrealScriptParserConstants.GT) ) {
+            return new GTToken(image, ofKind);
         }
 
         return new Token(ofKind, image);
@@ -134,7 +128,7 @@ public class Token implements java.io.Serializable {
 
     public static class GTToken extends Token {
 
-        int realKind;
+        final int realKind;
 
         public GTToken(String image, int realKind) {
             super(UnrealScriptParserConstants.GT, image);

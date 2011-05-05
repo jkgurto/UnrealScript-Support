@@ -15,345 +15,351 @@ public interface UnrealScriptParserConstants {
   /** RegularExpression Id. */
   int SINGLE_LINE_COMMENT = 4;
   /** RegularExpression Id. */
-  int JAVADOC_COMMENT = 5;
+  int COMPILER_DIRECTIVE = 5;
   /** RegularExpression Id. */
-  int MULTI_LINE_COMMENT = 6;
+  int PREPROCESSOR_DIRECTIVE = 6;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 11;
+  int JAVADOC_COMMENT = 7;
   /** RegularExpression Id. */
-  int NAME_LITERAL = 14;
+  int MULTI_LINE_COMMENT = 8;
   /** RegularExpression Id. */
-  int ABSTRACT = 15;
+  int STRING_LITERAL = 13;
   /** RegularExpression Id. */
-  int ARRAY = 16;
+  int NAME_LITERAL = 16;
   /** RegularExpression Id. */
-  int AUTO = 17;
+  int ABSTRACT = 17;
   /** RegularExpression Id. */
-  int BEGIN = 18;
+  int ARRAY = 18;
   /** RegularExpression Id. */
-  int BOOLEAN = 19;
+  int AUTO = 19;
   /** RegularExpression Id. */
-  int BREAK = 20;
+  int BEGIN = 20;
   /** RegularExpression Id. */
-  int BYTE = 21;
+  int BOOLEAN = 21;
   /** RegularExpression Id. */
-  int CACHEEXEMPT = 22;
+  int BREAK = 22;
   /** RegularExpression Id. */
-  int CASE = 23;
+  int BYTE = 23;
   /** RegularExpression Id. */
-  int CLASS = 24;
+  int CACHEEXEMPT = 24;
   /** RegularExpression Id. */
-  int CLOCKWISEFROM = 25;
+  int CASE = 25;
   /** RegularExpression Id. */
-  int COERCE = 26;
+  int CLASS = 26;
   /** RegularExpression Id. */
-  int COLLAPSECATEGORIES = 27;
+  int CLOCKWISEFROM = 27;
   /** RegularExpression Id. */
-  int CONFIG = 28;
+  int COERCE = 28;
   /** RegularExpression Id. */
-  int CONST = 29;
+  int COLLAPSECATEGORIES = 29;
   /** RegularExpression Id. */
-  int CONTINUE = 30;
+  int CONFIG = 30;
   /** RegularExpression Id. */
-  int CROSS = 31;
+  int CONST = 31;
   /** RegularExpression Id. */
-  int _DEFAULT = 32;
+  int CONTINUE = 32;
   /** RegularExpression Id. */
-  int _DEFAULTPROPERTIES = 33;
+  int CPPTEXT = 33;
   /** RegularExpression Id. */
-  int DELEGATE = 34;
+  int CROSS = 34;
   /** RegularExpression Id. */
-  int DEPENDSON = 35;
+  int _DEFAULT = 35;
   /** RegularExpression Id. */
-  int DEPRECATED = 36;
+  int _DEFAULTPROPERTIES = 36;
   /** RegularExpression Id. */
-  int DO = 37;
+  int DELEGATE = 37;
   /** RegularExpression Id. */
-  int DONTCOLLAPSECATEGORIES = 38;
+  int DEPENDSON = 38;
   /** RegularExpression Id. */
-  int DOTPRODUCT = 39;
+  int DEPRECATED = 39;
   /** RegularExpression Id. */
-  int EDFINDABLE = 40;
+  int DO = 40;
   /** RegularExpression Id. */
-  int EDITCONST = 41;
+  int DONTCOLLAPSECATEGORIES = 41;
   /** RegularExpression Id. */
-  int EDITINLINE = 42;
+  int DOTPRODUCT = 42;
   /** RegularExpression Id. */
-  int EDITINLINENEW = 43;
+  int EDFINDABLE = 43;
   /** RegularExpression Id. */
-  int EDITINLINEUSE = 44;
+  int EDITCONST = 44;
   /** RegularExpression Id. */
-  int ELSE = 45;
+  int EDITINLINE = 45;
   /** RegularExpression Id. */
-  int END = 46;
+  int EDITINLINENEW = 46;
   /** RegularExpression Id. */
-  int ENUM = 47;
+  int EDITINLINEUSE = 47;
   /** RegularExpression Id. */
-  int EVENT = 48;
+  int ELSE = 48;
   /** RegularExpression Id. */
-  int EXEC = 49;
+  int END = 49;
   /** RegularExpression Id. */
-  int EXPORT = 50;
+  int ENUM = 50;
   /** RegularExpression Id. */
-  int EXPORTSTRUCTS = 51;
+  int EVENT = 51;
   /** RegularExpression Id. */
-  int EXTENDS = 52;
+  int EXEC = 52;
   /** RegularExpression Id. */
-  int FALSE = 53;
+  int EXPORT = 53;
   /** RegularExpression Id. */
-  int FINAL = 54;
+  int EXPORTSTRUCTS = 54;
   /** RegularExpression Id. */
-  int FLOAT = 55;
+  int EXTENDS = 55;
   /** RegularExpression Id. */
-  int FOR = 56;
+  int FALSE = 56;
   /** RegularExpression Id. */
-  int FOREACH = 57;
+  int FINAL = 57;
   /** RegularExpression Id. */
-  int FUNCTION = 58;
+  int FLOAT = 58;
   /** RegularExpression Id. */
-  int GLOBAL = 59;
+  int FOR = 59;
   /** RegularExpression Id. */
-  int GLOBALCONFIG = 60;
+  int FOREACH = 60;
   /** RegularExpression Id. */
-  int GOTO = 61;
+  int FUNCTION = 61;
   /** RegularExpression Id. */
-  int GUID = 62;
+  int GLOBAL = 62;
   /** RegularExpression Id. */
-  int HIDECATEGORIES = 63;
+  int GLOBALCONFIG = 63;
   /** RegularExpression Id. */
-  int HIDEDROPDOWN = 64;
+  int GOTO = 64;
   /** RegularExpression Id. */
-  int IF = 65;
+  int GUID = 65;
   /** RegularExpression Id. */
-  int IGNORES = 66;
+  int HIDECATEGORIES = 66;
   /** RegularExpression Id. */
-  int INPUT = 67;
+  int HIDEDROPDOWN = 67;
   /** RegularExpression Id. */
-  int INSTANCED = 68;
+  int IF = 68;
   /** RegularExpression Id. */
-  int INT = 69;
+  int IGNORES = 69;
   /** RegularExpression Id. */
-  int ITERATOR = 70;
+  int INPUT = 70;
   /** RegularExpression Id. */
-  int LATENT = 71;
+  int INSTANCED = 71;
   /** RegularExpression Id. */
-  int LOCAL = 72;
+  int INT = 72;
   /** RegularExpression Id. */
-  int LOCALIZED = 73;
+  int ITERATOR = 73;
   /** RegularExpression Id. */
-  int NAME = 74;
+  int LATENT = 74;
   /** RegularExpression Id. */
-  int NATIVE = 75;
+  int LOCAL = 75;
   /** RegularExpression Id. */
-  int NATIVEREPLICATION = 76;
+  int LOCALIZED = 76;
   /** RegularExpression Id. */
-  int NEW = 77;
+  int NAME = 77;
   /** RegularExpression Id. */
-  int NOEDITINLINEW = 78;
+  int NATIVE = 78;
   /** RegularExpression Id. */
-  int NOEXPORT = 79;
+  int NATIVEREPLICATION = 79;
   /** RegularExpression Id. */
-  int NONE = 80;
+  int NEW = 80;
   /** RegularExpression Id. */
-  int NOTPLACEABLE = 81;
+  int NOEDITINLINEW = 81;
   /** RegularExpression Id. */
-  int OBJECT = 82;
+  int NOEXPORT = 82;
   /** RegularExpression Id. */
-  int OPERATOR = 83;
+  int NONE = 83;
   /** RegularExpression Id. */
-  int OPTIONAL = 84;
+  int NOTPLACEABLE = 84;
   /** RegularExpression Id. */
-  int OUT = 85;
+  int OBJECT = 85;
   /** RegularExpression Id. */
-  int PACKAGE = 86;
+  int OPERATOR = 86;
   /** RegularExpression Id. */
-  int PEROBJECTCONFIG = 87;
+  int OPTIONAL = 87;
   /** RegularExpression Id. */
-  int PLACEABLE = 88;
+  int OUT = 88;
   /** RegularExpression Id. */
-  int POSTOPERATOR = 89;
+  int PACKAGE = 89;
   /** RegularExpression Id. */
-  int PREOPERATOR = 90;
+  int PEROBJECTCONFIG = 90;
   /** RegularExpression Id. */
-  int PRIVATE = 91;
+  int PLACEABLE = 91;
   /** RegularExpression Id. */
-  int PROTECTED = 92;
+  int POSTOPERATOR = 92;
   /** RegularExpression Id. */
-  int PUBLIC = 93;
+  int PREOPERATOR = 93;
   /** RegularExpression Id. */
-  int RELIABLE = 94;
+  int PRIVATE = 94;
   /** RegularExpression Id. */
-  int REPLICATION = 95;
+  int PROTECTED = 95;
   /** RegularExpression Id. */
-  int RETURN = 96;
+  int PUBLIC = 96;
   /** RegularExpression Id. */
-  int SAFEREPLACE = 97;
+  int RELIABLE = 97;
   /** RegularExpression Id. */
-  int SHOWCATEGORIES = 98;
+  int REPLICATION = 98;
   /** RegularExpression Id. */
-  int SIMULATED = 99;
+  int RETURN = 99;
   /** RegularExpression Id. */
-  int SINGULAR = 100;
+  int SAFEREPLACE = 100;
   /** RegularExpression Id. */
-  int STATE = 101;
+  int SHOWCATEGORIES = 101;
   /** RegularExpression Id. */
-  int STATIC = 102;
+  int SIMULATED = 102;
   /** RegularExpression Id. */
-  int STRING = 103;
+  int SINGULAR = 103;
   /** RegularExpression Id. */
-  int STRUCT = 104;
+  int STATE = 104;
   /** RegularExpression Id. */
-  int STRUCTDEFAULTPROPERTIES = 105;
+  int STATIC = 105;
   /** RegularExpression Id. */
-  int SUPER = 106;
+  int STRING = 106;
   /** RegularExpression Id. */
-  int SWITCH = 107;
+  int STRUCT = 107;
   /** RegularExpression Id. */
-  int TRANSIENT = 108;
+  int STRUCTDEFAULTPROPERTIES = 108;
   /** RegularExpression Id. */
-  int TRAVEL = 109;
+  int SUPER = 109;
   /** RegularExpression Id. */
-  int TRUE = 110;
+  int SWITCH = 110;
   /** RegularExpression Id. */
-  int UNRELIABLE = 111;
+  int TRANSIENT = 111;
   /** RegularExpression Id. */
-  int UNTIL = 112;
+  int TRAVEL = 112;
   /** RegularExpression Id. */
-  int VAR = 113;
+  int TRUE = 113;
   /** RegularExpression Id. */
-  int VOID = 114;
+  int UNRELIABLE = 114;
   /** RegularExpression Id. */
-  int WITHIN = 115;
+  int UNTIL = 115;
   /** RegularExpression Id. */
-  int WHILE = 116;
+  int VAR = 116;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 117;
+  int VOID = 117;
   /** RegularExpression Id. */
-  int DECIMAL_LITERAL = 118;
+  int WITHIN = 118;
   /** RegularExpression Id. */
-  int HEX_LITERAL = 119;
+  int WHILE = 119;
   /** RegularExpression Id. */
-  int OCTAL_LITERAL = 120;
+  int INTEGER_LITERAL = 120;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 121;
+  int DECIMAL_LITERAL = 121;
   /** RegularExpression Id. */
-  int DECIMAL_FLOATING_POINT_LITERAL = 122;
+  int HEX_LITERAL = 122;
   /** RegularExpression Id. */
-  int DECIMAL_EXPONENT = 123;
+  int OCTAL_LITERAL = 123;
   /** RegularExpression Id. */
-  int HEXADECIMAL_FLOATING_POINT_LITERAL = 124;
+  int FLOATING_POINT_LITERAL = 124;
   /** RegularExpression Id. */
-  int HEXADECIMAL_EXPONENT = 125;
+  int DECIMAL_FLOATING_POINT_LITERAL = 125;
   /** RegularExpression Id. */
-  int IDENTIFIER = 126;
+  int DECIMAL_EXPONENT = 126;
   /** RegularExpression Id. */
-  int LETTER = 127;
+  int HEXADECIMAL_FLOATING_POINT_LITERAL = 127;
   /** RegularExpression Id. */
-  int PART_LETTER = 128;
+  int HEXADECIMAL_EXPONENT = 128;
   /** RegularExpression Id. */
-  int LPAREN = 129;
+  int IDENTIFIER = 129;
   /** RegularExpression Id. */
-  int RPAREN = 130;
+  int LETTER = 130;
   /** RegularExpression Id. */
-  int LBRACE = 131;
+  int PART_LETTER = 131;
   /** RegularExpression Id. */
-  int RBRACE = 132;
+  int LPAREN = 132;
   /** RegularExpression Id. */
-  int LBRACKET = 133;
+  int RPAREN = 133;
   /** RegularExpression Id. */
-  int RBRACKET = 134;
+  int LBRACE = 134;
   /** RegularExpression Id. */
-  int SEMICOLON = 135;
+  int RBRACE = 135;
   /** RegularExpression Id. */
-  int COMMA = 136;
+  int LBRACKET = 136;
   /** RegularExpression Id. */
-  int DOT = 137;
+  int RBRACKET = 137;
   /** RegularExpression Id. */
-  int ASSIGN = 138;
+  int SEMICOLON = 138;
   /** RegularExpression Id. */
-  int AT = 139;
+  int COMMA = 139;
   /** RegularExpression Id. */
-  int DOLLARS = 140;
+  int DOT = 140;
   /** RegularExpression Id. */
-  int LT = 141;
+  int ASSIGN = 141;
   /** RegularExpression Id. */
-  int BANG = 142;
+  int AT = 142;
   /** RegularExpression Id. */
-  int TILDE = 143;
+  int DOLLARS = 143;
   /** RegularExpression Id. */
-  int HOOK = 144;
+  int LT = 144;
   /** RegularExpression Id. */
-  int COLON = 145;
+  int BANG = 145;
   /** RegularExpression Id. */
-  int EQ = 146;
+  int TILDE = 146;
   /** RegularExpression Id. */
-  int LE = 147;
+  int HOOK = 147;
   /** RegularExpression Id. */
-  int GE = 148;
+  int COLON = 148;
   /** RegularExpression Id. */
-  int NE = 149;
+  int EQ = 149;
   /** RegularExpression Id. */
-  int SC_OR = 150;
+  int LE = 150;
   /** RegularExpression Id. */
-  int SC_AND = 151;
+  int GE = 151;
   /** RegularExpression Id. */
-  int INCR = 152;
+  int NE = 152;
   /** RegularExpression Id. */
-  int DECR = 153;
+  int SC_OR = 153;
   /** RegularExpression Id. */
-  int PLUS = 154;
+  int SC_AND = 154;
   /** RegularExpression Id. */
-  int MINUS = 155;
+  int INCR = 155;
   /** RegularExpression Id. */
-  int STAR = 156;
+  int DECR = 156;
   /** RegularExpression Id. */
-  int SLASH = 157;
+  int PLUS = 157;
   /** RegularExpression Id. */
-  int BIT_AND = 158;
+  int MINUS = 158;
   /** RegularExpression Id. */
-  int BIT_OR = 159;
+  int STAR = 159;
   /** RegularExpression Id. */
-  int XOR = 160;
+  int SLASH = 160;
   /** RegularExpression Id. */
-  int REM = 161;
+  int BIT_AND = 161;
   /** RegularExpression Id. */
-  int LSHIFT = 162;
+  int BIT_OR = 162;
   /** RegularExpression Id. */
-  int EXPONENT = 163;
+  int XOR = 163;
   /** RegularExpression Id. */
-  int ATASSIGN = 164;
+  int REM = 164;
   /** RegularExpression Id. */
-  int DOLLARSASSIGN = 165;
+  int LSHIFT = 165;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 166;
+  int EXPONENT = 166;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 167;
+  int ATASSIGN = 167;
   /** RegularExpression Id. */
-  int STARASSIGN = 168;
+  int DOLLARSASSIGN = 168;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 169;
+  int PLUSASSIGN = 169;
   /** RegularExpression Id. */
-  int ANDASSIGN = 170;
+  int MINUSASSIGN = 170;
   /** RegularExpression Id. */
-  int ORASSIGN = 171;
+  int STARASSIGN = 171;
   /** RegularExpression Id. */
-  int XORASSIGN = 172;
+  int SLASHASSIGN = 172;
   /** RegularExpression Id. */
-  int REMASSIGN = 173;
+  int ANDASSIGN = 173;
   /** RegularExpression Id. */
-  int LSHIFTASSIGN = 174;
+  int ORASSIGN = 174;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 175;
+  int XORASSIGN = 175;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFTASSIGN = 176;
+  int REMASSIGN = 176;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFT = 177;
+  int LSHIFTASSIGN = 177;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFT = 178;
+  int RSIGNEDSHIFTASSIGN = 178;
   /** RegularExpression Id. */
-  int GT = 179;
+  int RUNSIGNEDSHIFTASSIGN = 179;
   /** RegularExpression Id. */
-  int ALL = 180;
+  int RUNSIGNEDSHIFT = 180;
+  /** RegularExpression Id. */
+  int RSIGNEDSHIFT = 181;
+  /** RegularExpression Id. */
+  int GT = 182;
+  /** RegularExpression Id. */
+  int ALL = 183;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -373,15 +379,17 @@ public interface UnrealScriptParserConstants {
     "<token of kind 2>",
     "\"/*\"",
     "<SINGLE_LINE_COMMENT>",
+    "<COMPILER_DIRECTIVE>",
+    "<PREPROCESSOR_DIRECTIVE>",
     "\"*/\"",
     "\"*/\"",
-    "<token of kind 7>",
-    "<token of kind 8>",
-    "\"\\\"\"",
+    "<token of kind 9>",
     "<token of kind 10>",
     "\"\\\"\"",
+    "<token of kind 12>",
+    "\"\\\"\"",
     "\"\\\'\"",
-    "<token of kind 13>",
+    "<token of kind 15>",
     "\"\\\'\"",
     "\"abstract\"",
     "\"array\"",
@@ -399,6 +407,7 @@ public interface UnrealScriptParserConstants {
     "\"config\"",
     "\"const\"",
     "\"continue\"",
+    "\"cpptext\"",
     "\"cross\"",
     "\"default\"",
     "\"defaultproperties\"",

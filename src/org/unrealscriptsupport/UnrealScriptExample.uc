@@ -15,7 +15,12 @@ class TriggerLight extends Light;
  */
  /* Comment */
  // Comment
- 
+
+// Compiler directive
+#exec Texture Import File=Textures\S_Actor.pcx Name=S_Actor Mips=Off MASKED=1
+// Preprocessor
+`define Macroname
+
 //---------------------------------------------------------------------
 // Variables.
  

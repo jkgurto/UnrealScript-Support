@@ -5,7 +5,30 @@
  * Comment.
  */
 // Comment
-class ParserTest1 extends Mutator config(Test);
+class ParserTest1 extends Mutator config(Test)
+        native
+	exportstructs
+        editinlinenew
+	hidecategories(Movement,Collision,Lighting,LightColor,Karma,Force,Wind);
+
+#call
+#error
+#exec TEXTURE IMPORT NAME=NameForTextureToImportAs FILE=PATH\TO\SomeTexture.pcx GROUP=SomeGroup MIPS=OFF FLAGS=2 PALETTE=SomeTexPalette LODSET=2
+#exec Texture Import File=Textures\S_Actor.pcx Name=S_Actor Mips=Off MASKED=1
+#include
+
+`define <macroname>[<(paramA[,paramB...])>] [<macrodefinition>]
+`if(<value>)
+`else
+`endif
+`include(<filename>)
+`isdefined(<macroname>)
+`notdefined(<macroname>)
+`undefine(<macroname>)
+`log(string OutputString, optional bool bRequiredCondition, optional name LogTag);
+`warn(string OutputString, optional bool bRequiredCondition);
+`logd(string OutputString, optional bool bRequiredCondition, optional name LogTag);
+`assert(bool bCondition);
 
 var(group) type varname;
 
@@ -20,7 +43,7 @@ var(MyCategory) const editconst bool MyBool;
 // not changeable in script
 var(MyCategory) const bool MyBool;
 
-var class<actor> ActorClass;
+//var class<actor> ActorClass;
 
 var() class C;
 var actor A;
@@ -76,6 +99,7 @@ var ELightType InitialType; // Initial type of light.
 var float InitialBrightness; // Initial brightness.
 var float Alpha, Direction;
 var actor Trigger;
+var object o;
 
 var globalconfig float fDelay;           // delay between a message (seconds)
 var globalconfig int iAdminMsgDuration;// seconds that an "admin" message will stay visible
@@ -91,10 +115,34 @@ const T=True;
 const f=false;
 const F=False;
 
+const a=blah;
+const a=blah.blah();
+const a=1+2+3+4;
+
 var class C;
-var class<Pawn> PC;
-var array<int> IntList;
-var array<class<PlayerController> > Players;
+//var class<Pawn> PC;
+//var array<int> IntList;
+//var array<class<PlayerController> > Players;
+//var array<class<Object> > Players;
+
+const PROPNUM = 4;
+var localized string ACDisplayText[PROPNUM];
+var localized string ACDescText[PROPNUM];
+
+//var localized int variablename<tag1=value|tag2=value>;
+
+var(Path) config enum EPathStyle
+{
+	PATHSTYLE_Linear,
+	PATHSTYLE_Bezier
+} PathStyle;
+
+cpptext
+{
+    //...
+    void DrawTile(UTexture* Tex, FLOAT X, FLOAT Y, FLOAT XL, FLOAT YL, FLOAT U, FLOAT V, FLOAT UL, FLOAT VL, const FLinearColor& Color);
+    //...
+}
 
 replication
 {
@@ -125,6 +173,15 @@ function FunctionExample(actor Other)
    Super.Touch( Other );
 }
 
+function object FunctionExample(object o) { return o; }
+
+simulated function CheckOutOfAmmo()
+{
+    if (AmmoAmount <= 0)
+        Pawn(Owner).Weapon.OutOfAmmo();
+
+    testPawnArray[1].Weapon.OutOfAmmo();
+}
 
 function void OperatorExample() {
 
@@ -137,6 +194,20 @@ function void OperatorExample() {
     local bool y;
     local vector v;
     local actor a;
+    //local actor object;
+    local array<string> Ar;
+
+    for ( i=0; i<16; i++ )
+    {
+        if ( RouteCache[i] == None )
+        {
+            if ( i > 5 )
+                T = T$"--"$GetItemName(string(RouteCache[i-1]));
+            break;
+        }
+        else if ( i < 5 )
+            T = T$GetItemName(string(RouteCache[i]))$"-";
+    }
 
     str1 = "abc";
     str2 = "def";
@@ -147,10 +218,17 @@ function void OperatorExample() {
     y = false;
     v = vector(1.0, 1.0, 1.0);
     a = actor(obj);
+    a = a.b;
+    a = a.b(c, d, (e()));
+    a = a.b.c;
+    a = a.b.c(object.x);
+    a = a.b.c(d, e.f, g.h.i());
     a = class'MyClass'.default.variable;
     a = class'MyClass'.static.funcCall();
+    a = class'MyPackage.MyClass'.static.funcCall();
     class'MyClass'.default.variable = 1;
     a = class'SomeClass'.const.SOMECONST;
+    a = object.x;
 
     a = b + 1 + b;
     a = 1 + b + 1;
@@ -170,6 +248,7 @@ function void OperatorExample() {
     a = --a;
     a = a++;
     a = a--;
+    a = a++ + -4.0 * --x;
 
     a *= -2 * (3 * -4.0) / 5.0 + b - (+6);
     a = a ** 2;
@@ -599,9 +678,9 @@ function void checkNew() {
 
     WA = new class'UTServerAdmin'; // works because UTServerAdmin extends WebApplication
     WA = new WAClass; // works because the metaclass of WAClass is WebApplication
-    O  = new WAClass; // works because WebApplication extends Object
-    O  = new OClass;  // works because the metaclass of OClass is Object
-    WA = new OClass;  // type mismatch error (Object doesn't extend WebApplication!)
+    O = new WAClass; // works because WebApplication extends Object
+    O = new OClass;  // works because the metaclass of OClass is Object
+    O = new pkg.OClass;
 }
 
 final operator(18) int : ( int A, int B )
@@ -609,7 +688,7 @@ final operator(18) int : ( int A, int B )
   return (A + B) / 2;
 }
 
-final postoperator int # (int A)
+/*final postoperator int # (int A)
 {
   return A / 10;
 }
@@ -621,7 +700,7 @@ final postoperator int # ( out int A )
 static final postoperator int #( out int A )
 {
   return A /= 10;
-}
+}*/
 
 static final operator(22) string * ( coerce string A, int B )
 {
@@ -801,17 +880,17 @@ function testOperator() {
     Middle = 10 : 2; // Middle = 6
     Middle = 10 + 2 : 4; // Middle = (10 + 2) : 4 = 8
 
+    /*i = 100;
+
+    b = i#; // b = 10, i = 100 (i is NOT affected)
+
     i = 100;
 
-    //b = i#; // b = 10, i = 100 (i is NOT affected)
+    b = i#; // b = 10, i = 10 (i IS affected, because of the out keyword)
 
-    i = 100;
+    i#; // i = 1
 
-    //b = i#; // b = 10, i = 10 (i IS affected, because of the out keyword)
-
-    //i#; // i = 1
-
-    //SomeActor DIEDIEDIE; // It is now dead.
+    SomeActor DIEDIEDIE; // It is now dead.*/
 }
 
 defaultproperties
