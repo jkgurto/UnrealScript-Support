@@ -117,9 +117,13 @@ public class Token implements java.io.Serializable {
      */
     public static Token newToken(int ofKind, String image) {
         
-        if ( (ofKind == UnrealScriptParserConstants.RUNSIGNEDSHIFT) ||
-             (ofKind == UnrealScriptParserConstants.RSIGNEDSHIFT) ||
-             (ofKind == UnrealScriptParserConstants.GT) ) {
+        if (ofKind == UnrealScriptParserConstants.RUNSIGNEDSHIFT) {
+            return new GTToken(image, ofKind);
+        }
+        else if(ofKind == UnrealScriptParserConstants.RSIGNEDSHIFT) {
+            return new GTToken(image, ofKind);
+        }
+        else if(ofKind == UnrealScriptParserConstants.GT) {
             return new GTToken(image, ofKind);
         }
         

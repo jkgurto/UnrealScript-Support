@@ -220,13 +220,16 @@ MORE :
 <IN_STRING_LITERAL>
 SKIP :
 {
-    < ~["\""] >
+    < "\\\"" | ~["\""] >
 }
 
 // End of string literal
 <IN_STRING_LITERAL>
 TOKEN :
 {
+    /*< ESCAPED_CHAR: "\\" >
+    {
+    }*/
     <STRING_LITERAL: "\"" > : DEFAULT
 }
 
@@ -295,7 +298,7 @@ TOKEN :
 | < _DEFAULT: "default" >
 | < _DEFAULTPROPERTIES: "defaultproperties" >
 | < DELEGATE: "delegate" >
-| < DEPENDSON: "dependsOn" >
+| < DEPENDSON: "dependson" >
 | < DEPRECATED: "deprecated" >
 | < DO: "do" >
 | < DONTCOLLAPSECATEGORIES: "dontcollapsecategories" >
@@ -361,6 +364,7 @@ TOKEN :
 | < SHOWCATEGORIES: "showcategories" >
 | < SIMULATED: "simulated" >
 | < SINGULAR: "singular" >
+| < _SKIP: "skip" >
 | < STATE: "state" >
 | < STATIC: "static" >
 | < STRING: "string" >
@@ -374,6 +378,7 @@ TOKEN :
 | < UNRELIABLE: "unreliable" >
 | < UNTIL: "until" >
 | < VAR: "var" >
+| < VIRTUAL: "virtual" >
 | < VOID: "void" >
 | < WITHIN: "within" >
 | < WHILE: "while" >
@@ -1167,19 +1172,32 @@ TOKEN :
 TOKEN :
 {
   < RUNSIGNEDSHIFT: ">>>" >
-  {
-     matchedToken = Token.newToken(RUNSIGNEDSHIFT, ">");
-     input_stream.backup(2);
-  }
+  //{
+  //   matchedToken = Token.newToken(RUNSIGNEDSHIFT, ">>>");
+  //   input_stream.backup(2);
+
+     /*throw new RuntimeException("RUNSIGNEDSHIFT" +
+                       " image: " + image.toString() +
+                       " line: " + input_stream.line +
+                       " column: " + input_stream.column +
+                       " matchedToken.kind: " + matchedToken.kind +
+                       " matchedToken.image: " + matchedToken.image +
+                       " realKind: " + ((Token.GTToken)matchedToken).realKind);*/
+  //}
 | < RSIGNEDSHIFT: ">>" >
-  {
-    matchedToken = Token.newToken(RSIGNEDSHIFT, ">");
-    input_stream.backup(1);
-  }
+  //{
+  //  matchedToken = Token.newToken(RSIGNEDSHIFT, ">>");
+  //  input_stream.backup(1);
+
+    /*throw new RuntimeException("RSIGNEDSHIFT" +
+                       " image: " + image.toString() +
+                       " line: " + input_stream.line +
+                       " column: " + input_stream.column +
+                       " matchedToken.kind: " + matchedToken.kind +
+                       " matchedToken.image: " + matchedToken.image +
+                       " realKind: " + ((Token.GTToken)matchedToken).realKind);*/
+  //}
 | < GT: ">" >
-  {
-    matchedToken = Token.newToken(GT, ">");
-  }
 }
 
 /*************************************************
@@ -1201,9 +1219,7 @@ void CompilationUnit():
 {
     try {
         ClassDeclaration()
-        ( Declarations() )*
-        ( CppText() )?
-        ( ReplicationBlock() )?
+        ( Declarations() | CppText() )*
         Body()
         ( DefaultPropertiesBlock() )?
 
@@ -1226,7 +1242,7 @@ void ClassDeclaration():
 {
 }
 {
-    "class" <IDENTIFIER> ("extends" PackageIdentifier())? (ClassParams())* ";"
+    "class" (VarName() | "object") ("extends" PackageIdentifier())? (ClassParams())* ";"
 }
 
 
@@ -1241,7 +1257,7 @@ void ClassParams():
     (
     ConstClassParams() |
     ("within" PackageIdentifier()) |
-    ("dependsOn" "(" PackageIdentifier() ")") |
+    ("dependson" "(" PackageIdentifier() ")") |
     ("config" ( "(" PackageIdentifier() ")" )?) |
     ("hidecategories" "(" IdentifierList() ")") |
     ("showcategories" "(" IdentifierList() ")")
@@ -1252,7 +1268,7 @@ void ClassParams():
 void IdentifierList():
 {}
 {
-    <IDENTIFIER> ( "," <IDENTIFIER> )*
+    (<IDENTIFIER> | "object") ( "," (<IDENTIFIER> | "object") )*
 }
 
 // IDENTIFIER = ( ALPHA | UNDERSCORE ) ( ALPHA | UNDERSCORE | DIGIT )*
@@ -1263,7 +1279,7 @@ void IdentifierList():
 void PackageIdentifier():
 {}
 {
-    (<IDENTIFIER> | "object") PackageIdentifierEnd()
+    (VarName() | "object") PackageIdentifierEnd()
 }
 
 // Workaround for choice conflicts
@@ -1271,7 +1287,7 @@ void PackageIdentifier():
 void PackageIdentifierEnd():
 {}
 {
-    ("." (<IDENTIFIER> | "object"))?
+    ("." (VarName() | "object"))?
 }
 
 void ClassIdentifierStart():
@@ -1302,7 +1318,7 @@ void QualifiedIdentifierStart():
 void FuncCall():
 {}
 {   
-    (ClassIdentifierStart() FuncCallStart())?
+    (ClassIdentifierStart() (FuncCallStart())? )?
     IdDotId() FuncCallEnd()
 }
 
@@ -1312,29 +1328,64 @@ void FuncCallStart():
     "static" "."
 }
 
+// C = Spawn(P.ControllerClass,,,P.Location, P.Rotation);
 void FuncCallEnd():
 {}
 {
-    "(" ( Expression() ("," Expression())* )? ")"
+    "(" (Expression())? ("," (Expression())?)* ")"
 }
 
+// Pawn(Owner).Weapon.OutOfAmmo()
+// GetItemName(String(MoveTarget))
 void FuncCallOrQualifiedIdentifier():
 {}
 {
+    // "class'ClassName'." etc
+    LOOKAHEAD(ClassIdentifierStart())
     ( ClassIdentifierStart()
-        ( (FuncCallStart() IdDotId() FuncCallEnd()) |
-          (QualifiedIdentifierStart() IdDotId()) )
+          // default, static or const?
+        ( ( LOOKAHEAD(FuncCallStart() | QualifiedIdentifierStart())
+            (FuncCallStart() | QualifiedIdentifierStart()) )?
+          // x.y().z()
+          IdDotIdFuncCallEndRep() )
     ) |
-    ( IdDotId() (LOOKAHEAD("(") FuncCallEnd())? )
-
-    //FuncCall() |
-    //QualifiedIdentifier()
+    // Type cast - "(arg)" is required
+    // Pawn(Owner).Weapon.OutOfAmmo()
+    // class<name>(asdf)
+    LOOKAHEAD(BasicTypeOrClassType() | "object" "(")
+    ( (BasicTypeOrClassType() | "object") "(" Expression() ")" ("." IdDotIdFuncCallEndRep())? ) |
+    // x.y.Class
+    LOOKAHEAD(IdDotId() "." "class")
+    (IdDotId() "." "class") |
+    // x.y().z()
+    IdDotIdFuncCallEndRep()
 }
 
+void IdDotIdFuncCallEndRep():
+{}
+{
+    IdDotIdFuncCallEnd() ("." IdDotIdFuncCallEnd())*
+}
+
+void IdDotIdFuncCallEnd():
+{}
+{
+    // "(arg1, arg2..)" is optional
+    // var.func(arg)
+    // var.var
+    IdDotId() (LOOKAHEAD("(") FuncCallEnd())?
+    //( IdDotId() (LOOKAHEAD("class" | "(")("class" | FuncCallEnd()))? )
+}
+
+// testPawnArray[1].Weapon.OutOfAmmo();
 void IdDotId():
 {}
 {
-    (<IDENTIFIER> | "object") ("."  (<IDENTIFIER> | "object"))*
+    // testPawnArray[1]
+    // default.x
+    (VarName() | "default") (ArrayDeclEnd())?
+    // .Weapon.OutOfAmmo();
+    (LOOKAHEAD("." VarName()) "."  VarName() (ArrayDeclEnd())?)*
 }
 
 void FuncCallAndIdentifierList():
@@ -1363,7 +1414,7 @@ void Declarations():
 void ConstDecl():
 {}
 {
-    "const" <IDENTIFIER> "=" Expression()
+    "const" VarName() "=" Expression()
 }
 
 // VARDECL = var ( CONFIGGROUP )? ( VARPARAMS )*
@@ -1380,7 +1431,7 @@ void VarDecl():
 void ConfigGroup():
 {}
 {
-    "(" (<IDENTIFIER>)? ")"
+    "(" (<IDENTIFIER> | "object")? ")"
 }
 
 
@@ -1389,16 +1440,100 @@ void ConfigGroup():
 void VarTypeThenIdentifier():
 {}
 {
-    (LOOKAHEAD(2)
-        DynArrayDecl() |
-        EnumDecl() |
-        StructDecl() |
-        BasicTypeOrClassType() |
-        "object" |
-        <IDENTIFIER>
-    )
-    <IDENTIFIER> (ArrayDeclEndOrVarTags())?
-    ("," <IDENTIFIER> (ArrayDeclEndOrVarTags())?)*
+    (DynArrayDecl() |
+    EnumDecl() |
+    StructDecl() |
+    BasicTypeOrClassType() |
+    "object" |
+    <IDENTIFIER>)
+    VarEnd() ("," VarEnd())*
+}
+
+void VarEnd():
+{}
+{
+    VarName() (ArrayDeclEndOrVarTags())?
+}
+
+void VarName():
+{}
+{
+    <IDENTIFIER> | VarNameAlsoKeyword()
+}
+
+// UnrealScript keywords that could also be used as variable names
+void VarNameAlsoKeyword():
+{}
+{
+    "abstract" |
+    "auto" |
+    "begin" |
+    "cacheexempt" |
+    "class" | /// @todo FIXME Object
+    "coerce" |
+    "collapsecategories" |
+    "config" |
+    "cpptext" |
+    "defaultproperties" |
+    "delegate" |
+    "dependson" |
+    "deprecated" |
+    "dontcollapsecategories" |
+    "edfindable" |
+    "editconst" |
+    "editinline" |
+    "editinlinenew" |
+    "editinlineuse" |
+    "end" |
+    "enum" |
+    "event" |
+    "exec" |
+    "export" |
+    "exportstructs" |
+    "extends" |
+    "final" |
+    "function" |
+    "globalconfig" |
+    "guid" |
+    "hidecategories" |
+    "hidedropdown" |
+    "ignores" |
+    "input" |
+    "instanced" |
+    "iterator" |
+    "latent" |
+    "localized" |
+    "name" | /// @todo FIXME Object
+    "native" |
+    "nativereplication" |
+    "noteditinlinenew" |
+    "noexport" |
+    "notplaceable" |
+    "operator" |
+    "optional" |
+    "out" |
+    "package" |
+    "perobjectconfig" |
+    "placeable" |
+    "postoperator" |
+    "preoperator" |
+    "private" |
+    "protected" |
+    "public" |
+    "reliable" |
+    "replication" |
+    "safereplace" |
+    "showcategories" |
+    "simulated" |
+    "singular" |
+    "skip" |
+    "state" |
+    "structdefaultproperties" |
+    "switch" |
+    "transient" |
+    "travel" |
+    "unreliable" |
+    "within"
 }
 
 void ArrayDeclEndOrVarTags():
@@ -1411,13 +1546,20 @@ void ArrayDeclEndOrVarTags():
 // Variable tags
 // Eg.
 // var localized int variablename<tag1=value|tag2=value>;
+// Spaces between words allowed
+// Var() bool bEnableSpawning<DisplayName=Spawning Enabled>;
 void VarTags():
 {}
 {
-    /// @todo FIXME
-    "<" <IDENTIFIER> "=" Expression() ("|" <IDENTIFIER> "=" Expression())* GT()
+    // Do not use Expression() - matches last GT()
+    "<" <IDENTIFIER> "=" VarTagsValue() ("|" <IDENTIFIER> "=" VarTagsValue())* GT()
 }
 
+void VarTagsValue():
+{}
+{
+    (VarName() | Literal())+
+}
 
 // ARRAYDECL = IDENTIFIER LSBRACK INTVAL RSBRACK
 void ArrayDecl():
@@ -1447,15 +1589,13 @@ void DynArrayDecl():
 void ClassType():
 {}
 {
-    "class" ClassTypeEnd()
+    ClassTypeStart() PackageIdentifier() GT()
 }
 
-// Workaround for choice conflicts
-// BasicType and ClassType can start with "class"
-void ClassTypeEnd():
+void ClassTypeStart():
 {}
 {
-    "<" PackageIdentifier() GT()
+    "class" "<"
 }
 
 
@@ -1468,10 +1608,11 @@ void EnumDecl():
 
 
 // ENUMOPTIONS = IDENTIFIER ( COMMA IDENTIFIER )*
+// Trailing "," ok
 void EnumOptions():
 {}
 {
-    <IDENTIFIER> ( "," <IDENTIFIER> )*
+    <IDENTIFIER> (LOOKAHEAD("," <IDENTIFIER>) "," <IDENTIFIER> )* (",")?
 }
 
 
@@ -1480,7 +1621,7 @@ void EnumOptions():
 void StructDecl():
 {}
 {
-    "struct" (StructParams())* <IDENTIFIER> ("extends" PackageIdentifier())?
+    "struct" (StructParams())* VarName() ("extends" PackageIdentifier())?
                            "{" StructBody() "}"
 }
 
@@ -1512,21 +1653,21 @@ void CppFunc():
 {
     CppType() <IDENTIFIER> "("
     ( CppType() <IDENTIFIER> ("," CppType() <IDENTIFIER>)* )?
-    ")"
+    ")" (("=" <INTEGER_LITERAL>) | "{" "}")?
 }
 
 void CppType():
 {}
 {
-    ("const")?
-    (BasicType() | "void" | "none" | "object" | <IDENTIFIER>)
+    ("virtual")? ("static" | "const")?
+    (BasicType() | "void" | "none" | "object" | ("enum" <IDENTIFIER>) | <IDENTIFIER>)
     (CppPtrRef())?
 }
 
 void CppPtrRef():
 {}
 {
-    "&" | ("*" ("*")?)
+    "&" | (("const")? "*" ("*")?)
 }
 
 // Replication parts
@@ -1552,14 +1693,9 @@ void ReplicationBody():
 void Body():
 {}
 {
-    ( StateOrFunctionDecl() )*
-}
-
-// Prevent choice conflicts, both can start with "simulated"
-void StateOrFunctionDecl():
-{}
-{
-    (StateAndConstFuncParams())* (StateDecl() | FunctionDecl())
+    ( LOOKAHEAD(StateDeclStart()) StateDecl() |
+      FunctionDecl() |
+      ReplicationBlock() )*
 }
 
 // State parts
@@ -1567,8 +1703,14 @@ void StateOrFunctionDecl():
 void StateDecl():
 {}
 {
-    (StateParams())* "state" ("(" ")")? <IDENTIFIER>
+    StateDeclStart() ("(" ")")? <IDENTIFIER>
         (ConfigGroup())? ("extends" <IDENTIFIER>)? StateBody()
+}
+
+void StateDeclStart():
+{}
+{
+    (StateParams())* "state"
 }
 
 
@@ -1603,7 +1745,7 @@ void FunctionDecl():
 void NormalOrOperatorFunc():
 {}
 {
-    LOOKAHEAD(8, (ConstFuncParams())* "native")
+    LOOKAHEAD(NativeFuncParamsStart())
     ( NativeFuncParams() FuncEnd() ("const")? FunctionBody() ) |
     ( (ConstFuncParams())* FuncEnd() FunctionBody() )
 }
@@ -1611,9 +1753,14 @@ void NormalOrOperatorFunc():
 void NativeFuncParams():
 {}
 {
+    NativeFuncParamsStart() ("(" <INTEGER_LITERAL> ")")?
     (ConstFuncParams())*
-    "native" ("(" <INTEGER_LITERAL> ")")?
-    (ConstFuncParams())*
+}
+
+void NativeFuncParamsStart():
+{}
+{
+    (ConstFuncParams())* "native"
 }
 
 void FuncEnd():
@@ -1641,11 +1788,12 @@ void NormalFuncEnd():
 void ReturnTypeThenIdentifier():
 {}
 {
-    ("void" <IDENTIFIER>) |
-    (LocalTypeEnd() <IDENTIFIER>) |
-    (LOOKAHEAD(2)
-    (PackageIdentifierOrArrayDecl() <IDENTIFIER>) |
-    <IDENTIFIER>)
+    ("void" VarName()) |
+    (LocalTypeEnd() VarName()) |
+    // Look ahead 2 - check for (func identifier) or just (identifier)
+    ( LOOKAHEAD(2)
+     (PackageIdentifierOrArrayDecl() VarName()) |
+     VarName() )
 }
 
 // OPERATORFUNC = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
@@ -1689,22 +1837,28 @@ void UnaryOperator():
 void FunctionArgs():
 {}
 {
-    //("optional" | "out" | "coerce")? FunctionArgType() <IDENTIFIER>
-    ( "optional" FunctionArgTypeAndName() ("=" UnaryExpression())? ) |
-    ( ("out" | "coerce")? FunctionArgTypeAndName() )
+    ( "optional" (LOOKAHEAD(FuncArgParamsNotOpt()) FuncArgParamsNotOpt())?
+      FunctionArgTypeAndName() ("=" UnaryExpression())? ) |
+    ( (LOOKAHEAD(FuncArgParamsNotOpt()) FuncArgParamsNotOpt())? FunctionArgTypeAndName() )
+}
+
+void FuncArgParamsNotOpt():
+{}
+{
+    "out" | "coerce" | "skip"
 }
 
 void FunctionArgTypeAndName():
 {}
 {
-    FunctionArgType() <IDENTIFIER>
+    FunctionArgType() VarName()
 }
 
 // FUNCTIONARGTYPE = BASICTYPE | PACKAGEIDENTIFIER
 void FunctionArgType():
 {}
 {
-    BasicType() | PackageIdentifier() | DynArrayDecl()
+    BasicTypeOrClassType() | PackageIdentifier() | DynArrayDecl()
 }
 
 
@@ -1720,7 +1874,7 @@ void FunctionBody():
 void LocalDecl():
 {}
 {
-    "local" LocalType() <IDENTIFIER> ( "," <IDENTIFIER> )* ";"
+    "local" LocalType() VarName() ( "," VarName() )* ";"
 }
 
 
@@ -1736,14 +1890,14 @@ void LocalType():
 void LocalTypeEnd():
 {}
 {
-    BasicTypeOrClassType()
+    BasicTypeOrClassType() | DynArrayDecl()
 }
 
 // choice conflict - multiple things that start with <IDENTIFIER>
 void PackageIdentifierOrArrayDecl():
 {}
 {
-    (<IDENTIFIER> | "object") (ArrayDeclEnd() | PackageIdentifierEnd())
+    (VarName() | "object") (ArrayDeclEnd() | PackageIdentifierEnd())
 }
 
 // Code parts
@@ -1755,11 +1909,6 @@ void CodeLine():
     //( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
     //   | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
     try {
-        CodeBlock() |
-        (LOOKAHEAD(2)(Expression() ";") | LOOKAHEAD(2) Statement() |
-                      LabelStatement() ) |
-        EmptyStatement() |
-        SwitchStatement() |
         IfStatement() |
         WhileStatement() |
         DoStatement() |
@@ -1768,7 +1917,16 @@ void CodeLine():
         BreakStatement() |
         ContinueStatement() |
         ReturnStatement() |
-        GotoStatement()
+        GotoStatement() |
+
+        CodeBlock() |
+
+        LOOKAHEAD(SwitchStart()) SwitchStatement() |
+        LOOKAHEAD(LabelStatementStart()) LabelStatement() |
+        (Expression() ";") |
+        //Statement() |
+
+        EmptyStatement()
     }
     catch (ParseException ex) {
         recover(ex, SEMICOLON);
@@ -1825,17 +1983,23 @@ void DoStatement():
 void SwitchStatement():
 {}
 {
-    "switch" "(" Expression() ")" "{"
+    SwitchStart()
         (SwitchLabel())*
         (DefaultLabel())?
     "}"
+}
+
+void SwitchStart():
+{}
+{
+    "switch" "(" Expression() ")" "{"
 }
 
 // CASERULE = case INTVAL COLON CODEBLOCK
 void SwitchLabel():
 {}
 {
-    "case" (<INTEGER_LITERAL> | QualifiedIdentifier()) ":" (CodeLine())*
+    "case" (LOOKAHEAD(Literal()) Literal() | QualifiedIdentifier()) ":" (LOOKAHEAD(1) CodeLine())*
 }
 
 // DEFAULTRULE = default CODEBLOCK
@@ -1867,7 +2031,13 @@ void GotoStatement():
 void LabelStatement():
 {}
 {
-    (<IDENTIFIER> | "begin" | "end") ":" (LOOKAHEAD(1) CodeLine())*
+    LabelStatementStart() (LOOKAHEAD(1) CodeLine())*
+}
+
+void LabelStatementStart():
+{}
+{
+    (<IDENTIFIER> | "begin" | "end") ":"
 }
 
 // FOREACHLOOP = foreach FUNCCALL CODEBLOCK
@@ -1875,7 +2045,7 @@ void ForEachStatement():
 {}
 {
     // foreach FUNCCALL CODEBLOCK
-    "foreach" FuncCall() CodeBlock()
+    "foreach" FuncCall() CodeLine()
 }
 
 
@@ -1922,7 +2092,7 @@ void Expression():
     //ConditionalExpression() (LOOKAHEAD(2) AssignmentOperator() Expression())?
     //Operand() ( LOOKAHEAD(2) OpIdentifier() Operand() )*
     //ConditionalExpression()
-    LOOKAHEAD(3) NewExpression() | BinaryExpression()
+    LOOKAHEAD(NewStart()) NewExpression() | BinaryExpression()
 }
 
 void TernaryExpression():
@@ -1946,7 +2116,7 @@ void ConditionalExpression():
 void BinaryExpression():
 {}
 {
-    exp2() (LOOKAHEAD(2) OperatorNames2() exp2())*
+    exp2() (LOOKAHEAD(OperatorNames2()) OperatorNames2() exp2())*
 }
 
 void exp2():
@@ -1961,7 +2131,10 @@ void exp1():
 {}
 {
     "(" Expression() ")" |
-    (LOOKAHEAD(3) CastExpression() | LOOKAHEAD(3) FuncCallOrIdentifierSpecifier() | Literal())
+    // Order is important
+    // Match class'name'.func() before class'name'
+    (LOOKAHEAD(3) FuncCallOrIdentifierSpecifier() | Literal())
+    //(FuncCallOrIdentifierSpecifier() | Literal())
 }
 
 // new operator in UE3
@@ -1969,8 +2142,7 @@ void exp1():
 void NewExpression():
 {}
 {
-    <IDENTIFIER> "="
-    "new" (
+    NewStart() (
         ( ( "(" (QualifiedIdentifier() | "none") ("," <NAME_LITERAL> ("," ArrayIndex())? )? ")")?
         "class" <NAME_LITERAL> ("(" <IDENTIFIER> (<NAME_LITERAL>)? ")")? ) |
 
@@ -1978,6 +2150,11 @@ void NewExpression():
     )
 }
 
+void NewStart():
+{}
+{
+    <IDENTIFIER> "=" "new"
+}
 
 // OPIDENTIFIER = IDENTIFIER | OPERATORNAMES
 void OpIdentifier():
@@ -2256,7 +2433,8 @@ void DefPropIdentifier():
 void ArrayIndex():
 {}
 {
-    (<IDENTIFIER> | <INTEGER_LITERAL>)
+    //(<IDENTIFIER> | <INTEGER_LITERAL>)
+    Expression()
 }
 
 // Default properties block
@@ -2353,6 +2531,10 @@ void ConstClassParams():
     "native" |
     "nativereplication" |
     "abstract" |
+    "collapsecategories" |
+    "dontcollapsecategories" |
+    "editinlinenew" |
+    "exportstructs" |
 
     ("guid" "("
     <INTEGER_LITERAL> ","
@@ -2360,12 +2542,13 @@ void ConstClassParams():
     <INTEGER_LITERAL> ","
     <INTEGER_LITERAL> ")") |
 
-    "transient" |
-    "placeable" |
+    "noexport" |
+    "noteditinlinenew" |
     "notplaceable" |
-
-    "exportstructs" |
-    "editinlinenew"
+    "perobjectconfig" |
+    "placeable" |
+    "safereplace" |
+    "transient"
 }
 
 // BOOLVAL = true | false
@@ -2394,6 +2577,7 @@ void VarParams():
     "input" |
     "localized" |
     "native" |
+    "noexport" |
     "private" |
     "protected" |
     "transient" |
@@ -2401,34 +2585,27 @@ void VarParams():
 }
 
 // STATEPARAMS = auto | simulated
-// Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
 void StateParams():
 {}
 {
-    "auto"
+    "auto" |
+    "simulated"
 }
 
 // CONSTFUNCPARAMS = final | iterator | latent | simulated | singular | static |
 //                   exec | protected | private
-// Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
 void ConstFuncParams():
 {}
 {
+    "exec" |
     "final" |
     "iterator" |
     "latent" |
-    "singular" |
-    "static" |
-    "exec" |
+    "private" |
     "protected" |
-    "private"
-}
-
-// Prevent choice conflicts between StateParams and ConstFuncParams
-void StateAndConstFuncParams():
-{}
-{
-    "simulated"
+    "simulated" |
+    "singular" |
+    "static"
 }
 
 // BASICTYPE = byte | int | float | string | bool | name | class
@@ -2455,7 +2632,7 @@ void BasicClassType():
 void BasicTypeOrClassType():
 {}
 {
-    BasicTypeSimple() | ( "class" ( LOOKAHEAD(2) ClassTypeEnd())? )
+    BasicTypeSimple() | (LOOKAHEAD(ClassTypeStart()) ClassType() | "class") /// @todo FIXME
 }
 
 // FUNCTIONTYPE = function | event | delegate
@@ -2477,7 +2654,7 @@ void Literal():
   <INTEGER_LITERAL> |
   <FLOATING_POINT_LITERAL> |
   <NAME_LITERAL> |
-  ("class" <NAME_LITERAL>) |
+  ("class" (LOOKAHEAD(<NAME_LITERAL>) <NAME_LITERAL>)?) |
   <STRING_LITERAL> |
   BooleanLiteral() |
   NoneLiteral()
@@ -2496,32 +2673,35 @@ void NoneLiteral():
 void RUNSIGNEDSHIFT():
 {}
 {
-  ( LOOKAHEAD({
+  /*( LOOKAHEAD({
         ( getToken(1).kind == GT ) &&
         ( ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT )
     })
    ">" ">" ">"
-  )
+  )*/
+    ">>>"
 }
 
 void RSIGNEDSHIFT():
 {}
 {
-  ( LOOKAHEAD({
+  /*( LOOKAHEAD({
         ( getToken(1).kind == GT ) &&
         ( ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT)
     })
   ">" ">"
-  )
+  )*/
+    ">>"
 }
 
 void GT():
 {}
 {
-  ( LOOKAHEAD({
+  /*( LOOKAHEAD({
         ( getToken(1).kind == GT ) &&
         ( ((Token.GTToken)getToken(1)).realKind == GT )
     })
   ">"
-  )
+  )*/
+    ">"
 }

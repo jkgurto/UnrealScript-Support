@@ -2502,13 +2502,13 @@ private int jjMoveStringLiteralDfa0_3()
       case 34:
          return jjStopAtPos(0, 13);
       default :
-         return jjMoveNfa_3(0, 0);
+         return jjMoveNfa_3(1, 0);
    }
 }
 private int jjMoveNfa_3(int startState, int curPos)
 {
    int startsAt = 0;
-   jjnewStateCnt = 1;
+   jjnewStateCnt = 3;
    int i = 1;
    jjstateSet[0] = startState;
    int kind = 0x7fffffff;
@@ -2523,8 +2523,12 @@ private int jjMoveNfa_3(int startState, int curPos)
          {
             switch(jjstateSet[--i])
             {
-               case 0:
+               case 1:
                   if ((0xfffffffbffffffffL & l) != 0L)
+                     kind = 12;
+                  break;
+               case 0:
+                  if (curChar == 34)
                      kind = 12;
                   break;
                default : break;
@@ -2538,8 +2542,15 @@ private int jjMoveNfa_3(int startState, int curPos)
          {
             switch(jjstateSet[--i])
             {
-               case 0:
-                  kind = 12;
+               case 1:
+                  if (kind > 12)
+                     kind = 12;
+                  if (curChar == 92)
+                     jjstateSet[jjnewStateCnt++] = 0;
+                  break;
+               case 2:
+                  if (kind > 12)
+                     kind = 12;
                   break;
                default : break;
             }
@@ -2556,7 +2567,7 @@ private int jjMoveNfa_3(int startState, int curPos)
          {
             switch(jjstateSet[--i])
             {
-               case 0:
+               case 1:
                   if (jjCanMove_0(hiByte, i1, i2, l1, l2) && kind > 12)
                      kind = 12;
                   break;
@@ -2571,7 +2582,7 @@ private int jjMoveNfa_3(int startState, int curPos)
          kind = 0x7fffffff;
       }
       ++curPos;
-      if ((i = jjnewStateCnt) == (startsAt = 1 - (jjnewStateCnt = startsAt)))
+      if ((i = jjnewStateCnt) == (startsAt = 3 - (jjnewStateCnt = startsAt)))
          return curPos;
       try { curChar = input_stream.readChar(); }
       catch(java.io.IOException e) { return curPos; }

@@ -43,7 +43,16 @@ var(MyCategory) const editconst bool MyBool;
 // not changeable in script
 var(MyCategory) const bool MyBool;
 
-//var class<actor> ActorClass;
+var(Object) name InitialState;
+
+var class<actor> ActorClass;
+
+var(Object) native const editconst noexport name Name;
+
+struct Guid
+{
+	var int A, B, C, D;
+};
 
 var() class C;
 var actor A;
@@ -108,7 +117,7 @@ var globalconfig color cAdminMsgColor;   // color of the admin messages
 const LargeNumber=123456;
 const PI=3.14159;
 const MyName="Tim";
-//const Northeast=Vect(1.0,1.0,0.0);
+const Northeast=Vect(1.0,1.0,0.0);
 
 const t=true;
 const T=True;
@@ -120,16 +129,17 @@ const a=blah.blah();
 const a=1+2+3+4;
 
 var class C;
-//var class<Pawn> PC;
-//var array<int> IntList;
-//var array<class<PlayerController> > Players;
-//var array<class<Object> > Players;
+var class<Pawn> PC;
+var array<int> IntList;
+var array<class<PlayerController> > Players;
+var array<class<Object> > Players;
 
 const PROPNUM = 4;
 var localized string ACDisplayText[PROPNUM];
 var localized string ACDescText[PROPNUM];
+var(Events) name          Event;         // The event this actor causes.
 
-//var localized int variablename<tag1=value|tag2=value>;
+var localized int variablename<tag1=value|tag2=value>;
 
 var(Path) config enum EPathStyle
 {
@@ -164,13 +174,84 @@ replication
       PacketLoss, Ping;
 }
 
+native final function EnableChannelNotify ( int Channel, int Switch );
+native final function bool GetCacheEntry( int Num, out string GUID, out string Filename );
+native final simulated function SetBoneRotation( name BoneName, optional rotator BoneTurn, optional int Space, optional float Alpha );
+event TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector Momentum, class<DamageType> DamageType);
+function bool HealDamage(int Amount, Controller Healer, class<DamageType> DamageType);
+
+native(130) static final operator(30) bool  && ( bool A, skip bool B );
+
+native(277) final function Actor Trace
+(
+	out vector      HitLocation,
+	out vector      HitNormal,
+	vector          TraceEnd,
+	optional vector TraceStart,
+	optional bool   bTraceActors,
+	optional vector Extent,
+	optional out material Material
+);
+
+native simulated final function PlayOwnedSound
+(
+	sound				Sound,
+	optional ESoundSlot Slot,
+	optional float		Volume,
+	optional bool		bNoOverride,
+	optional float		Radius,
+	optional float		Pitch,
+	optional bool		Attenuate
+);
+
+function FunctionExample(name Event) { }
 
 function FunctionExample(actor Other)
 {
-   Super.FunctionExample(other);
-   Super(Pawn).Touch( Other );
-   Global.Touch( Other );
-   Super.Touch( Other );
+    local name Event;         // The event this actor causes.
+    Event.func();
+    varname.Event.func();
+
+    Super.FunctionExample(other);
+    Super(Pawn).Touch( Other );
+    Global.Touch( Other );
+    Super.Touch( Other );
+
+    C = Spawn(P.ControllerClass,,,P.Location, P.Rotation);
+    GetItemName(String(MoveTarget));
+    i = MapHandler.GetGameIndex(string(Level.Game.Class));
+
+    // Check nested quotes
+    if (Mid(Params, p, 1) == "\"")
+    {
+        ;
+    }
+}
+
+static function FillPlayInfo(PlayInfo PlayInfo)
+{
+local int i;
+
+	Super.FillPlayInfo(PlayInfo);  // Always begin with calling parent
+
+	i=0;
+	PlayInfo.AddSetting(default.ServerGroup,      "GamePassword", default.ACDisplayText[i++], 240, 1, "Text",      "16",,True,True);
+	PlayInfo.AddSetting(default.ServerGroup,        "IPPolicies", default.ACDisplayText[i++], 254, 1, "Text",      "15",,True,True);
+	PlayInfo.AddSetting(default.ServerGroup,     "AdminPassword", default.ACDisplayText[i++], 255, 1, "Text",      "16",,True,True);
+	PlayInfo.AddSetting(default.ServerGroup, "LoginDelaySeconds", default.ACDisplayText[i++], 200, 1, "Text", "3;0:999",,True,True);
+}
+
+static event string GetDescriptionText(string PropName)
+{
+	switch (PropName)
+	{
+		case "GamePassword": 	  return default.ACDescText[0];
+		case "IPPolicies":		  return default.ACDescText[1];
+		case "AdminPassword":	  return default.ACDescText[2];
+		case "LoginDelaySeconds": return default.ACDescText[3];
+	}
+
+	return Super.GetDescriptionText(PropName);
 }
 
 function object FunctionExample(object o) { return o; }
@@ -194,7 +275,7 @@ function void OperatorExample() {
     local bool y;
     local vector v;
     local actor a;
-    //local actor object;
+    local object object1;
     local array<string> Ar;
 
     for ( i=0; i<16; i++ )
@@ -221,14 +302,14 @@ function void OperatorExample() {
     a = a.b;
     a = a.b(c, d, (e()));
     a = a.b.c;
-    a = a.b.c(object.x);
+    //a = a.b.c(object.x);
     a = a.b.c(d, e.f, g.h.i());
     a = class'MyClass'.default.variable;
     a = class'MyClass'.static.funcCall();
     a = class'MyPackage.MyClass'.static.funcCall();
     class'MyClass'.default.variable = 1;
     a = class'SomeClass'.const.SOMECONST;
-    a = object.x;
+    //a = object.x;
 
     a = b + 1 + b;
     a = 1 + b + 1;
@@ -318,6 +399,9 @@ function WhileExample()
       i = i + 1;
    }
    log( "Completed with i=" $ i);
+
+    while( i < 4 )
+      i = i + 1;
 }
 
 function BreakExample()
@@ -331,6 +415,9 @@ function BreakExample()
       log( "The value of i is " $ i );
    }
    log( "Completed with i=" $ i );
+
+    for( i=0; i<10; i++ )
+      log( "The value of i is " $ i );
 }
 
 function ContinueExample()
@@ -388,6 +475,10 @@ function IfElseExample() {
     {
        log( "Light is steady" );
     }
+    else if( LightBrightness < 40 )
+    {
+       log( "Light is not steady and medium" );
+    }
     else
     {
        log( "Light is not steady" );
@@ -440,6 +531,10 @@ function IterateThroughArray(array<string> SomeArray)
 {
     local string ArrayItem;
     local int Index;
+
+    foreach SomeArray(ArrayItem)
+        log("Array iterator test #1:"@ArrayItem);
+
     foreach SomeArray(ArrayItem)
     {
         log("Array iterator test #1:"@ArrayItem);

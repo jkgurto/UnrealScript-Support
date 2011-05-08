@@ -110,6 +110,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CONST:
+        case CPPTEXT:
         case ENUM:
         case STRUCT:
         case VAR:
@@ -119,23 +120,21 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           jj_la1[0] = jj_gen;
           break label_1;
         }
-        Declarations();
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case CPPTEXT:
-        CppText();
-        break;
-      default:
-        jj_la1[1] = jj_gen;
-        ;
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case REPLICATION:
-        ReplicationBlock();
-        break;
-      default:
-        jj_la1[2] = jj_gen;
-        ;
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case CONST:
+        case ENUM:
+        case STRUCT:
+        case VAR:
+          Declarations();
+          break;
+        case CPPTEXT:
+          CppText();
+          break;
+        default:
+          jj_la1[1] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
       }
       Body();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -143,7 +142,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         DefaultPropertiesBlock();
         break;
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[2] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -151,7 +150,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(STUFF_TO_IGNORE);
         break;
       default:
-        jj_la1[4] = jj_gen;
+        jj_la1[3] = jj_gen;
         ;
       }
       jj_consume_token(0);
@@ -165,7 +164,87 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 //                            ( CLASSPARAMS )* SEMICOLON
   final public void ClassDeclaration() throws ParseException {
     jj_consume_token(CLASS);
-    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
+    case IDENTIFIER:
+      VarName();
+      break;
+    case OBJECT:
+      jj_consume_token(OBJECT);
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case EXTENDS:
       jj_consume_token(EXTENDS);
@@ -179,16 +258,22 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ABSTRACT:
+      case COLLAPSECATEGORIES:
       case CONFIG:
       case DEPENDSON:
+      case DONTCOLLAPSECATEGORIES:
       case EDITINLINENEW:
       case EXPORTSTRUCTS:
       case GUID:
       case HIDECATEGORIES:
       case NATIVE:
       case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
       case NOTPLACEABLE:
+      case PEROBJECTCONFIG:
       case PLACEABLE:
+      case SAFEREPLACE:
       case SHOWCATEGORIES:
       case TRANSIENT:
       case WITHIN:
@@ -211,13 +296,19 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void ClassParams() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ABSTRACT:
+    case COLLAPSECATEGORIES:
+    case DONTCOLLAPSECATEGORIES:
     case EDITINLINENEW:
     case EXPORTSTRUCTS:
     case GUID:
     case NATIVE:
     case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NOTPLACEABLE:
+    case PEROBJECTCONFIG:
     case PLACEABLE:
+    case SAFEREPLACE:
     case TRANSIENT:
       ConstClassParams();
       break;
@@ -265,7 +356,18 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // IDENTIFIERLIST = IDENTIFIER ( COMMA IDENTIFIER )*
   final public void IdentifierList() throws ParseException {
-    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    case OBJECT:
+      jj_consume_token(OBJECT);
+      break;
+    default:
+      jj_la1[9] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -273,11 +375,22 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         break label_3;
       }
       jj_consume_token(COMMA);
-      jj_consume_token(IDENTIFIER);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        jj_consume_token(IDENTIFIER);
+        break;
+      case OBJECT:
+        jj_consume_token(OBJECT);
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     }
   }
 
@@ -288,14 +401,83 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // PACKAGEIDENTIFIER = ( IDENTIFIER DOT )? IDENTIFIER
   final public void PackageIdentifier() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
-      jj_consume_token(IDENTIFIER);
+      VarName();
       break;
     case OBJECT:
       jj_consume_token(OBJECT);
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[12] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -309,20 +491,89 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case DOT:
       jj_consume_token(DOT);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ABSTRACT:
+      case AUTO:
+      case BEGIN:
+      case CACHEEXEMPT:
+      case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
+      case CPPTEXT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
+      case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
+      case FINAL:
+      case FUNCTION:
+      case GLOBALCONFIG:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
+      case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
+      case NOTPLACEABLE:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
+      case STRUCTDEFAULTPROPERTIES:
+      case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
+      case UNRELIABLE:
+      case WITHIN:
       case IDENTIFIER:
-        jj_consume_token(IDENTIFIER);
+        VarName();
         break;
       case OBJECT:
         jj_consume_token(OBJECT);
         break;
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[13] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[14] = jj_gen;
       ;
     }
   }
@@ -343,7 +594,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       QualifiedIdentifierStart();
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[15] = jj_gen;
       ;
     }
     IdDotId();
@@ -358,7 +609,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(CONST);
       break;
     default:
-      jj_la1[14] = jj_gen;
+      jj_la1[16] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -373,10 +624,17 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CLASS:
       ClassIdentifierStart();
-      FuncCallStart();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case STATIC:
+        FuncCallStart();
+        break;
+      default:
+        jj_la1[17] = jj_gen;
+        ;
+      }
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[18] = jj_gen;
       ;
     }
     IdDotId();
@@ -388,24 +646,93 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     jj_consume_token(DOT);
   }
 
+// C = Spawn(P.ControllerClass,,,P.Location, P.Rotation);
   final public void FuncCallEnd() throws ParseException {
     jj_consume_token(LPAREN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
@@ -417,77 +744,269 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case PLUS:
     case MINUS:
       Expression();
-      label_4:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case COMMA:
-          ;
-          break;
-        default:
-          jj_la1[16] = jj_gen;
-          break label_4;
-        }
-        jj_consume_token(COMMA);
-        Expression();
-      }
       break;
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[19] = jj_gen;
       ;
+    }
+    label_4:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[20] = jj_gen;
+        break label_4;
+      }
+      jj_consume_token(COMMA);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case STRING_LITERAL:
+      case NAME_LITERAL:
+      case ABSTRACT:
+      case AUTO:
+      case BEGIN:
+      case BOOLEAN:
+      case BYTE:
+      case CACHEEXEMPT:
+      case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
+      case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
+      case FALSE:
+      case FINAL:
+      case FLOAT:
+      case FUNCTION:
+      case GLOBAL:
+      case GLOBALCONFIG:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
+      case INT:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
+      case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
+      case NONE:
+      case NOTPLACEABLE:
+      case OBJECT:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
+      case STRING:
+      case STRUCTDEFAULTPROPERTIES:
+      case SUPER:
+      case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
+      case TRUE:
+      case UNRELIABLE:
+      case WITHIN:
+      case INTEGER_LITERAL:
+      case FLOATING_POINT_LITERAL:
+      case IDENTIFIER:
+      case LPAREN:
+      case BANG:
+      case TILDE:
+      case INCR:
+      case DECR:
+      case PLUS:
+      case MINUS:
+        Expression();
+        break;
+      default:
+        jj_la1[21] = jj_gen;
+        ;
+      }
     }
     jj_consume_token(RPAREN);
   }
 
+// Pawn(Owner).Weapon.OutOfAmmo()
+// GetItemName(String(MoveTarget))
   final public void FuncCallOrQualifiedIdentifier() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CLASS:
+    if (jj_2_2(2147483647)) {
       ClassIdentifierStart();
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case STATIC:
-        FuncCallStart();
-        IdDotId();
-        FuncCallEnd();
-        break;
-      case CONST:
-      case _DEFAULT:
-        QualifiedIdentifierStart();
-        IdDotId();
-        break;
-      default:
-        jj_la1[18] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      break;
-    case OBJECT:
-    case IDENTIFIER:
-      IdDotId();
       if (jj_2_1(2147483647)) {
-        FuncCallEnd();
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case STATIC:
+          FuncCallStart();
+          break;
+        case CONST:
+        case _DEFAULT:
+          QualifiedIdentifierStart();
+          break;
+        default:
+          jj_la1[22] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
       } else {
         ;
       }
-      break;
-    default:
-      jj_la1[19] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+      IdDotIdFuncCallEndRep();
+    } else if (jj_2_3(2147483647)) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case BOOLEAN:
+      case BYTE:
+      case CLASS:
+      case FLOAT:
+      case INT:
+      case NAME:
+      case STRING:
+        BasicTypeOrClassType();
+        break;
+      case OBJECT:
+        jj_consume_token(OBJECT);
+        break;
+      default:
+        jj_la1[23] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      jj_consume_token(LPAREN);
+      Expression();
+      jj_consume_token(RPAREN);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DOT:
+        jj_consume_token(DOT);
+        IdDotIdFuncCallEndRep();
+        break;
+      default:
+        jj_la1[24] = jj_gen;
+        ;
+      }
+    } else if (jj_2_4(2147483647)) {
+      IdDotId();
+      jj_consume_token(DOT);
+      jj_consume_token(CLASS);
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ABSTRACT:
+      case AUTO:
+      case BEGIN:
+      case CACHEEXEMPT:
+      case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
+      case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
+      case FINAL:
+      case FUNCTION:
+      case GLOBALCONFIG:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
+      case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
+      case NOTPLACEABLE:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
+      case STRUCTDEFAULTPROPERTIES:
+      case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
+      case UNRELIABLE:
+      case WITHIN:
+      case IDENTIFIER:
+        IdDotIdFuncCallEndRep();
+        break;
+      default:
+        jj_la1[25] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     }
   }
 
-  final public void IdDotId() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENTIFIER:
-      jj_consume_token(IDENTIFIER);
-      break;
-    case OBJECT:
-      jj_consume_token(OBJECT);
-      break;
-    default:
-      jj_la1[20] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
+  final public void IdDotIdFuncCallEndRep() throws ParseException {
+    IdDotIdFuncCallEnd();
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -495,36 +1014,145 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[26] = jj_gen;
         break label_5;
       }
       jj_consume_token(DOT);
+      IdDotIdFuncCallEnd();
+    }
+  }
+
+  final public void IdDotIdFuncCallEnd() throws ParseException {
+    IdDotId();
+    if (jj_2_5(2147483647)) {
+      FuncCallEnd();
+    } else {
+      ;
+    }
+  }
+
+// testPawnArray[1].Weapon.OutOfAmmo();
+  final public void IdDotId() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
+    case IDENTIFIER:
+      VarName();
+      break;
+    case _DEFAULT:
+      jj_consume_token(_DEFAULT);
+      break;
+    default:
+      jj_la1[27] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LBRACKET:
+      ArrayDeclEnd();
+      break;
+    default:
+      jj_la1[28] = jj_gen;
+      ;
+    }
+    label_6:
+    while (true) {
+      if (jj_2_6(2147483647)) {
+        ;
+      } else {
+        break label_6;
+      }
+      jj_consume_token(DOT);
+      VarName();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IDENTIFIER:
-        jj_consume_token(IDENTIFIER);
-        break;
-      case OBJECT:
-        jj_consume_token(OBJECT);
+      case LBRACKET:
+        ArrayDeclEnd();
         break;
       default:
-        jj_la1[22] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
+        jj_la1[29] = jj_gen;
+        ;
       }
     }
   }
 
   final public void FuncCallAndIdentifierList() throws ParseException {
     FuncCallOrQualifiedIdentifier();
-    label_6:
+    label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[23] = jj_gen;
-        break label_6;
+        jj_la1[30] = jj_gen;
+        break label_7;
       }
       jj_consume_token(COMMA);
       FuncCallOrQualifiedIdentifier();
@@ -554,7 +1182,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       StructDecl();
       break;
     default:
-      jj_la1[24] = jj_gen;
+      jj_la1[31] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -565,7 +1193,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // CONSTVALUE = ( STRINGVAL | INTVAL | FLOATVAL | BOOLVAL )
   final public void ConstDecl() throws ParseException {
     jj_consume_token(CONST);
-    jj_consume_token(IDENTIFIER);
+    VarName();
     jj_consume_token(ASSIGN);
     Expression();
   }
@@ -579,10 +1207,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ConfigGroup();
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[32] = jj_gen;
       ;
     }
-    label_7:
+    label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case CONFIG:
@@ -597,6 +1225,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case INPUT:
       case LOCALIZED:
       case NATIVE:
+      case NOEXPORT:
       case PRIVATE:
       case PROTECTED:
       case TRANSIENT:
@@ -604,8 +1233,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[26] = jj_gen;
-        break label_7;
+        jj_la1[33] = jj_gen;
+        break label_8;
       }
       VarParams();
     }
@@ -616,11 +1245,23 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void ConfigGroup() throws ParseException {
     jj_consume_token(LPAREN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OBJECT:
     case IDENTIFIER:
-      jj_consume_token(IDENTIFIER);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        jj_consume_token(IDENTIFIER);
+        break;
+      case OBJECT:
+        jj_consume_token(OBJECT);
+        break;
+      default:
+        jj_la1[34] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[35] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -629,68 +1270,362 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // VARTYPE = PACKAGEIDENTIFIER | ENUMDECL | STRUCTDECL | ARRAYDECL | CLASSTYPE | BASICTYPE
 // VARIDENTIFIER = IDENTIFIER
   final public void VarTypeThenIdentifier() throws ParseException {
-    if (jj_2_2(2)) {
-      DynArrayDecl();
-    } else {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ENUM:
-        EnumDecl();
-        break;
-      case STRUCT:
-        StructDecl();
-        break;
-      case BOOLEAN:
-      case BYTE:
-      case CLASS:
-      case FLOAT:
-      case INT:
-      case NAME:
-      case STRING:
-        BasicTypeOrClassType();
-        break;
-      case OBJECT:
-        jj_consume_token(OBJECT);
-        break;
-      case IDENTIFIER:
-        jj_consume_token(IDENTIFIER);
-        break;
-      default:
-        jj_la1[28] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    }
-    jj_consume_token(IDENTIFIER);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case LBRACKET:
-    case LT:
-      ArrayDeclEndOrVarTags();
+    case ARRAY:
+      DynArrayDecl();
+      break;
+    case ENUM:
+      EnumDecl();
+      break;
+    case STRUCT:
+      StructDecl();
+      break;
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      BasicTypeOrClassType();
+      break;
+    case OBJECT:
+      jj_consume_token(OBJECT);
+      break;
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[29] = jj_gen;
-      ;
+      jj_la1[36] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
-    label_8:
+    VarEnd();
+    label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[30] = jj_gen;
-        break label_8;
+        jj_la1[37] = jj_gen;
+        break label_9;
       }
       jj_consume_token(COMMA);
+      VarEnd();
+    }
+  }
+
+  final public void VarEnd() throws ParseException {
+    VarName();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LBRACKET:
+    case LT:
+      ArrayDeclEndOrVarTags();
+      break;
+    default:
+      jj_la1[38] = jj_gen;
+      ;
+    }
+  }
+
+  final public void VarName() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
       jj_consume_token(IDENTIFIER);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case LBRACKET:
-      case LT:
-        ArrayDeclEndOrVarTags();
-        break;
-      default:
-        jj_la1[31] = jj_gen;
-        ;
-      }
+      break;
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
+      VarNameAlsoKeyword();
+      break;
+    default:
+      jj_la1[39] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+// UnrealScript keywords that could also be used as variable names
+  final public void VarNameAlsoKeyword() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+      jj_consume_token(ABSTRACT);
+      break;
+    case AUTO:
+      jj_consume_token(AUTO);
+      break;
+    case BEGIN:
+      jj_consume_token(BEGIN);
+      break;
+    case CACHEEXEMPT:
+      jj_consume_token(CACHEEXEMPT);
+      break;
+    case CLASS:
+      jj_consume_token(CLASS);
+      break;
+    case COERCE:
+      jj_consume_token(COERCE);
+      break;
+    case COLLAPSECATEGORIES:
+      jj_consume_token(COLLAPSECATEGORIES);
+      break;
+    case CONFIG:
+      jj_consume_token(CONFIG);
+      break;
+    case CPPTEXT:
+      jj_consume_token(CPPTEXT);
+      break;
+    case _DEFAULTPROPERTIES:
+      jj_consume_token(_DEFAULTPROPERTIES);
+      break;
+    case DELEGATE:
+      jj_consume_token(DELEGATE);
+      break;
+    case DEPENDSON:
+      jj_consume_token(DEPENDSON);
+      break;
+    case DEPRECATED:
+      jj_consume_token(DEPRECATED);
+      break;
+    case DONTCOLLAPSECATEGORIES:
+      jj_consume_token(DONTCOLLAPSECATEGORIES);
+      break;
+    case EDFINDABLE:
+      jj_consume_token(EDFINDABLE);
+      break;
+    case EDITCONST:
+      jj_consume_token(EDITCONST);
+      break;
+    case EDITINLINE:
+      jj_consume_token(EDITINLINE);
+      break;
+    case EDITINLINENEW:
+      jj_consume_token(EDITINLINENEW);
+      break;
+    case EDITINLINEUSE:
+      jj_consume_token(EDITINLINEUSE);
+      break;
+    case END:
+      jj_consume_token(END);
+      break;
+    case ENUM:
+      jj_consume_token(ENUM);
+      break;
+    case EVENT:
+      jj_consume_token(EVENT);
+      break;
+    case EXEC:
+      jj_consume_token(EXEC);
+      break;
+    case EXPORT:
+      jj_consume_token(EXPORT);
+      break;
+    case EXPORTSTRUCTS:
+      jj_consume_token(EXPORTSTRUCTS);
+      break;
+    case EXTENDS:
+      jj_consume_token(EXTENDS);
+      break;
+    case FINAL:
+      jj_consume_token(FINAL);
+      break;
+    case FUNCTION:
+      jj_consume_token(FUNCTION);
+      break;
+    case GLOBALCONFIG:
+      jj_consume_token(GLOBALCONFIG);
+      break;
+    case GUID:
+      jj_consume_token(GUID);
+      break;
+    case HIDECATEGORIES:
+      jj_consume_token(HIDECATEGORIES);
+      break;
+    case HIDEDROPDOWN:
+      jj_consume_token(HIDEDROPDOWN);
+      break;
+    case IGNORES:
+      jj_consume_token(IGNORES);
+      break;
+    case INPUT:
+      jj_consume_token(INPUT);
+      break;
+    case INSTANCED:
+      jj_consume_token(INSTANCED);
+      break;
+    case ITERATOR:
+      jj_consume_token(ITERATOR);
+      break;
+    case LATENT:
+      jj_consume_token(LATENT);
+      break;
+    case LOCALIZED:
+      jj_consume_token(LOCALIZED);
+      break;
+    case NAME:
+      jj_consume_token(NAME);
+      break;
+    case NATIVE:
+      jj_consume_token(NATIVE);
+      break;
+    case NATIVEREPLICATION:
+      jj_consume_token(NATIVEREPLICATION);
+      break;
+    case NOEDITINLINEW:
+      jj_consume_token(NOEDITINLINEW);
+      break;
+    case NOEXPORT:
+      jj_consume_token(NOEXPORT);
+      break;
+    case NOTPLACEABLE:
+      jj_consume_token(NOTPLACEABLE);
+      break;
+    case OPERATOR:
+      jj_consume_token(OPERATOR);
+      break;
+    case OPTIONAL:
+      jj_consume_token(OPTIONAL);
+      break;
+    case OUT:
+      jj_consume_token(OUT);
+      break;
+    case PACKAGE:
+      jj_consume_token(PACKAGE);
+      break;
+    case PEROBJECTCONFIG:
+      jj_consume_token(PEROBJECTCONFIG);
+      break;
+    case PLACEABLE:
+      jj_consume_token(PLACEABLE);
+      break;
+    case POSTOPERATOR:
+      jj_consume_token(POSTOPERATOR);
+      break;
+    case PREOPERATOR:
+      jj_consume_token(PREOPERATOR);
+      break;
+    case PRIVATE:
+      jj_consume_token(PRIVATE);
+      break;
+    case PROTECTED:
+      jj_consume_token(PROTECTED);
+      break;
+    case PUBLIC:
+      jj_consume_token(PUBLIC);
+      break;
+    case RELIABLE:
+      jj_consume_token(RELIABLE);
+      break;
+    case REPLICATION:
+      jj_consume_token(REPLICATION);
+      break;
+    case SAFEREPLACE:
+      jj_consume_token(SAFEREPLACE);
+      break;
+    case SHOWCATEGORIES:
+      jj_consume_token(SHOWCATEGORIES);
+      break;
+    case SIMULATED:
+      jj_consume_token(SIMULATED);
+      break;
+    case SINGULAR:
+      jj_consume_token(SINGULAR);
+      break;
+    case _SKIP:
+      jj_consume_token(_SKIP);
+      break;
+    case STATE:
+      jj_consume_token(STATE);
+      break;
+    case STRUCTDEFAULTPROPERTIES:
+      jj_consume_token(STRUCTDEFAULTPROPERTIES);
+      break;
+    case SWITCH:
+      jj_consume_token(SWITCH);
+      break;
+    case TRANSIENT:
+      jj_consume_token(TRANSIENT);
+      break;
+    case TRAVEL:
+      jj_consume_token(TRAVEL);
+      break;
+    case UNRELIABLE:
+      jj_consume_token(UNRELIABLE);
+      break;
+    case WITHIN:
+      jj_consume_token(WITHIN);
+      break;
+    default:
+      jj_la1[40] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
@@ -703,7 +1638,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       VarTags();
       break;
     default:
-      jj_la1[32] = jj_gen;
+      jj_la1[41] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -713,27 +1648,206 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // Variable tags
 // Eg.
 // var localized int variablename<tag1=value|tag2=value>;
+// Spaces between words allowed
+// Var() bool bEnableSpawning<DisplayName=Spawning Enabled>;
   final public void VarTags() throws ParseException {
     jj_consume_token(LT);
     jj_consume_token(IDENTIFIER);
     jj_consume_token(ASSIGN);
-    Expression();
-    label_9:
+    VarTagsValue();
+    label_10:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BIT_OR:
         ;
         break;
       default:
-        jj_la1[33] = jj_gen;
-        break label_9;
+        jj_la1[42] = jj_gen;
+        break label_10;
       }
       jj_consume_token(BIT_OR);
       jj_consume_token(IDENTIFIER);
       jj_consume_token(ASSIGN);
-      Expression();
+      VarTagsValue();
     }
     GT();
+  }
+
+  final public void VarTagsValue() throws ParseException {
+    label_11:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ABSTRACT:
+      case AUTO:
+      case BEGIN:
+      case CACHEEXEMPT:
+      case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
+      case CPPTEXT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
+      case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
+      case FINAL:
+      case FUNCTION:
+      case GLOBALCONFIG:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
+      case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
+      case NOTPLACEABLE:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
+      case STRUCTDEFAULTPROPERTIES:
+      case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
+      case UNRELIABLE:
+      case WITHIN:
+      case IDENTIFIER:
+        VarName();
+        break;
+      case STRING_LITERAL:
+      case NAME_LITERAL:
+      case FALSE:
+      case NONE:
+      case TRUE:
+      case INTEGER_LITERAL:
+      case FLOATING_POINT_LITERAL:
+        Literal();
+        break;
+      default:
+        jj_la1[43] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case STRING_LITERAL:
+      case NAME_LITERAL:
+      case ABSTRACT:
+      case AUTO:
+      case BEGIN:
+      case CACHEEXEMPT:
+      case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
+      case CPPTEXT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
+      case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
+      case FALSE:
+      case FINAL:
+      case FUNCTION:
+      case GLOBALCONFIG:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
+      case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
+      case NONE:
+      case NOTPLACEABLE:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
+      case STRUCTDEFAULTPROPERTIES:
+      case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
+      case TRUE:
+      case UNRELIABLE:
+      case WITHIN:
+      case INTEGER_LITERAL:
+      case FLOATING_POINT_LITERAL:
+      case IDENTIFIER:
+        ;
+        break;
+      default:
+        jj_la1[44] = jj_gen;
+        break label_11;
+      }
+    }
   }
 
 // ARRAYDECL = IDENTIFIER LSBRACK INTVAL RSBRACK
@@ -755,21 +1869,88 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     jj_consume_token(ARRAY);
     jj_consume_token(LT);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
       PackageIdentifier();
       break;
     case BOOLEAN:
     case BYTE:
-    case CLASS:
     case FLOAT:
     case INT:
-    case NAME:
     case STRING:
       BasicTypeOrClassType();
       break;
     default:
-      jj_la1[34] = jj_gen;
+      jj_la1[45] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -778,16 +1959,14 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // CLASSTYPE = class LABRACK PACKAGEIDENTIFIER RABRACK
   final public void ClassType() throws ParseException {
-    jj_consume_token(CLASS);
-    ClassTypeEnd();
-  }
-
-// Workaround for choice conflicts
-// BasicType and ClassType can start with "class"
-  final public void ClassTypeEnd() throws ParseException {
-    jj_consume_token(LT);
+    ClassTypeStart();
     PackageIdentifier();
     GT();
+  }
+
+  final public void ClassTypeStart() throws ParseException {
+    jj_consume_token(CLASS);
+    jj_consume_token(LT);
   }
 
 // ENUMDECL = enum IDENTIFIER LCBRACK ENUMOPTIONS RCBRACK
@@ -800,20 +1979,26 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   }
 
 // ENUMOPTIONS = IDENTIFIER ( COMMA IDENTIFIER )*
+// Trailing "," ok
   final public void EnumOptions() throws ParseException {
     jj_consume_token(IDENTIFIER);
-    label_10:
+    label_12:
     while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
+      if (jj_2_7(2147483647)) {
         ;
-        break;
-      default:
-        jj_la1[35] = jj_gen;
-        break label_10;
+      } else {
+        break label_12;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case COMMA:
+      jj_consume_token(COMMA);
+      break;
+    default:
+      jj_la1[46] = jj_gen;
+      ;
     }
   }
 
@@ -821,7 +2006,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 //                            LCBRACK STRUCTBODY RCBRACK
   final public void StructDecl() throws ParseException {
     jj_consume_token(STRUCT);
-    label_11:
+    label_13:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EXPORT:
@@ -829,19 +2014,19 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[36] = jj_gen;
-        break label_11;
+        jj_la1[47] = jj_gen;
+        break label_13;
       }
       StructParams();
     }
-    jj_consume_token(IDENTIFIER);
+    VarName();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case EXTENDS:
       jj_consume_token(EXTENDS);
       PackageIdentifier();
       break;
     default:
-      jj_la1[37] = jj_gen;
+      jj_la1[48] = jj_gen;
       ;
     }
     jj_consume_token(LBRACE);
@@ -859,7 +2044,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(EXPORT);
       break;
     default:
-      jj_la1[38] = jj_gen;
+      jj_la1[49] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -867,7 +2052,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // STRUCTBODY = ( VARDECL SEMICOLON )+
   final public void StructBody() throws ParseException {
-    label_12:
+    label_14:
     while (true) {
       VarDecl();
       jj_consume_token(SEMICOLON);
@@ -876,8 +2061,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[39] = jj_gen;
-        break label_12;
+        jj_la1[50] = jj_gen;
+        break label_14;
       }
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -885,7 +2070,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       StructDefaultPropertiesBlock();
       break;
     default:
-      jj_la1[40] = jj_gen;
+      jj_la1[51] = jj_gen;
       ;
     }
   }
@@ -893,26 +2078,29 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void CppText() throws ParseException {
     jj_consume_token(CPPTEXT);
     jj_consume_token(LBRACE);
-    label_13:
+    label_15:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BOOLEAN:
       case BYTE:
       case CLASS:
       case CONST:
+      case ENUM:
       case FLOAT:
       case INT:
       case NAME:
       case NONE:
       case OBJECT:
+      case STATIC:
       case STRING:
+      case VIRTUAL:
       case VOID:
       case IDENTIFIER:
         ;
         break;
       default:
-        jj_la1[41] = jj_gen;
-        break label_13;
+        jj_la1[52] = jj_gen;
+        break label_15;
       }
       CppFunc();
       jj_consume_token(SEMICOLON);
@@ -929,25 +2117,28 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case BYTE:
     case CLASS:
     case CONST:
+    case ENUM:
     case FLOAT:
     case INT:
     case NAME:
     case NONE:
     case OBJECT:
+    case STATIC:
     case STRING:
+    case VIRTUAL:
     case VOID:
     case IDENTIFIER:
       CppType();
       jj_consume_token(IDENTIFIER);
-      label_14:
+      label_16:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case COMMA:
           ;
           break;
         default:
-          jj_la1[42] = jj_gen;
-          break label_14;
+          jj_la1[53] = jj_gen;
+          break label_16;
         }
         jj_consume_token(COMMA);
         CppType();
@@ -955,19 +2146,61 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       }
       break;
     default:
-      jj_la1[43] = jj_gen;
+      jj_la1[54] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LBRACE:
+    case ASSIGN:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ASSIGN:
+        jj_consume_token(ASSIGN);
+        jj_consume_token(INTEGER_LITERAL);
+        break;
+      case LBRACE:
+        jj_consume_token(LBRACE);
+        jj_consume_token(RBRACE);
+        break;
+      default:
+        jj_la1[55] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    default:
+      jj_la1[56] = jj_gen;
+      ;
+    }
   }
 
   final public void CppType() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CONST:
-      jj_consume_token(CONST);
+    case VIRTUAL:
+      jj_consume_token(VIRTUAL);
       break;
     default:
-      jj_la1[44] = jj_gen;
+      jj_la1[57] = jj_gen;
+      ;
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CONST:
+    case STATIC:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case STATIC:
+        jj_consume_token(STATIC);
+        break;
+      case CONST:
+        jj_consume_token(CONST);
+        break;
+      default:
+        jj_la1[58] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      break;
+    default:
+      jj_la1[59] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -989,21 +2222,26 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case OBJECT:
       jj_consume_token(OBJECT);
       break;
+    case ENUM:
+      jj_consume_token(ENUM);
+      jj_consume_token(IDENTIFIER);
+      break;
     case IDENTIFIER:
       jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[45] = jj_gen;
+      jj_la1[60] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CONST:
     case STAR:
     case BIT_AND:
       CppPtrRef();
       break;
     default:
-      jj_la1[46] = jj_gen;
+      jj_la1[61] = jj_gen;
       ;
     }
   }
@@ -1013,19 +2251,28 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case BIT_AND:
       jj_consume_token(BIT_AND);
       break;
+    case CONST:
     case STAR:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CONST:
+        jj_consume_token(CONST);
+        break;
+      default:
+        jj_la1[62] = jj_gen;
+        ;
+      }
       jj_consume_token(STAR);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STAR:
         jj_consume_token(STAR);
         break;
       default:
-        jj_la1[47] = jj_gen;
+        jj_la1[63] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[48] = jj_gen;
+      jj_la1[64] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1036,7 +2283,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void ReplicationBlock() throws ParseException {
     jj_consume_token(REPLICATION);
     jj_consume_token(LBRACE);
-    label_15:
+    label_17:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IF:
@@ -1045,8 +2292,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[49] = jj_gen;
-        break label_15;
+        jj_la1[65] = jj_gen;
+        break label_17;
       }
       ReplicationBody();
     }
@@ -1068,13 +2315,13 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(UNRELIABLE);
         break;
       default:
-        jj_la1[50] = jj_gen;
+        jj_la1[66] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[51] = jj_gen;
+      jj_la1[67] = jj_gen;
       ;
     }
     jj_consume_token(IF);
@@ -1088,7 +2335,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // Body parts
 // BODY = ( STATEDECL | FUNCTIONDECL )*
   final public void Body() throws ParseException {
-    label_16:
+    label_18:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case AUTO:
@@ -1105,6 +2352,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case PREOPERATOR:
       case PRIVATE:
       case PROTECTED:
+      case REPLICATION:
       case SIMULATED:
       case SINGULAR:
       case STATE:
@@ -1112,79 +2360,54 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[52] = jj_gen;
-        break label_16;
+        jj_la1[68] = jj_gen;
+        break label_18;
       }
-      StateOrFunctionDecl();
-    }
-  }
-
-// Prevent choice conflicts, both can start with "simulated"
-  final public void StateOrFunctionDecl() throws ParseException {
-    label_17:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SIMULATED:
-        ;
-        break;
-      default:
-        jj_la1[53] = jj_gen;
-        break label_17;
+      if (jj_2_8(2147483647)) {
+        StateDecl();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case DELEGATE:
+        case EVENT:
+        case EXEC:
+        case FINAL:
+        case FUNCTION:
+        case ITERATOR:
+        case LATENT:
+        case NATIVE:
+        case OPERATOR:
+        case POSTOPERATOR:
+        case PREOPERATOR:
+        case PRIVATE:
+        case PROTECTED:
+        case SIMULATED:
+        case SINGULAR:
+        case STATIC:
+          FunctionDecl();
+          break;
+        case REPLICATION:
+          ReplicationBlock();
+          break;
+        default:
+          jj_la1[69] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
       }
-      StateAndConstFuncParams();
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case AUTO:
-    case STATE:
-      StateDecl();
-      break;
-    case DELEGATE:
-    case EVENT:
-    case EXEC:
-    case FINAL:
-    case FUNCTION:
-    case ITERATOR:
-    case LATENT:
-    case NATIVE:
-    case OPERATOR:
-    case POSTOPERATOR:
-    case PREOPERATOR:
-    case PRIVATE:
-    case PROTECTED:
-    case SINGULAR:
-    case STATIC:
-      FunctionDecl();
-      break;
-    default:
-      jj_la1[54] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
     }
   }
 
 // State parts
 // STATEDECL = ( STATEPARAMS )* state IDENTIFIER ( CONFIGGROUP )? ( extends IDENTIFIER )? STATEBODY
   final public void StateDecl() throws ParseException {
-    label_18:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case AUTO:
-        ;
-        break;
-      default:
-        jj_la1[55] = jj_gen;
-        break label_18;
-      }
-      StateParams();
-    }
-    jj_consume_token(STATE);
+    StateDeclStart();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LPAREN:
       jj_consume_token(LPAREN);
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[56] = jj_gen;
+      jj_la1[70] = jj_gen;
       ;
     }
     jj_consume_token(IDENTIFIER);
@@ -1193,7 +2416,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ConfigGroup();
       break;
     default:
-      jj_la1[57] = jj_gen;
+      jj_la1[71] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1202,10 +2425,27 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[58] = jj_gen;
+      jj_la1[72] = jj_gen;
       ;
     }
     StateBody();
+  }
+
+  final public void StateDeclStart() throws ParseException {
+    label_19:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case AUTO:
+      case SIMULATED:
+        ;
+        break;
+      default:
+        jj_la1[73] = jj_gen;
+        break label_19;
+      }
+      StateParams();
+    }
+    jj_consume_token(STATE);
   }
 
 // STATEBODY = LCBRACK ( STATEIGNORE )? ( FUNCTIONDECL )* STATELABELS RCBRACK
@@ -1216,10 +2456,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       StateIgnore();
       break;
     default:
-      jj_la1[59] = jj_gen;
+      jj_la1[74] = jj_gen;
       ;
     }
-    label_19:
+    label_20:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DELEGATE:
@@ -1235,17 +2475,18 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case PREOPERATOR:
       case PRIVATE:
       case PROTECTED:
+      case SIMULATED:
       case SINGULAR:
       case STATIC:
         ;
         break;
       default:
-        jj_la1[60] = jj_gen;
-        break label_19;
+        jj_la1[75] = jj_gen;
+        break label_20;
       }
       FunctionDecl();
     }
-    label_20:
+    label_21:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BEGIN:
@@ -1254,8 +2495,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[61] = jj_gen;
-        break label_20;
+        jj_la1[76] = jj_gen;
+        break label_21;
       }
       LabelStatement();
     }
@@ -1266,15 +2507,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void StateIgnore() throws ParseException {
     jj_consume_token(IGNORES);
     jj_consume_token(IDENTIFIER);
-    label_21:
+    label_22:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[62] = jj_gen;
-        break label_21;
+        jj_la1[77] = jj_gen;
+        break label_22;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
@@ -1294,7 +2535,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // Native functions can have const after them
 // native function int doSomething(string myData) const;
   final public void NormalOrOperatorFunc() throws ParseException {
-    if (jj_2_3(8)) {
+    if (jj_2_9(2147483647)) {
       NativeFuncParams();
       FuncEnd();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1302,7 +2543,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(CONST);
         break;
       default:
-        jj_la1[63] = jj_gen;
+        jj_la1[78] = jj_gen;
         ;
       }
       FunctionBody();
@@ -1320,9 +2561,10 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case PREOPERATOR:
       case PRIVATE:
       case PROTECTED:
+      case SIMULATED:
       case SINGULAR:
       case STATIC:
-        label_22:
+        label_23:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case EXEC:
@@ -1331,13 +2573,14 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           case LATENT:
           case PRIVATE:
           case PROTECTED:
+          case SIMULATED:
           case SINGULAR:
           case STATIC:
             ;
             break;
           default:
-            jj_la1[64] = jj_gen;
-            break label_22;
+            jj_la1[79] = jj_gen;
+            break label_23;
           }
           ConstFuncParams();
         }
@@ -1345,7 +2588,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         FunctionBody();
         break;
       default:
-        jj_la1[65] = jj_gen;
+        jj_la1[80] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1353,26 +2596,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   }
 
   final public void NativeFuncParams() throws ParseException {
-    label_23:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case EXEC:
-      case FINAL:
-      case ITERATOR:
-      case LATENT:
-      case PRIVATE:
-      case PROTECTED:
-      case SINGULAR:
-      case STATIC:
-        ;
-        break;
-      default:
-        jj_la1[66] = jj_gen;
-        break label_23;
-      }
-      ConstFuncParams();
-    }
-    jj_consume_token(NATIVE);
+    NativeFuncParamsStart();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LPAREN:
       jj_consume_token(LPAREN);
@@ -1380,7 +2604,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[67] = jj_gen;
+      jj_la1[81] = jj_gen;
       ;
     }
     label_24:
@@ -1392,16 +2616,41 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case LATENT:
       case PRIVATE:
       case PROTECTED:
+      case SIMULATED:
       case SINGULAR:
       case STATIC:
         ;
         break;
       default:
-        jj_la1[68] = jj_gen;
+        jj_la1[82] = jj_gen;
         break label_24;
       }
       ConstFuncParams();
     }
+  }
+
+  final public void NativeFuncParamsStart() throws ParseException {
+    label_25:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case EXEC:
+      case FINAL:
+      case ITERATOR:
+      case LATENT:
+      case PRIVATE:
+      case PROTECTED:
+      case SIMULATED:
+      case SINGULAR:
+      case STATIC:
+        ;
+        break;
+      default:
+        jj_la1[83] = jj_gen;
+        break label_25;
+      }
+      ConstFuncParams();
+    }
+    jj_consume_token(NATIVE);
   }
 
   final public void FuncEnd() throws ParseException {
@@ -1417,7 +2666,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       OperatorFuncEnd();
       break;
     default:
-      jj_la1[69] = jj_gen;
+      jj_la1[84] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1432,36 +2681,100 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     ReturnTypeThenIdentifier();
     jj_consume_token(LPAREN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
     case ARRAY:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
     case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
     case OPTIONAL:
     case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
       FunctionArgs();
-      label_25:
+      label_26:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case COMMA:
           ;
           break;
         default:
-          jj_la1[70] = jj_gen;
-          break label_25;
+          jj_la1[85] = jj_gen;
+          break label_26;
         }
         jj_consume_token(COMMA);
         FunctionArgs();
       }
       break;
     default:
-      jj_la1[71] = jj_gen;
+      jj_la1[86] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -1476,8 +2789,9 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VOID:
       jj_consume_token(VOID);
-      jj_consume_token(IDENTIFIER);
+      VarName();
       break;
+    case ARRAY:
     case BOOLEAN:
     case BYTE:
     case CLASS:
@@ -1486,27 +2800,163 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case NAME:
     case STRING:
       LocalTypeEnd();
-      jj_consume_token(IDENTIFIER);
+      VarName();
       break;
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
-      if (jj_2_4(2)) {
+      if (jj_2_10(2)) {
         PackageIdentifierOrArrayDecl();
-        jj_consume_token(IDENTIFIER);
+        VarName();
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case ABSTRACT:
+        case AUTO:
+        case BEGIN:
+        case CACHEEXEMPT:
+        case CLASS:
+        case COERCE:
+        case COLLAPSECATEGORIES:
+        case CONFIG:
+        case CPPTEXT:
+        case _DEFAULTPROPERTIES:
+        case DELEGATE:
+        case DEPENDSON:
+        case DEPRECATED:
+        case DONTCOLLAPSECATEGORIES:
+        case EDFINDABLE:
+        case EDITCONST:
+        case EDITINLINE:
+        case EDITINLINENEW:
+        case EDITINLINEUSE:
+        case END:
+        case ENUM:
+        case EVENT:
+        case EXEC:
+        case EXPORT:
+        case EXPORTSTRUCTS:
+        case EXTENDS:
+        case FINAL:
+        case FUNCTION:
+        case GLOBALCONFIG:
+        case GUID:
+        case HIDECATEGORIES:
+        case HIDEDROPDOWN:
+        case IGNORES:
+        case INPUT:
+        case INSTANCED:
+        case ITERATOR:
+        case LATENT:
+        case LOCALIZED:
+        case NAME:
+        case NATIVE:
+        case NATIVEREPLICATION:
+        case NOEDITINLINEW:
+        case NOEXPORT:
+        case NOTPLACEABLE:
+        case OPERATOR:
+        case OPTIONAL:
+        case OUT:
+        case PACKAGE:
+        case PEROBJECTCONFIG:
+        case PLACEABLE:
+        case POSTOPERATOR:
+        case PREOPERATOR:
+        case PRIVATE:
+        case PROTECTED:
+        case PUBLIC:
+        case RELIABLE:
+        case REPLICATION:
+        case SAFEREPLACE:
+        case SHOWCATEGORIES:
+        case SIMULATED:
+        case SINGULAR:
+        case _SKIP:
+        case STATE:
+        case STRUCTDEFAULTPROPERTIES:
+        case SWITCH:
+        case TRANSIENT:
+        case TRAVEL:
+        case UNRELIABLE:
+        case WITHIN:
         case IDENTIFIER:
-          jj_consume_token(IDENTIFIER);
+          VarName();
           break;
         default:
-          jj_la1[72] = jj_gen;
+          jj_la1[87] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
       break;
     default:
-      jj_la1[73] = jj_gen;
+      jj_la1[88] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1528,7 +2978,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       UnaryOperator();
       break;
     default:
-      jj_la1[74] = jj_gen;
+      jj_la1[89] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1548,27 +2998,95 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[75] = jj_gen;
+      jj_la1[90] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     jj_consume_token(RPAREN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
       PackageIdentifier();
       break;
+    case ARRAY:
     case BOOLEAN:
     case BYTE:
-    case CLASS:
     case FLOAT:
     case INT:
-    case NAME:
     case STRING:
       LocalTypeEnd();
       break;
     default:
-      jj_la1[76] = jj_gen;
+      jj_la1[91] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1592,26 +3110,94 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(POSTOPERATOR);
       break;
     default:
-      jj_la1[77] = jj_gen;
+      jj_la1[92] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
       PackageIdentifier();
       break;
+    case ARRAY:
     case BOOLEAN:
     case BYTE:
-    case CLASS:
     case FLOAT:
     case INT:
-    case NAME:
     case STRING:
       LocalTypeEnd();
       break;
     default:
-      jj_la1[78] = jj_gen;
+      jj_la1[93] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1629,6 +3215,11 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPTIONAL:
       jj_consume_token(OPTIONAL);
+      if (jj_2_11(2147483647)) {
+        FuncArgParamsNotOpt();
+      } else {
+        ;
+      }
       FunctionArgTypeAndName();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ASSIGN:
@@ -1636,46 +3227,113 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         UnaryExpression();
         break;
       default:
-        jj_la1[79] = jj_gen;
+        jj_la1[94] = jj_gen;
         ;
       }
       break;
+    case ABSTRACT:
     case ARRAY:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
     case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
     case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COERCE:
-      case OUT:
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OUT:
-          jj_consume_token(OUT);
-          break;
-        case COERCE:
-          jj_consume_token(COERCE);
-          break;
-        default:
-          jj_la1[80] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-        break;
-      default:
-        jj_la1[81] = jj_gen;
+      if (jj_2_12(2147483647)) {
+        FuncArgParamsNotOpt();
+      } else {
         ;
       }
       FunctionArgTypeAndName();
       break;
     default:
-      jj_la1[82] = jj_gen;
+      jj_la1[95] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void FuncArgParamsNotOpt() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OUT:
+      jj_consume_token(OUT);
+      break;
+    case COERCE:
+      jj_consume_token(COERCE);
+      break;
+    case _SKIP:
+      jj_consume_token(_SKIP);
+      break;
+    default:
+      jj_la1[96] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1683,7 +3341,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
   final public void FunctionArgTypeAndName() throws ParseException {
     FunctionArgType();
-    jj_consume_token(IDENTIFIER);
+    VarName();
   }
 
 // FUNCTIONARGTYPE = BASICTYPE | PACKAGEIDENTIFIER
@@ -1696,9 +3354,76 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case INT:
     case NAME:
     case STRING:
-      BasicType();
+      BasicTypeOrClassType();
       break;
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
       PackageIdentifier();
       break;
@@ -1706,7 +3431,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       DynArrayDecl();
       break;
     default:
-      jj_la1[83] = jj_gen;
+      jj_la1[97] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1720,47 +3445,112 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       break;
     case LBRACE:
       jj_consume_token(LBRACE);
-      label_26:
+      label_27:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case LOCAL:
           ;
           break;
         default:
-          jj_la1[84] = jj_gen;
-          break label_26;
+          jj_la1[98] = jj_gen;
+          break label_27;
         }
         LocalDecl();
       }
-      label_27:
+      label_28:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case STRING_LITERAL:
         case NAME_LITERAL:
+        case ABSTRACT:
+        case AUTO:
         case BEGIN:
         case BOOLEAN:
         case BREAK:
         case BYTE:
+        case CACHEEXEMPT:
         case CLASS:
+        case COERCE:
+        case COLLAPSECATEGORIES:
+        case CONFIG:
         case CONTINUE:
+        case CPPTEXT:
+        case _DEFAULT:
+        case _DEFAULTPROPERTIES:
+        case DELEGATE:
+        case DEPENDSON:
+        case DEPRECATED:
         case DO:
+        case DONTCOLLAPSECATEGORIES:
+        case EDFINDABLE:
+        case EDITCONST:
+        case EDITINLINE:
+        case EDITINLINENEW:
+        case EDITINLINEUSE:
         case END:
+        case ENUM:
+        case EVENT:
+        case EXEC:
+        case EXPORT:
+        case EXPORTSTRUCTS:
+        case EXTENDS:
         case FALSE:
+        case FINAL:
         case FLOAT:
         case FOR:
         case FOREACH:
+        case FUNCTION:
         case GLOBAL:
+        case GLOBALCONFIG:
         case GOTO:
+        case GUID:
+        case HIDECATEGORIES:
+        case HIDEDROPDOWN:
         case IF:
+        case IGNORES:
+        case INPUT:
+        case INSTANCED:
         case INT:
+        case ITERATOR:
+        case LATENT:
+        case LOCALIZED:
         case NAME:
+        case NATIVE:
+        case NATIVEREPLICATION:
+        case NOEDITINLINEW:
+        case NOEXPORT:
         case NONE:
+        case NOTPLACEABLE:
         case OBJECT:
+        case OPERATOR:
+        case OPTIONAL:
+        case OUT:
+        case PACKAGE:
+        case PEROBJECTCONFIG:
+        case PLACEABLE:
+        case POSTOPERATOR:
+        case PREOPERATOR:
+        case PRIVATE:
+        case PROTECTED:
+        case PUBLIC:
+        case RELIABLE:
+        case REPLICATION:
         case RETURN:
+        case SAFEREPLACE:
+        case SHOWCATEGORIES:
+        case SIMULATED:
+        case SINGULAR:
+        case _SKIP:
+        case STATE:
         case STRING:
+        case STRUCTDEFAULTPROPERTIES:
         case SUPER:
         case SWITCH:
+        case TRANSIENT:
+        case TRAVEL:
         case TRUE:
+        case UNRELIABLE:
+        case WITHIN:
         case WHILE:
         case INTEGER_LITERAL:
         case FLOATING_POINT_LITERAL:
@@ -1777,15 +3567,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           ;
           break;
         default:
-          jj_la1[85] = jj_gen;
-          break label_27;
+          jj_la1[99] = jj_gen;
+          break label_28;
         }
         CodeLine();
       }
       jj_consume_token(RBRACE);
       break;
     default:
-      jj_la1[86] = jj_gen;
+      jj_la1[100] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1795,19 +3585,19 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void LocalDecl() throws ParseException {
     jj_consume_token(LOCAL);
     LocalType();
-    jj_consume_token(IDENTIFIER);
-    label_28:
+    VarName();
+    label_29:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[87] = jj_gen;
-        break label_28;
+        jj_la1[101] = jj_gen;
+        break label_29;
       }
       jj_consume_token(COMMA);
-      jj_consume_token(IDENTIFIER);
+      VarName();
     }
     jj_consume_token(SEMICOLON);
   }
@@ -1815,21 +3605,89 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // LOCALTYPE = PACKAGEIDENTIFIER | ARRAYDECL | CLASSTYPE | BASICTYPE
   final public void LocalType() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
       PackageIdentifierOrArrayDecl();
       break;
+    case ARRAY:
     case BOOLEAN:
     case BYTE:
-    case CLASS:
     case FLOAT:
     case INT:
-    case NAME:
     case STRING:
       LocalTypeEnd();
       break;
     default:
-      jj_la1[88] = jj_gen;
+      jj_la1[102] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1838,20 +3696,106 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // LocalType without PackageIdentifier and ArrayDecl
 // to prevent choice conflicts with <IDENTIFIER>
   final public void LocalTypeEnd() throws ParseException {
-    BasicTypeOrClassType();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BOOLEAN:
+    case BYTE:
+    case CLASS:
+    case FLOAT:
+    case INT:
+    case NAME:
+    case STRING:
+      BasicTypeOrClassType();
+      break;
+    case ARRAY:
+      DynArrayDecl();
+      break;
+    default:
+      jj_la1[103] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
   }
 
 // choice conflict - multiple things that start with <IDENTIFIER>
   final public void PackageIdentifierOrArrayDecl() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
-      jj_consume_token(IDENTIFIER);
+      VarName();
       break;
     case OBJECT:
       jj_consume_token(OBJECT);
       break;
     default:
-      jj_la1[89] = jj_gen;
+      jj_la1[104] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1860,7 +3804,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ArrayDeclEnd();
       break;
     default:
-      jj_la1[90] = jj_gen;
+      jj_la1[105] = jj_gen;
       PackageIdentifierEnd();
     }
   }
@@ -1871,61 +3815,6 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void CodeLine() throws ParseException {
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case LBRACE:
-        CodeBlock();
-        break;
-      case STRING_LITERAL:
-      case NAME_LITERAL:
-      case BEGIN:
-      case BOOLEAN:
-      case BYTE:
-      case CLASS:
-      case END:
-      case FALSE:
-      case FLOAT:
-      case GLOBAL:
-      case INT:
-      case NAME:
-      case NONE:
-      case OBJECT:
-      case STRING:
-      case SUPER:
-      case TRUE:
-      case INTEGER_LITERAL:
-      case FLOATING_POINT_LITERAL:
-      case IDENTIFIER:
-      case LPAREN:
-      case BANG:
-      case TILDE:
-      case INCR:
-      case DECR:
-      case PLUS:
-      case MINUS:
-        if (jj_2_5(2)) {
-          Expression();
-          jj_consume_token(SEMICOLON);
-        } else if (jj_2_6(2)) {
-          Statement();
-        } else {
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case BEGIN:
-          case END:
-          case IDENTIFIER:
-            LabelStatement();
-            break;
-          default:
-            jj_la1[91] = jj_gen;
-            jj_consume_token(-1);
-            throw new ParseException();
-          }
-        }
-        break;
-      case SEMICOLON:
-        EmptyStatement();
-        break;
-      case SWITCH:
-        SwitchStatement();
-        break;
       case IF:
         IfStatement();
         break;
@@ -1953,10 +3842,122 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case GOTO:
         GotoStatement();
         break;
+      case LBRACE:
+        CodeBlock();
+        break;
       default:
-        jj_la1[92] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
+        jj_la1[106] = jj_gen;
+        if (jj_2_13(2147483647)) {
+          SwitchStatement();
+        } else if (jj_2_14(2147483647)) {
+          LabelStatement();
+        } else {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case STRING_LITERAL:
+          case NAME_LITERAL:
+          case ABSTRACT:
+          case AUTO:
+          case BEGIN:
+          case BOOLEAN:
+          case BYTE:
+          case CACHEEXEMPT:
+          case CLASS:
+          case COERCE:
+          case COLLAPSECATEGORIES:
+          case CONFIG:
+          case CPPTEXT:
+          case _DEFAULT:
+          case _DEFAULTPROPERTIES:
+          case DELEGATE:
+          case DEPENDSON:
+          case DEPRECATED:
+          case DONTCOLLAPSECATEGORIES:
+          case EDFINDABLE:
+          case EDITCONST:
+          case EDITINLINE:
+          case EDITINLINENEW:
+          case EDITINLINEUSE:
+          case END:
+          case ENUM:
+          case EVENT:
+          case EXEC:
+          case EXPORT:
+          case EXPORTSTRUCTS:
+          case EXTENDS:
+          case FALSE:
+          case FINAL:
+          case FLOAT:
+          case FUNCTION:
+          case GLOBAL:
+          case GLOBALCONFIG:
+          case GUID:
+          case HIDECATEGORIES:
+          case HIDEDROPDOWN:
+          case IGNORES:
+          case INPUT:
+          case INSTANCED:
+          case INT:
+          case ITERATOR:
+          case LATENT:
+          case LOCALIZED:
+          case NAME:
+          case NATIVE:
+          case NATIVEREPLICATION:
+          case NOEDITINLINEW:
+          case NOEXPORT:
+          case NONE:
+          case NOTPLACEABLE:
+          case OBJECT:
+          case OPERATOR:
+          case OPTIONAL:
+          case OUT:
+          case PACKAGE:
+          case PEROBJECTCONFIG:
+          case PLACEABLE:
+          case POSTOPERATOR:
+          case PREOPERATOR:
+          case PRIVATE:
+          case PROTECTED:
+          case PUBLIC:
+          case RELIABLE:
+          case REPLICATION:
+          case SAFEREPLACE:
+          case SHOWCATEGORIES:
+          case SIMULATED:
+          case SINGULAR:
+          case _SKIP:
+          case STATE:
+          case STRING:
+          case STRUCTDEFAULTPROPERTIES:
+          case SUPER:
+          case SWITCH:
+          case TRANSIENT:
+          case TRAVEL:
+          case TRUE:
+          case UNRELIABLE:
+          case WITHIN:
+          case INTEGER_LITERAL:
+          case FLOATING_POINT_LITERAL:
+          case IDENTIFIER:
+          case LPAREN:
+          case BANG:
+          case TILDE:
+          case INCR:
+          case DECR:
+          case PLUS:
+          case MINUS:
+            Expression();
+            jj_consume_token(SEMICOLON);
+            break;
+          case SEMICOLON:
+            EmptyStatement();
+            break;
+          default:
+            jj_la1[107] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+        }
       }
     } catch (ParseException ex) {
         recover(ex, SEMICOLON);
@@ -1966,35 +3967,100 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // CODEBLOCK = ( CODELINE | ( LCBRACK ( CODELINE )* RCBRACK ) )
   final public void CodeBlock() throws ParseException {
     jj_consume_token(LBRACE);
-    label_29:
+    label_30:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case ABSTRACT:
+      case AUTO:
       case BEGIN:
       case BOOLEAN:
       case BREAK:
       case BYTE:
+      case CACHEEXEMPT:
       case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
       case CONTINUE:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
       case DO:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
       case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
       case FALSE:
+      case FINAL:
       case FLOAT:
       case FOR:
       case FOREACH:
+      case FUNCTION:
       case GLOBAL:
+      case GLOBALCONFIG:
       case GOTO:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
       case IF:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
       case INT:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
       case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
       case NONE:
+      case NOTPLACEABLE:
       case OBJECT:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
       case RETURN:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
       case STRING:
+      case STRUCTDEFAULTPROPERTIES:
       case SUPER:
       case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
       case TRUE:
+      case UNRELIABLE:
+      case WITHIN:
       case WHILE:
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
@@ -2011,8 +4077,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[93] = jj_gen;
-        break label_29;
+        jj_la1[108] = jj_gen;
+        break label_30;
       }
       CodeLine();
     }
@@ -2049,7 +4115,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       CodeLine();
       break;
     default:
-      jj_la1[94] = jj_gen;
+      jj_la1[109] = jj_gen;
       ;
     }
   }
@@ -2076,20 +4142,16 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // SWITCHCASE = switch LBRACK EXPR RBRACK LCBRACK ( CASERULE )+ ( DEFAULTRULE )? RCBRACK
   final public void SwitchStatement() throws ParseException {
-    jj_consume_token(SWITCH);
-    jj_consume_token(LPAREN);
-    Expression();
-    jj_consume_token(RPAREN);
-    jj_consume_token(LBRACE);
-    label_30:
+    SwitchStart();
+    label_31:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case CASE:
         ;
         break;
       default:
-        jj_la1[95] = jj_gen;
-        break label_30;
+        jj_la1[110] = jj_gen;
+        break label_31;
       }
       SwitchLabel();
     }
@@ -2098,59 +4160,201 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       DefaultLabel();
       break;
     default:
-      jj_la1[96] = jj_gen;
+      jj_la1[111] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
   }
 
+  final public void SwitchStart() throws ParseException {
+    jj_consume_token(SWITCH);
+    jj_consume_token(LPAREN);
+    Expression();
+    jj_consume_token(RPAREN);
+    jj_consume_token(LBRACE);
+  }
+
 // CASERULE = case INTVAL COLON CODEBLOCK
   final public void SwitchLabel() throws ParseException {
     jj_consume_token(CASE);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case INTEGER_LITERAL:
-      jj_consume_token(INTEGER_LITERAL);
-      break;
-    case CLASS:
-    case OBJECT:
-    case IDENTIFIER:
-      QualifiedIdentifier();
-      break;
-    default:
-      jj_la1[97] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    if (jj_2_15(2147483647)) {
+      Literal();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ABSTRACT:
+      case AUTO:
+      case BEGIN:
+      case CACHEEXEMPT:
+      case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
+      case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
+      case FINAL:
+      case FUNCTION:
+      case GLOBALCONFIG:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
+      case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
+      case NOTPLACEABLE:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
+      case STRUCTDEFAULTPROPERTIES:
+      case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
+      case UNRELIABLE:
+      case WITHIN:
+      case IDENTIFIER:
+        QualifiedIdentifier();
+        break;
+      default:
+        jj_la1[112] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     }
     jj_consume_token(COLON);
-    label_31:
+    label_32:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case ABSTRACT:
+      case AUTO:
       case BEGIN:
       case BOOLEAN:
       case BREAK:
       case BYTE:
+      case CACHEEXEMPT:
       case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
       case CONTINUE:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
       case DO:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
       case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
       case FALSE:
+      case FINAL:
       case FLOAT:
       case FOR:
       case FOREACH:
+      case FUNCTION:
       case GLOBAL:
+      case GLOBALCONFIG:
       case GOTO:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
       case IF:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
       case INT:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
       case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
       case NONE:
+      case NOTPLACEABLE:
       case OBJECT:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
       case RETURN:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
       case STRING:
+      case STRUCTDEFAULTPROPERTIES:
       case SUPER:
       case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
       case TRUE:
+      case UNRELIABLE:
+      case WITHIN:
       case WHILE:
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
@@ -2167,8 +4371,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[98] = jj_gen;
-        break label_31;
+        jj_la1[113] = jj_gen;
+        break label_32;
       }
       CodeLine();
     }
@@ -2178,36 +4382,101 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void DefaultLabel() throws ParseException {
     jj_consume_token(_DEFAULT);
     jj_consume_token(COLON);
-    label_32:
+    label_33:
     while (true) {
       CodeLine();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case ABSTRACT:
+      case AUTO:
       case BEGIN:
       case BOOLEAN:
       case BREAK:
       case BYTE:
+      case CACHEEXEMPT:
       case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
       case CONTINUE:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
       case DO:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
       case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
       case FALSE:
+      case FINAL:
       case FLOAT:
       case FOR:
       case FOREACH:
+      case FUNCTION:
       case GLOBAL:
+      case GLOBALCONFIG:
       case GOTO:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
       case IF:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
       case INT:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
       case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
       case NONE:
+      case NOTPLACEABLE:
       case OBJECT:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
       case RETURN:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
       case STRING:
+      case STRUCTDEFAULTPROPERTIES:
       case SUPER:
       case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
       case TRUE:
+      case UNRELIABLE:
+      case WITHIN:
       case WHILE:
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
@@ -2224,8 +4493,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[99] = jj_gen;
-        break label_32;
+        jj_la1[114] = jj_gen;
+        break label_33;
       }
     }
   }
@@ -2236,19 +4505,87 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
@@ -2262,7 +4599,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       Expression();
       break;
     default:
-      jj_la1[100] = jj_gen;
+      jj_la1[115] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -2288,7 +4625,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[101] = jj_gen;
+      jj_la1[116] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2297,51 +4634,101 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
 // STATELABELS = ( IDENTIFIER COLON ( CODELINE )* )*
   final public void LabelStatement() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENTIFIER:
-      jj_consume_token(IDENTIFIER);
-      break;
-    case BEGIN:
-      jj_consume_token(BEGIN);
-      break;
-    case END:
-      jj_consume_token(END);
-      break;
-    default:
-      jj_la1[102] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    jj_consume_token(COLON);
-    label_33:
+    LabelStatementStart();
+    label_34:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case ABSTRACT:
+      case AUTO:
       case BEGIN:
       case BOOLEAN:
       case BREAK:
       case BYTE:
+      case CACHEEXEMPT:
       case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
       case CONTINUE:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
       case DO:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
       case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
       case FALSE:
+      case FINAL:
       case FLOAT:
       case FOR:
       case FOREACH:
+      case FUNCTION:
       case GLOBAL:
+      case GLOBALCONFIG:
       case GOTO:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
       case IF:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
       case INT:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
       case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
       case NONE:
+      case NOTPLACEABLE:
       case OBJECT:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
       case RETURN:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
       case STRING:
+      case STRUCTDEFAULTPROPERTIES:
       case SUPER:
       case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
       case TRUE:
+      case UNRELIABLE:
+      case WITHIN:
       case WHILE:
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
@@ -2358,18 +4745,37 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[103] = jj_gen;
-        break label_33;
+        jj_la1[117] = jj_gen;
+        break label_34;
       }
       CodeLine();
     }
+  }
+
+  final public void LabelStatementStart() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    case BEGIN:
+      jj_consume_token(BEGIN);
+      break;
+    case END:
+      jj_consume_token(END);
+      break;
+    default:
+      jj_la1[118] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(COLON);
   }
 
 // FOREACHLOOP = foreach FUNCCALL CODEBLOCK
   final public void ForEachStatement() throws ParseException {
     jj_consume_token(FOREACH);
     FuncCall();
-    CodeBlock();
+    CodeLine();
   }
 
 // FORLOOP = for LBRACK ASSIGNMENT SEMICOLON EXPR SEMICOLON EXPR RBRACK CODEBLOCK
@@ -2379,13 +4785,87 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case BOOLEAN:
+    case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
+    case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
@@ -2395,26 +4875,94 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ForInit();
       break;
     default:
-      jj_la1[104] = jj_gen;
+      jj_la1[119] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
@@ -2428,20 +4976,94 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       Expression();
       break;
     default:
-      jj_la1[105] = jj_gen;
+      jj_la1[120] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case BOOLEAN:
+    case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
+    case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
@@ -2451,7 +5073,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       ForUpdate();
       break;
     default:
-      jj_la1[106] = jj_gen;
+      jj_la1[121] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -2464,15 +5086,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
   final public void StatementExpressionList() throws ParseException {
     StatementExpression();
-    label_34:
+    label_35:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[107] = jj_gen;
-        break label_34;
+        jj_la1[122] = jj_gen;
+        break label_35;
       }
       jj_consume_token(COMMA);
       StatementExpression();
@@ -2492,25 +5114,93 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // a primary expression.  Consider adding a semantic predicate to work
 // around this.
   final public void Expression() throws ParseException {
-    if (jj_2_7(3)) {
+    if (jj_2_16(2147483647)) {
       NewExpression();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case ABSTRACT:
+      case AUTO:
+      case BEGIN:
       case BOOLEAN:
       case BYTE:
+      case CACHEEXEMPT:
       case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
+      case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
       case FALSE:
+      case FINAL:
       case FLOAT:
+      case FUNCTION:
       case GLOBAL:
+      case GLOBALCONFIG:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
       case INT:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
       case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
       case NONE:
+      case NOTPLACEABLE:
       case OBJECT:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
       case STRING:
+      case STRUCTDEFAULTPROPERTIES:
       case SUPER:
+      case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
       case TRUE:
+      case UNRELIABLE:
+      case WITHIN:
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
       case IDENTIFIER:
@@ -2524,7 +5214,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         BinaryExpression();
         break;
       default:
-        jj_la1[108] = jj_gen;
+        jj_la1[123] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2540,19 +5230,87 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
@@ -2576,13 +5334,13 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           jj_consume_token(DOUBLEHOOK);
           break;
         default:
-          jj_la1[109] = jj_gen;
+          jj_la1[124] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[110] = jj_gen;
+        jj_la1[125] = jj_gen;
         ;
       }
       BinaryExpression();
@@ -2590,7 +5348,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       BinaryExpression();
       break;
     default:
-      jj_la1[111] = jj_gen;
+      jj_la1[126] = jj_gen;
       ;
     }
   }
@@ -2602,12 +5360,12 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 }*/
   final public void BinaryExpression() throws ParseException {
     exp2();
-    label_35:
+    label_36:
     while (true) {
-      if (jj_2_8(2)) {
+      if (jj_2_17(2147483647)) {
         ;
       } else {
-        break label_35;
+        break label_36;
       }
       OperatorNames2();
       exp2();
@@ -2642,13 +5400,13 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(BANG);
         break;
       default:
-        jj_la1[112] = jj_gen;
+        jj_la1[127] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[113] = jj_gen;
+      jj_la1[128] = jj_gen;
       ;
     }
     exp1();
@@ -2663,13 +5421,13 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(DECR);
         break;
       default:
-        jj_la1[114] = jj_gen;
+        jj_la1[129] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[115] = jj_gen;
+      jj_la1[130] = jj_gen;
       ;
     }
   }
@@ -2683,25 +5441,91 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       break;
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
-      if (jj_2_9(3)) {
-        CastExpression();
-      } else if (jj_2_10(3)) {
+      if (jj_2_18(3)) {
         FuncCallOrIdentifierSpecifier();
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2716,14 +5540,14 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           Literal();
           break;
         default:
-          jj_la1[116] = jj_gen;
+          jj_la1[131] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
       break;
     default:
-      jj_la1[117] = jj_gen;
+      jj_la1[132] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2732,9 +5556,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // new operator in UE3
 // ObjectVar = new[(InOuter, InName, InFlags)] <class'InClass'>[(InTemplate)];
   final public void NewExpression() throws ParseException {
-    jj_consume_token(IDENTIFIER);
-    jj_consume_token(ASSIGN);
-    jj_consume_token(NEW);
+    NewStart();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CLASS:
     case LPAREN:
@@ -2742,8 +5564,76 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       case LPAREN:
         jj_consume_token(LPAREN);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case ABSTRACT:
+        case AUTO:
+        case BEGIN:
+        case CACHEEXEMPT:
         case CLASS:
-        case OBJECT:
+        case COERCE:
+        case COLLAPSECATEGORIES:
+        case CONFIG:
+        case CPPTEXT:
+        case _DEFAULT:
+        case _DEFAULTPROPERTIES:
+        case DELEGATE:
+        case DEPENDSON:
+        case DEPRECATED:
+        case DONTCOLLAPSECATEGORIES:
+        case EDFINDABLE:
+        case EDITCONST:
+        case EDITINLINE:
+        case EDITINLINENEW:
+        case EDITINLINEUSE:
+        case END:
+        case ENUM:
+        case EVENT:
+        case EXEC:
+        case EXPORT:
+        case EXPORTSTRUCTS:
+        case EXTENDS:
+        case FINAL:
+        case FUNCTION:
+        case GLOBALCONFIG:
+        case GUID:
+        case HIDECATEGORIES:
+        case HIDEDROPDOWN:
+        case IGNORES:
+        case INPUT:
+        case INSTANCED:
+        case ITERATOR:
+        case LATENT:
+        case LOCALIZED:
+        case NAME:
+        case NATIVE:
+        case NATIVEREPLICATION:
+        case NOEDITINLINEW:
+        case NOEXPORT:
+        case NOTPLACEABLE:
+        case OPERATOR:
+        case OPTIONAL:
+        case OUT:
+        case PACKAGE:
+        case PEROBJECTCONFIG:
+        case PLACEABLE:
+        case POSTOPERATOR:
+        case PREOPERATOR:
+        case PRIVATE:
+        case PROTECTED:
+        case PUBLIC:
+        case RELIABLE:
+        case REPLICATION:
+        case SAFEREPLACE:
+        case SHOWCATEGORIES:
+        case SIMULATED:
+        case SINGULAR:
+        case _SKIP:
+        case STATE:
+        case STRUCTDEFAULTPROPERTIES:
+        case SWITCH:
+        case TRANSIENT:
+        case TRAVEL:
+        case UNRELIABLE:
+        case WITHIN:
         case IDENTIFIER:
           QualifiedIdentifier();
           break;
@@ -2751,7 +5641,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           jj_consume_token(NONE);
           break;
         default:
-          jj_la1[118] = jj_gen;
+          jj_la1[133] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2765,18 +5655,18 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
             ArrayIndex();
             break;
           default:
-            jj_la1[119] = jj_gen;
+            jj_la1[134] = jj_gen;
             ;
           }
           break;
         default:
-          jj_la1[120] = jj_gen;
+          jj_la1[135] = jj_gen;
           ;
         }
         jj_consume_token(RPAREN);
         break;
       default:
-        jj_la1[121] = jj_gen;
+        jj_la1[136] = jj_gen;
         ;
       }
       jj_consume_token(CLASS);
@@ -2790,57 +5680,219 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           jj_consume_token(NAME_LITERAL);
           break;
         default:
-          jj_la1[122] = jj_gen;
+          jj_la1[137] = jj_gen;
           ;
         }
         jj_consume_token(RPAREN);
         break;
       default:
-        jj_la1[123] = jj_gen;
+        jj_la1[138] = jj_gen;
         ;
       }
       break;
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case CACHEEXEMPT:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
+    case FINAL:
+    case FUNCTION:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRUCTDEFAULTPROPERTIES:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
+    case UNRELIABLE:
+    case WITHIN:
     case IDENTIFIER:
       PackageIdentifier();
       break;
     default:
-      jj_la1[124] = jj_gen;
+      jj_la1[139] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
+  final public void NewStart() throws ParseException {
+    jj_consume_token(IDENTIFIER);
+    jj_consume_token(ASSIGN);
+    jj_consume_token(NEW);
+  }
+
 // OPIDENTIFIER = IDENTIFIER | OPERATORNAMES
   final public void OpIdentifier() throws ParseException {
-    if (jj_2_11(1)) {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CLOCKWISEFROM:
+    case CROSS:
+    case DOTPRODUCT:
+    case ASSIGN:
+    case AT:
+    case DOLLARS:
+    case LT:
+    case BANG:
+    case TILDE:
+    case HOOK:
+    case COLON:
+    case EQ:
+    case LE:
+    case GE:
+    case NE:
+    case SC_OR:
+    case SC_AND:
+    case INCR:
+    case DECR:
+    case PLUS:
+    case MINUS:
+    case STAR:
+    case SLASH:
+    case BIT_AND:
+    case BIT_OR:
+    case XOR:
+    case REM:
+    case LSHIFT:
+    case EXPONENT:
+    case ATASSIGN:
+    case DOLLARSASSIGN:
+    case PLUSASSIGN:
+    case MINUSASSIGN:
+    case STARASSIGN:
+    case SLASHASSIGN:
+    case ANDASSIGN:
+    case ORASSIGN:
+    case XORASSIGN:
+    case REMASSIGN:
+    case RSIGNEDSHIFTASSIGN:
+    case RUNSIGNEDSHIFTASSIGN:
+    case DOUBLEHOOK:
+    case DASHASSIGNDASH:
+    case RUNSIGNEDSHIFT:
+    case RSIGNEDSHIFT:
+    case GT:
+    case 188:
+    case 189:
       OperatorNames();
-    } else {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IDENTIFIER:
-        jj_consume_token(IDENTIFIER);
-        break;
-      default:
-        jj_la1[125] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+      break;
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[140] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
   final public void OpIdentifier2() throws ParseException {
-    if (jj_2_12(1)) {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CLOCKWISEFROM:
+    case CROSS:
+    case DOTPRODUCT:
+    case ASSIGN:
+    case AT:
+    case DOLLARS:
+    case LT:
+    case HOOK:
+    case COLON:
+    case EQ:
+    case LE:
+    case GE:
+    case NE:
+    case SC_OR:
+    case SC_AND:
+    case PLUS:
+    case MINUS:
+    case STAR:
+    case SLASH:
+    case BIT_AND:
+    case BIT_OR:
+    case XOR:
+    case REM:
+    case LSHIFT:
+    case EXPONENT:
+    case ATASSIGN:
+    case DOLLARSASSIGN:
+    case PLUSASSIGN:
+    case MINUSASSIGN:
+    case STARASSIGN:
+    case SLASHASSIGN:
+    case ANDASSIGN:
+    case ORASSIGN:
+    case XORASSIGN:
+    case REMASSIGN:
+    case RSIGNEDSHIFTASSIGN:
+    case RUNSIGNEDSHIFTASSIGN:
+    case DOUBLEHOOK:
+    case DASHASSIGNDASH:
+    case RUNSIGNEDSHIFT:
+    case RSIGNEDSHIFT:
+    case GT:
+    case 188:
+    case 189:
       OperatorNames2();
-    } else {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IDENTIFIER:
-        jj_consume_token(IDENTIFIER);
-        break;
-      default:
-        jj_la1[126] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+      break;
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[141] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
@@ -2871,8 +5923,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case SC_AND:
       jj_consume_token(SC_AND);
       break;
-    case 186:
-      jj_consume_token(186);
+    case 188:
+      jj_consume_token(188);
       break;
     case BIT_AND:
       jj_consume_token(BIT_AND);
@@ -2892,125 +5944,116 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case LT:
       jj_consume_token(LT);
       break;
+    case GT:
+      GT();
+      break;
+    case LE:
+      jj_consume_token(LE);
+      break;
+    case GE:
+      jj_consume_token(GE);
+      break;
+    case 189:
+      jj_consume_token(189);
+      break;
+    case LSHIFT:
+      jj_consume_token(LSHIFT);
+      break;
+    case RSIGNEDSHIFT:
+      RSIGNEDSHIFT();
+      break;
+    case RUNSIGNEDSHIFT:
+      RUNSIGNEDSHIFT();
+      break;
+    case PLUS:
+      jj_consume_token(PLUS);
+      break;
+    case MINUS:
+      jj_consume_token(MINUS);
+      break;
+    case REM:
+      jj_consume_token(REM);
+      break;
+    case STAR:
+      jj_consume_token(STAR);
+      break;
+    case SLASH:
+      jj_consume_token(SLASH);
+      break;
+    case DOTPRODUCT:
+      jj_consume_token(DOTPRODUCT);
+      break;
+    case CROSS:
+      jj_consume_token(CROSS);
+      break;
+    case EXPONENT:
+      jj_consume_token(EXPONENT);
+      break;
+    case CLOCKWISEFROM:
+      jj_consume_token(CLOCKWISEFROM);
+      break;
+    case ATASSIGN:
+      jj_consume_token(ATASSIGN);
+      break;
+    case DOLLARSASSIGN:
+      jj_consume_token(DOLLARSASSIGN);
+      break;
+    case ANDASSIGN:
+      jj_consume_token(ANDASSIGN);
+      break;
+    case XORASSIGN:
+      jj_consume_token(XORASSIGN);
+      break;
+    case ORASSIGN:
+      jj_consume_token(ORASSIGN);
+      jj_consume_token(LSHIFTASSIGN);
+      break;
+    case RSIGNEDSHIFTASSIGN:
+      jj_consume_token(RSIGNEDSHIFTASSIGN);
+      break;
+    case RUNSIGNEDSHIFTASSIGN:
+      jj_consume_token(RUNSIGNEDSHIFTASSIGN);
+      break;
+    case PLUSASSIGN:
+      jj_consume_token(PLUSASSIGN);
+      break;
+    case MINUSASSIGN:
+      jj_consume_token(MINUSASSIGN);
+      break;
+    case REMASSIGN:
+      jj_consume_token(REMASSIGN);
+      break;
+    case STARASSIGN:
+      jj_consume_token(STARASSIGN);
+      break;
+    case SLASHASSIGN:
+      jj_consume_token(SLASHASSIGN);
+      break;
+    case ASSIGN:
+      jj_consume_token(ASSIGN);
+      break;
+    case DOUBLEHOOK:
+      jj_consume_token(DOUBLEHOOK);
+      break;
+    case DASHASSIGNDASH:
+      jj_consume_token(DASHASSIGNDASH);
+      break;
+    case INCR:
+      jj_consume_token(INCR);
+      break;
+    case DECR:
+      jj_consume_token(DECR);
+      break;
+    case TILDE:
+      jj_consume_token(TILDE);
+      break;
+    case BANG:
+      jj_consume_token(BANG);
+      break;
     default:
-      jj_la1[127] = jj_gen;
-      if (jj_2_13(1)) {
-        GT();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case LE:
-          jj_consume_token(LE);
-          break;
-        case GE:
-          jj_consume_token(GE);
-          break;
-        case 187:
-          jj_consume_token(187);
-          break;
-        case LSHIFT:
-          jj_consume_token(LSHIFT);
-          break;
-        default:
-          jj_la1[128] = jj_gen;
-          if (jj_2_14(1)) {
-            RSIGNEDSHIFT();
-          } else if (jj_2_15(1)) {
-            RUNSIGNEDSHIFT();
-          } else {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case PLUS:
-              jj_consume_token(PLUS);
-              break;
-            case MINUS:
-              jj_consume_token(MINUS);
-              break;
-            case REM:
-              jj_consume_token(REM);
-              break;
-            case STAR:
-              jj_consume_token(STAR);
-              break;
-            case SLASH:
-              jj_consume_token(SLASH);
-              break;
-            case DOTPRODUCT:
-              jj_consume_token(DOTPRODUCT);
-              break;
-            case CROSS:
-              jj_consume_token(CROSS);
-              break;
-            case EXPONENT:
-              jj_consume_token(EXPONENT);
-              break;
-            case CLOCKWISEFROM:
-              jj_consume_token(CLOCKWISEFROM);
-              break;
-            case ATASSIGN:
-              jj_consume_token(ATASSIGN);
-              break;
-            case DOLLARSASSIGN:
-              jj_consume_token(DOLLARSASSIGN);
-              break;
-            case ANDASSIGN:
-              jj_consume_token(ANDASSIGN);
-              break;
-            case XORASSIGN:
-              jj_consume_token(XORASSIGN);
-              break;
-            case ORASSIGN:
-              jj_consume_token(ORASSIGN);
-              jj_consume_token(LSHIFTASSIGN);
-              break;
-            case RSIGNEDSHIFTASSIGN:
-              jj_consume_token(RSIGNEDSHIFTASSIGN);
-              break;
-            case RUNSIGNEDSHIFTASSIGN:
-              jj_consume_token(RUNSIGNEDSHIFTASSIGN);
-              break;
-            case PLUSASSIGN:
-              jj_consume_token(PLUSASSIGN);
-              break;
-            case MINUSASSIGN:
-              jj_consume_token(MINUSASSIGN);
-              break;
-            case REMASSIGN:
-              jj_consume_token(REMASSIGN);
-              break;
-            case STARASSIGN:
-              jj_consume_token(STARASSIGN);
-              break;
-            case SLASHASSIGN:
-              jj_consume_token(SLASHASSIGN);
-              break;
-            case ASSIGN:
-              jj_consume_token(ASSIGN);
-              break;
-            case DOUBLEHOOK:
-              jj_consume_token(DOUBLEHOOK);
-              break;
-            case DASHASSIGNDASH:
-              jj_consume_token(DASHASSIGNDASH);
-              break;
-            case INCR:
-              jj_consume_token(INCR);
-              break;
-            case DECR:
-              jj_consume_token(DECR);
-              break;
-            case TILDE:
-              jj_consume_token(TILDE);
-              break;
-            case BANG:
-              jj_consume_token(BANG);
-              break;
-            default:
-              jj_la1[129] = jj_gen;
-              jj_consume_token(-1);
-              throw new ParseException();
-            }
-          }
-        }
-      }
+      jj_la1[142] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
@@ -3034,8 +6077,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case SC_AND:
       jj_consume_token(SC_AND);
       break;
-    case 186:
-      jj_consume_token(186);
+    case 188:
+      jj_consume_token(188);
       break;
     case BIT_AND:
       jj_consume_token(BIT_AND);
@@ -3055,113 +6098,104 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case LT:
       jj_consume_token(LT);
       break;
+    case GT:
+      GT();
+      break;
+    case LE:
+      jj_consume_token(LE);
+      break;
+    case GE:
+      jj_consume_token(GE);
+      break;
+    case 189:
+      jj_consume_token(189);
+      break;
+    case LSHIFT:
+      jj_consume_token(LSHIFT);
+      break;
+    case RSIGNEDSHIFT:
+      RSIGNEDSHIFT();
+      break;
+    case RUNSIGNEDSHIFT:
+      RUNSIGNEDSHIFT();
+      break;
+    case PLUS:
+      jj_consume_token(PLUS);
+      break;
+    case MINUS:
+      jj_consume_token(MINUS);
+      break;
+    case REM:
+      jj_consume_token(REM);
+      break;
+    case STAR:
+      jj_consume_token(STAR);
+      break;
+    case SLASH:
+      jj_consume_token(SLASH);
+      break;
+    case DOTPRODUCT:
+      jj_consume_token(DOTPRODUCT);
+      break;
+    case CROSS:
+      jj_consume_token(CROSS);
+      break;
+    case EXPONENT:
+      jj_consume_token(EXPONENT);
+      break;
+    case CLOCKWISEFROM:
+      jj_consume_token(CLOCKWISEFROM);
+      break;
+    case ATASSIGN:
+      jj_consume_token(ATASSIGN);
+      break;
+    case DOLLARSASSIGN:
+      jj_consume_token(DOLLARSASSIGN);
+      break;
+    case ANDASSIGN:
+      jj_consume_token(ANDASSIGN);
+      break;
+    case XORASSIGN:
+      jj_consume_token(XORASSIGN);
+      break;
+    case ORASSIGN:
+      jj_consume_token(ORASSIGN);
+      jj_consume_token(LSHIFTASSIGN);
+      break;
+    case RSIGNEDSHIFTASSIGN:
+      jj_consume_token(RSIGNEDSHIFTASSIGN);
+      break;
+    case RUNSIGNEDSHIFTASSIGN:
+      jj_consume_token(RUNSIGNEDSHIFTASSIGN);
+      break;
+    case PLUSASSIGN:
+      jj_consume_token(PLUSASSIGN);
+      break;
+    case MINUSASSIGN:
+      jj_consume_token(MINUSASSIGN);
+      break;
+    case REMASSIGN:
+      jj_consume_token(REMASSIGN);
+      break;
+    case STARASSIGN:
+      jj_consume_token(STARASSIGN);
+      break;
+    case SLASHASSIGN:
+      jj_consume_token(SLASHASSIGN);
+      break;
+    case ASSIGN:
+      jj_consume_token(ASSIGN);
+      break;
+    case DOUBLEHOOK:
+      jj_consume_token(DOUBLEHOOK);
+      break;
+    case DASHASSIGNDASH:
+      jj_consume_token(DASHASSIGNDASH);
+      break;
     default:
-      jj_la1[130] = jj_gen;
-      if (jj_2_16(1)) {
-        GT();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case LE:
-          jj_consume_token(LE);
-          break;
-        case GE:
-          jj_consume_token(GE);
-          break;
-        case 187:
-          jj_consume_token(187);
-          break;
-        case LSHIFT:
-          jj_consume_token(LSHIFT);
-          break;
-        default:
-          jj_la1[131] = jj_gen;
-          if (jj_2_17(1)) {
-            RSIGNEDSHIFT();
-          } else if (jj_2_18(1)) {
-            RUNSIGNEDSHIFT();
-          } else {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case PLUS:
-              jj_consume_token(PLUS);
-              break;
-            case MINUS:
-              jj_consume_token(MINUS);
-              break;
-            case REM:
-              jj_consume_token(REM);
-              break;
-            case STAR:
-              jj_consume_token(STAR);
-              break;
-            case SLASH:
-              jj_consume_token(SLASH);
-              break;
-            case DOTPRODUCT:
-              jj_consume_token(DOTPRODUCT);
-              break;
-            case CROSS:
-              jj_consume_token(CROSS);
-              break;
-            case EXPONENT:
-              jj_consume_token(EXPONENT);
-              break;
-            case CLOCKWISEFROM:
-              jj_consume_token(CLOCKWISEFROM);
-              break;
-            case ATASSIGN:
-              jj_consume_token(ATASSIGN);
-              break;
-            case DOLLARSASSIGN:
-              jj_consume_token(DOLLARSASSIGN);
-              break;
-            case ANDASSIGN:
-              jj_consume_token(ANDASSIGN);
-              break;
-            case XORASSIGN:
-              jj_consume_token(XORASSIGN);
-              break;
-            case ORASSIGN:
-              jj_consume_token(ORASSIGN);
-              jj_consume_token(LSHIFTASSIGN);
-              break;
-            case RSIGNEDSHIFTASSIGN:
-              jj_consume_token(RSIGNEDSHIFTASSIGN);
-              break;
-            case RUNSIGNEDSHIFTASSIGN:
-              jj_consume_token(RUNSIGNEDSHIFTASSIGN);
-              break;
-            case PLUSASSIGN:
-              jj_consume_token(PLUSASSIGN);
-              break;
-            case MINUSASSIGN:
-              jj_consume_token(MINUSASSIGN);
-              break;
-            case REMASSIGN:
-              jj_consume_token(REMASSIGN);
-              break;
-            case STARASSIGN:
-              jj_consume_token(STARASSIGN);
-              break;
-            case SLASHASSIGN:
-              jj_consume_token(SLASHASSIGN);
-              break;
-            case ASSIGN:
-              jj_consume_token(ASSIGN);
-              break;
-            case DOUBLEHOOK:
-              jj_consume_token(DOUBLEHOOK);
-              break;
-            case DASHASSIGNDASH:
-              jj_consume_token(DASHASSIGNDASH);
-              break;
-            default:
-              jj_la1[132] = jj_gen;
-              jj_consume_token(-1);
-              throw new ParseException();
-            }
-          }
-        }
-      }
+      jj_la1[143] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
@@ -3182,7 +6216,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(DOUBLEHOOK);
       break;
     default:
-      jj_la1[133] = jj_gen;
+      jj_la1[144] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3202,8 +6236,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case SC_AND:
       jj_consume_token(SC_AND);
       break;
-    case 186:
-      jj_consume_token(186);
+    case 188:
+      jj_consume_token(188);
       break;
     case BIT_AND:
       jj_consume_token(BIT_AND);
@@ -3223,71 +6257,62 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     case LT:
       jj_consume_token(LT);
       break;
+    case GT:
+      GT();
+      break;
+    case LE:
+      jj_consume_token(LE);
+      break;
+    case GE:
+      jj_consume_token(GE);
+      break;
+    case 189:
+      jj_consume_token(189);
+      break;
+    case LSHIFT:
+      jj_consume_token(LSHIFT);
+      break;
+    case RSIGNEDSHIFT:
+      RSIGNEDSHIFT();
+      break;
+    case RUNSIGNEDSHIFT:
+      RUNSIGNEDSHIFT();
+      break;
+    case PLUS:
+      jj_consume_token(PLUS);
+      break;
+    case MINUS:
+      jj_consume_token(MINUS);
+      break;
+    case REM:
+      jj_consume_token(REM);
+      break;
+    case STAR:
+      jj_consume_token(STAR);
+      break;
+    case SLASH:
+      jj_consume_token(SLASH);
+      break;
+    case DOTPRODUCT:
+      jj_consume_token(DOTPRODUCT);
+      break;
+    case CROSS:
+      jj_consume_token(CROSS);
+      break;
+    case EXPONENT:
+      jj_consume_token(EXPONENT);
+      break;
+    case CLOCKWISEFROM:
+      jj_consume_token(CLOCKWISEFROM);
+      break;
+    case DASHASSIGNDASH:
+      jj_consume_token(DASHASSIGNDASH);
+      AssignmentOperatorNames();
+      break;
     default:
-      jj_la1[134] = jj_gen;
-      if (jj_2_19(1)) {
-        GT();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case LE:
-          jj_consume_token(LE);
-          break;
-        case GE:
-          jj_consume_token(GE);
-          break;
-        case 187:
-          jj_consume_token(187);
-          break;
-        case LSHIFT:
-          jj_consume_token(LSHIFT);
-          break;
-        default:
-          jj_la1[135] = jj_gen;
-          if (jj_2_20(1)) {
-            RSIGNEDSHIFT();
-          } else if (jj_2_21(1)) {
-            RUNSIGNEDSHIFT();
-          } else {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case PLUS:
-              jj_consume_token(PLUS);
-              break;
-            case MINUS:
-              jj_consume_token(MINUS);
-              break;
-            case REM:
-              jj_consume_token(REM);
-              break;
-            case STAR:
-              jj_consume_token(STAR);
-              break;
-            case SLASH:
-              jj_consume_token(SLASH);
-              break;
-            case DOTPRODUCT:
-              jj_consume_token(DOTPRODUCT);
-              break;
-            case CROSS:
-              jj_consume_token(CROSS);
-              break;
-            case EXPONENT:
-              jj_consume_token(EXPONENT);
-              break;
-            case CLOCKWISEFROM:
-              jj_consume_token(CLOCKWISEFROM);
-              break;
-            case DASHASSIGNDASH:
-              jj_consume_token(DASHASSIGNDASH);
-              AssignmentOperatorNames();
-              break;
-            default:
-              jj_la1[136] = jj_gen;
-              jj_consume_token(-1);
-              throw new ParseException();
-            }
-          }
-        }
-      }
+      jj_la1[145] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
@@ -3334,7 +6359,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(ASSIGN);
       break;
     default:
-      jj_la1[137] = jj_gen;
+      jj_la1[146] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3361,7 +6386,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(BANG);
       break;
     default:
-      jj_la1[138] = jj_gen;
+      jj_la1[147] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3385,7 +6410,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(MINUS);
         break;
       default:
-        jj_la1[139] = jj_gen;
+        jj_la1[148] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3393,19 +6418,87 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       break;
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
@@ -3415,7 +6508,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       UnaryExpressionNotPlusMinus();
       break;
     default:
-      jj_la1[140] = jj_gen;
+      jj_la1[149] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3443,7 +6536,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(BANG);
         break;
       default:
-        jj_la1[141] = jj_gen;
+        jj_la1[150] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3451,36 +6544,178 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       break;
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
     case BOOLEAN:
     case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
     case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
     case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
     case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
     case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
     case LPAREN:
-      if (jj_2_22(2)) {
+      if (jj_2_19(2)) {
         CastExpression();
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case STRING_LITERAL:
         case NAME_LITERAL:
+        case ABSTRACT:
+        case AUTO:
+        case BEGIN:
+        case BOOLEAN:
+        case BYTE:
+        case CACHEEXEMPT:
         case CLASS:
+        case COERCE:
+        case COLLAPSECATEGORIES:
+        case CONFIG:
+        case CPPTEXT:
+        case _DEFAULT:
+        case _DEFAULTPROPERTIES:
+        case DELEGATE:
+        case DEPENDSON:
+        case DEPRECATED:
+        case DONTCOLLAPSECATEGORIES:
+        case EDFINDABLE:
+        case EDITCONST:
+        case EDITINLINE:
+        case EDITINLINENEW:
+        case EDITINLINEUSE:
+        case END:
+        case ENUM:
+        case EVENT:
+        case EXEC:
+        case EXPORT:
+        case EXPORTSTRUCTS:
+        case EXTENDS:
         case FALSE:
+        case FINAL:
+        case FLOAT:
+        case FUNCTION:
         case GLOBAL:
+        case GLOBALCONFIG:
+        case GUID:
+        case HIDECATEGORIES:
+        case HIDEDROPDOWN:
+        case IGNORES:
+        case INPUT:
+        case INSTANCED:
+        case INT:
+        case ITERATOR:
+        case LATENT:
+        case LOCALIZED:
+        case NAME:
+        case NATIVE:
+        case NATIVEREPLICATION:
+        case NOEDITINLINEW:
+        case NOEXPORT:
         case NONE:
+        case NOTPLACEABLE:
         case OBJECT:
+        case OPERATOR:
+        case OPTIONAL:
+        case OUT:
+        case PACKAGE:
+        case PEROBJECTCONFIG:
+        case PLACEABLE:
+        case POSTOPERATOR:
+        case PREOPERATOR:
+        case PRIVATE:
+        case PROTECTED:
+        case PUBLIC:
+        case RELIABLE:
+        case REPLICATION:
+        case SAFEREPLACE:
+        case SHOWCATEGORIES:
+        case SIMULATED:
+        case SINGULAR:
+        case _SKIP:
+        case STATE:
+        case STRING:
+        case STRUCTDEFAULTPROPERTIES:
         case SUPER:
+        case SWITCH:
+        case TRANSIENT:
+        case TRAVEL:
         case TRUE:
+        case UNRELIABLE:
+        case WITHIN:
         case INTEGER_LITERAL:
         case FLOATING_POINT_LITERAL:
         case IDENTIFIER:
@@ -3488,14 +6723,14 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           PostfixExpression();
           break;
         default:
-          jj_la1[142] = jj_gen;
+          jj_la1[151] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
       break;
     default:
-      jj_la1[143] = jj_gen;
+      jj_la1[152] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3509,7 +6744,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     jj_consume_token(LPAREN);
     PrimaryPrefix();
     jj_consume_token(RPAREN);
-    if (jj_2_23(2)) {
+    if (jj_2_20(2)) {
       FuncCallOrQualifiedIdentifier();
     } else {
       ;
@@ -3529,13 +6764,13 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(DECR);
         break;
       default:
-        jj_la1[144] = jj_gen;
+        jj_la1[153] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[145] = jj_gen;
+      jj_la1[154] = jj_gen;
       ;
     }
   }
@@ -3554,36 +6789,184 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       break;
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case BOOLEAN:
+    case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
+    case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
-      if (jj_2_24(3)) {
+      if (jj_2_21(3)) {
         Literal();
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case ABSTRACT:
+        case AUTO:
+        case BEGIN:
+        case BOOLEAN:
+        case BYTE:
+        case CACHEEXEMPT:
         case CLASS:
+        case COERCE:
+        case COLLAPSECATEGORIES:
+        case CONFIG:
+        case CPPTEXT:
+        case _DEFAULT:
+        case _DEFAULTPROPERTIES:
+        case DELEGATE:
+        case DEPENDSON:
+        case DEPRECATED:
+        case DONTCOLLAPSECATEGORIES:
+        case EDFINDABLE:
+        case EDITCONST:
+        case EDITINLINE:
+        case EDITINLINENEW:
+        case EDITINLINEUSE:
+        case END:
+        case ENUM:
+        case EVENT:
+        case EXEC:
+        case EXPORT:
+        case EXPORTSTRUCTS:
+        case EXTENDS:
+        case FINAL:
+        case FLOAT:
+        case FUNCTION:
         case GLOBAL:
+        case GLOBALCONFIG:
+        case GUID:
+        case HIDECATEGORIES:
+        case HIDEDROPDOWN:
+        case IGNORES:
+        case INPUT:
+        case INSTANCED:
+        case INT:
+        case ITERATOR:
+        case LATENT:
+        case LOCALIZED:
+        case NAME:
+        case NATIVE:
+        case NATIVEREPLICATION:
+        case NOEDITINLINEW:
+        case NOEXPORT:
+        case NOTPLACEABLE:
         case OBJECT:
+        case OPERATOR:
+        case OPTIONAL:
+        case OUT:
+        case PACKAGE:
+        case PEROBJECTCONFIG:
+        case PLACEABLE:
+        case POSTOPERATOR:
+        case PREOPERATOR:
+        case PRIVATE:
+        case PROTECTED:
+        case PUBLIC:
+        case RELIABLE:
+        case REPLICATION:
+        case SAFEREPLACE:
+        case SHOWCATEGORIES:
+        case SIMULATED:
+        case SINGULAR:
+        case _SKIP:
+        case STATE:
+        case STRING:
+        case STRUCTDEFAULTPROPERTIES:
         case SUPER:
+        case SWITCH:
+        case TRANSIENT:
+        case TRAVEL:
+        case UNRELIABLE:
+        case WITHIN:
         case IDENTIFIER:
           FuncCallOrIdentifierSpecifier();
           break;
         default:
-          jj_la1[146] = jj_gen;
+          jj_la1[155] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
       break;
     default:
-      jj_la1[147] = jj_gen;
+      jj_la1[156] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3614,7 +6997,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
           jj_consume_token(RPAREN);
           break;
         default:
-          jj_la1[148] = jj_gen;
+          jj_la1[157] = jj_gen;
           ;
         }
         jj_consume_token(DOT);
@@ -3624,13 +7007,13 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(DOT);
         break;
       default:
-        jj_la1[149] = jj_gen;
+        jj_la1[158] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[150] = jj_gen;
+      jj_la1[159] = jj_gen;
       ;
     }
     FuncCallOrQualifiedIdentifier();
@@ -3650,13 +7033,87 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       break;
     case STRING_LITERAL:
     case NAME_LITERAL:
+    case ABSTRACT:
+    case AUTO:
+    case BEGIN:
+    case BOOLEAN:
+    case BYTE:
+    case CACHEEXEMPT:
     case CLASS:
+    case COERCE:
+    case COLLAPSECATEGORIES:
+    case CONFIG:
+    case CPPTEXT:
+    case _DEFAULT:
+    case _DEFAULTPROPERTIES:
+    case DELEGATE:
+    case DEPENDSON:
+    case DEPRECATED:
+    case DONTCOLLAPSECATEGORIES:
+    case EDFINDABLE:
+    case EDITCONST:
+    case EDITINLINE:
+    case EDITINLINENEW:
+    case EDITINLINEUSE:
+    case END:
+    case ENUM:
+    case EVENT:
+    case EXEC:
+    case EXPORT:
+    case EXPORTSTRUCTS:
+    case EXTENDS:
     case FALSE:
+    case FINAL:
+    case FLOAT:
+    case FUNCTION:
     case GLOBAL:
+    case GLOBALCONFIG:
+    case GUID:
+    case HIDECATEGORIES:
+    case HIDEDROPDOWN:
+    case IGNORES:
+    case INPUT:
+    case INSTANCED:
+    case INT:
+    case ITERATOR:
+    case LATENT:
+    case LOCALIZED:
+    case NAME:
+    case NATIVE:
+    case NATIVEREPLICATION:
+    case NOEDITINLINEW:
+    case NOEXPORT:
     case NONE:
+    case NOTPLACEABLE:
     case OBJECT:
+    case OPERATOR:
+    case OPTIONAL:
+    case OUT:
+    case PACKAGE:
+    case PEROBJECTCONFIG:
+    case PLACEABLE:
+    case POSTOPERATOR:
+    case PREOPERATOR:
+    case PRIVATE:
+    case PROTECTED:
+    case PUBLIC:
+    case RELIABLE:
+    case REPLICATION:
+    case SAFEREPLACE:
+    case SHOWCATEGORIES:
+    case SIMULATED:
+    case SINGULAR:
+    case _SKIP:
+    case STATE:
+    case STRING:
+    case STRUCTDEFAULTPROPERTIES:
     case SUPER:
+    case SWITCH:
+    case TRANSIENT:
+    case TRAVEL:
     case TRUE:
+    case UNRELIABLE:
+    case WITHIN:
     case INTEGER_LITERAL:
     case FLOATING_POINT_LITERAL:
     case IDENTIFIER:
@@ -3699,19 +7156,93 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         case RSIGNEDSHIFTASSIGN:
         case RUNSIGNEDSHIFTASSIGN:
           AssignmentOperatorNames();
-          if (jj_2_25(3)) {
+          if (jj_2_22(3)) {
             Expression();
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case STRING_LITERAL:
             case NAME_LITERAL:
+            case ABSTRACT:
+            case AUTO:
+            case BEGIN:
+            case BOOLEAN:
+            case BYTE:
+            case CACHEEXEMPT:
             case CLASS:
+            case COERCE:
+            case COLLAPSECATEGORIES:
+            case CONFIG:
+            case CPPTEXT:
+            case _DEFAULT:
+            case _DEFAULTPROPERTIES:
+            case DELEGATE:
+            case DEPENDSON:
+            case DEPRECATED:
+            case DONTCOLLAPSECATEGORIES:
+            case EDFINDABLE:
+            case EDITCONST:
+            case EDITINLINE:
+            case EDITINLINENEW:
+            case EDITINLINEUSE:
+            case END:
+            case ENUM:
+            case EVENT:
+            case EXEC:
+            case EXPORT:
+            case EXPORTSTRUCTS:
+            case EXTENDS:
             case FALSE:
+            case FINAL:
+            case FLOAT:
+            case FUNCTION:
             case GLOBAL:
+            case GLOBALCONFIG:
+            case GUID:
+            case HIDECATEGORIES:
+            case HIDEDROPDOWN:
+            case IGNORES:
+            case INPUT:
+            case INSTANCED:
+            case INT:
+            case ITERATOR:
+            case LATENT:
+            case LOCALIZED:
+            case NAME:
+            case NATIVE:
+            case NATIVEREPLICATION:
+            case NOEDITINLINEW:
+            case NOEXPORT:
             case NONE:
+            case NOTPLACEABLE:
             case OBJECT:
+            case OPERATOR:
+            case OPTIONAL:
+            case OUT:
+            case PACKAGE:
+            case PEROBJECTCONFIG:
+            case PLACEABLE:
+            case POSTOPERATOR:
+            case PREOPERATOR:
+            case PRIVATE:
+            case PROTECTED:
+            case PUBLIC:
+            case RELIABLE:
+            case REPLICATION:
+            case SAFEREPLACE:
+            case SHOWCATEGORIES:
+            case SIMULATED:
+            case SINGULAR:
+            case _SKIP:
+            case STATE:
+            case STRING:
+            case STRUCTDEFAULTPROPERTIES:
             case SUPER:
+            case SWITCH:
+            case TRANSIENT:
+            case TRAVEL:
             case TRUE:
+            case UNRELIABLE:
+            case WITHIN:
             case INTEGER_LITERAL:
             case FLOATING_POINT_LITERAL:
             case IDENTIFIER:
@@ -3721,25 +7252,25 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
               StatementExpression();
               break;
             default:
-              jj_la1[151] = jj_gen;
+              jj_la1[160] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
           }
           break;
         default:
-          jj_la1[152] = jj_gen;
+          jj_la1[161] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[153] = jj_gen;
+        jj_la1[162] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[154] = jj_gen;
+      jj_la1[163] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3760,7 +7291,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void DefaultPropertiesBlock() throws ParseException {
     jj_consume_token(_DEFAULTPROPERTIES);
     jj_consume_token(LBRACE);
-    label_36:
+    label_37:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BEGIN:
@@ -3768,8 +7299,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[155] = jj_gen;
-        break label_36;
+        jj_la1[164] = jj_gen;
+        break label_37;
       }
       DefProp();
     }
@@ -3779,7 +7310,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void StructDefaultPropertiesBlock() throws ParseException {
     jj_consume_token(STRUCTDEFAULTPROPERTIES);
     jj_consume_token(LBRACE);
-    label_37:
+    label_38:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BEGIN:
@@ -3787,8 +7318,8 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         ;
         break;
       default:
-        jj_la1[156] = jj_gen;
-        break label_37;
+        jj_la1[165] = jj_gen;
+        break label_38;
       }
       DefProp();
     }
@@ -3807,15 +7338,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       jj_consume_token(NAME);
       jj_consume_token(ASSIGN);
       jj_consume_token(IDENTIFIER);
-      label_38:
+      label_39:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case IDENTIFIER:
           ;
           break;
         default:
-          jj_la1[157] = jj_gen;
-          break label_38;
+          jj_la1[166] = jj_gen;
+          break label_39;
         }
         DefProp2();
       }
@@ -3826,7 +7357,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
       DefProp2();
       break;
     default:
-      jj_la1[158] = jj_gen;
+      jj_la1[167] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3834,27 +7365,95 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 
   final public void DefProp2() throws ParseException {
     DefPropIdentifier();
-    if (jj_2_29(2147483647)) {
+    if (jj_2_26(2147483647)) {
       jj_consume_token(ASSIGN);
-      if (jj_2_28(2147483647)) {
+      if (jj_2_25(2147483647)) {
         DefPropStruct2();
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case STRING_LITERAL:
         case NAME_LITERAL:
+        case ABSTRACT:
+        case AUTO:
+        case BEGIN:
         case BOOLEAN:
         case BYTE:
+        case CACHEEXEMPT:
         case CLASS:
+        case COERCE:
+        case COLLAPSECATEGORIES:
+        case CONFIG:
+        case CPPTEXT:
+        case _DEFAULT:
+        case _DEFAULTPROPERTIES:
+        case DELEGATE:
+        case DEPENDSON:
+        case DEPRECATED:
+        case DONTCOLLAPSECATEGORIES:
+        case EDFINDABLE:
+        case EDITCONST:
+        case EDITINLINE:
+        case EDITINLINENEW:
+        case EDITINLINEUSE:
+        case END:
+        case ENUM:
+        case EVENT:
+        case EXEC:
+        case EXPORT:
+        case EXPORTSTRUCTS:
+        case EXTENDS:
         case FALSE:
+        case FINAL:
         case FLOAT:
+        case FUNCTION:
         case GLOBAL:
+        case GLOBALCONFIG:
+        case GUID:
+        case HIDECATEGORIES:
+        case HIDEDROPDOWN:
+        case IGNORES:
+        case INPUT:
+        case INSTANCED:
         case INT:
+        case ITERATOR:
+        case LATENT:
+        case LOCALIZED:
         case NAME:
+        case NATIVE:
+        case NATIVEREPLICATION:
+        case NOEDITINLINEW:
+        case NOEXPORT:
         case NONE:
+        case NOTPLACEABLE:
         case OBJECT:
+        case OPERATOR:
+        case OPTIONAL:
+        case OUT:
+        case PACKAGE:
+        case PEROBJECTCONFIG:
+        case PLACEABLE:
+        case POSTOPERATOR:
+        case PREOPERATOR:
+        case PRIVATE:
+        case PROTECTED:
+        case PUBLIC:
+        case RELIABLE:
+        case REPLICATION:
+        case SAFEREPLACE:
+        case SHOWCATEGORIES:
+        case SIMULATED:
+        case SINGULAR:
+        case _SKIP:
+        case STATE:
         case STRING:
+        case STRUCTDEFAULTPROPERTIES:
         case SUPER:
+        case SWITCH:
+        case TRANSIENT:
+        case TRAVEL:
         case TRUE:
+        case UNRELIABLE:
+        case WITHIN:
         case INTEGER_LITERAL:
         case FLOATING_POINT_LITERAL:
         case IDENTIFIER:
@@ -3865,25 +7464,93 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         case DECR:
         case PLUS:
         case MINUS:
-          if (jj_2_27(2147483647)) {
+          if (jj_2_24(2147483647)) {
             DefPropStruct1();
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case STRING_LITERAL:
             case NAME_LITERAL:
+            case ABSTRACT:
+            case AUTO:
+            case BEGIN:
             case BOOLEAN:
             case BYTE:
+            case CACHEEXEMPT:
             case CLASS:
+            case COERCE:
+            case COLLAPSECATEGORIES:
+            case CONFIG:
+            case CPPTEXT:
+            case _DEFAULT:
+            case _DEFAULTPROPERTIES:
+            case DELEGATE:
+            case DEPENDSON:
+            case DEPRECATED:
+            case DONTCOLLAPSECATEGORIES:
+            case EDFINDABLE:
+            case EDITCONST:
+            case EDITINLINE:
+            case EDITINLINENEW:
+            case EDITINLINEUSE:
+            case END:
+            case ENUM:
+            case EVENT:
+            case EXEC:
+            case EXPORT:
+            case EXPORTSTRUCTS:
+            case EXTENDS:
             case FALSE:
+            case FINAL:
             case FLOAT:
+            case FUNCTION:
             case GLOBAL:
+            case GLOBALCONFIG:
+            case GUID:
+            case HIDECATEGORIES:
+            case HIDEDROPDOWN:
+            case IGNORES:
+            case INPUT:
+            case INSTANCED:
             case INT:
+            case ITERATOR:
+            case LATENT:
+            case LOCALIZED:
             case NAME:
+            case NATIVE:
+            case NATIVEREPLICATION:
+            case NOEDITINLINEW:
+            case NOEXPORT:
             case NONE:
+            case NOTPLACEABLE:
             case OBJECT:
+            case OPERATOR:
+            case OPTIONAL:
+            case OUT:
+            case PACKAGE:
+            case PEROBJECTCONFIG:
+            case PLACEABLE:
+            case POSTOPERATOR:
+            case PREOPERATOR:
+            case PRIVATE:
+            case PROTECTED:
+            case PUBLIC:
+            case RELIABLE:
+            case REPLICATION:
+            case SAFEREPLACE:
+            case SHOWCATEGORIES:
+            case SIMULATED:
+            case SINGULAR:
+            case _SKIP:
+            case STATE:
             case STRING:
+            case STRUCTDEFAULTPROPERTIES:
             case SUPER:
+            case SWITCH:
+            case TRANSIENT:
+            case TRAVEL:
             case TRUE:
+            case UNRELIABLE:
+            case WITHIN:
             case INTEGER_LITERAL:
             case FLOATING_POINT_LITERAL:
             case IDENTIFIER:
@@ -3894,25 +7561,93 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
             case DECR:
             case PLUS:
             case MINUS:
-              if (jj_2_26(2147483647)) {
+              if (jj_2_23(2147483647)) {
                 DefPropArray1();
               } else {
                 switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
                 case STRING_LITERAL:
                 case NAME_LITERAL:
+                case ABSTRACT:
+                case AUTO:
+                case BEGIN:
                 case BOOLEAN:
                 case BYTE:
+                case CACHEEXEMPT:
                 case CLASS:
+                case COERCE:
+                case COLLAPSECATEGORIES:
+                case CONFIG:
+                case CPPTEXT:
+                case _DEFAULT:
+                case _DEFAULTPROPERTIES:
+                case DELEGATE:
+                case DEPENDSON:
+                case DEPRECATED:
+                case DONTCOLLAPSECATEGORIES:
+                case EDFINDABLE:
+                case EDITCONST:
+                case EDITINLINE:
+                case EDITINLINENEW:
+                case EDITINLINEUSE:
+                case END:
+                case ENUM:
+                case EVENT:
+                case EXEC:
+                case EXPORT:
+                case EXPORTSTRUCTS:
+                case EXTENDS:
                 case FALSE:
+                case FINAL:
                 case FLOAT:
+                case FUNCTION:
                 case GLOBAL:
+                case GLOBALCONFIG:
+                case GUID:
+                case HIDECATEGORIES:
+                case HIDEDROPDOWN:
+                case IGNORES:
+                case INPUT:
+                case INSTANCED:
                 case INT:
+                case ITERATOR:
+                case LATENT:
+                case LOCALIZED:
                 case NAME:
+                case NATIVE:
+                case NATIVEREPLICATION:
+                case NOEDITINLINEW:
+                case NOEXPORT:
                 case NONE:
+                case NOTPLACEABLE:
                 case OBJECT:
+                case OPERATOR:
+                case OPTIONAL:
+                case OUT:
+                case PACKAGE:
+                case PEROBJECTCONFIG:
+                case PLACEABLE:
+                case POSTOPERATOR:
+                case PREOPERATOR:
+                case PRIVATE:
+                case PROTECTED:
+                case PUBLIC:
+                case RELIABLE:
+                case REPLICATION:
+                case SAFEREPLACE:
+                case SHOWCATEGORIES:
+                case SIMULATED:
+                case SINGULAR:
+                case _SKIP:
+                case STATE:
                 case STRING:
+                case STRUCTDEFAULTPROPERTIES:
                 case SUPER:
+                case SWITCH:
+                case TRANSIENT:
+                case TRAVEL:
                 case TRUE:
+                case UNRELIABLE:
+                case WITHIN:
                 case INTEGER_LITERAL:
                 case FLOATING_POINT_LITERAL:
                 case IDENTIFIER:
@@ -3926,21 +7661,21 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
                   DefPropValue();
                   break;
                 default:
-                  jj_la1[159] = jj_gen;
+                  jj_la1[168] = jj_gen;
                   jj_consume_token(-1);
                   throw new ParseException();
                 }
               }
               break;
             default:
-              jj_la1[160] = jj_gen;
+              jj_la1[169] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
           }
           break;
         default:
-          jj_la1[161] = jj_gen;
+          jj_la1[170] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3951,7 +7686,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         DefPropArray3();
         break;
       default:
-        jj_la1[162] = jj_gen;
+        jj_la1[171] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3961,7 +7696,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
 // DEFPROPIDENTIFIER = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
   final public void DefPropIdentifier() throws ParseException {
     jj_consume_token(IDENTIFIER);
-    if (jj_2_30(3)) {
+    if (jj_2_27(3)) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LPAREN:
         jj_consume_token(LPAREN);
@@ -3974,7 +7709,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         jj_consume_token(RBRACKET);
         break;
       default:
-        jj_la1[163] = jj_gen;
+        jj_la1[172] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3984,18 +7719,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   }
 
   final public void ArrayIndex() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENTIFIER:
-      jj_consume_token(IDENTIFIER);
-      break;
-    case INTEGER_LITERAL:
-      jj_consume_token(INTEGER_LITERAL);
-      break;
-    default:
-      jj_la1[164] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
+    Expression();
   }
 
 // Default properties block
@@ -4004,15 +7728,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   final public void DefPropArray1() throws ParseException {
     jj_consume_token(LPAREN);
     DefPropValue();
-    label_39:
+    label_40:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[165] = jj_gen;
-        break label_39;
+        jj_la1[173] = jj_gen;
+        break label_40;
       }
       jj_consume_token(COMMA);
       DefPropValue();
@@ -4045,15 +7769,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     jj_consume_token(IDENTIFIER);
     jj_consume_token(ASSIGN);
     DefPropValue();
-    label_40:
+    label_41:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[166] = jj_gen;
-        break label_40;
+        jj_la1[174] = jj_gen;
+        break label_41;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
@@ -4069,15 +7793,15 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
     jj_consume_token(IDENTIFIER);
     jj_consume_token(ASSIGN);
     DefPropValue();
-    label_41:
+    label_42:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[167] = jj_gen;
-        break label_41;
+        jj_la1[175] = jj_gen;
+        break label_42;
       }
       jj_consume_token(COMMA);
       jj_consume_token(IDENTIFIER);
@@ -4089,26 +7813,94 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
   }
 
   final public void DefPropValue() throws ParseException {
-    if (jj_2_31(3)) {
+    if (jj_2_28(3)) {
       jj_consume_token(IDENTIFIER);
       jj_consume_token(NAME_LITERAL);
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STRING_LITERAL:
       case NAME_LITERAL:
+      case ABSTRACT:
+      case AUTO:
+      case BEGIN:
       case BOOLEAN:
       case BYTE:
+      case CACHEEXEMPT:
       case CLASS:
+      case COERCE:
+      case COLLAPSECATEGORIES:
+      case CONFIG:
+      case CPPTEXT:
+      case _DEFAULT:
+      case _DEFAULTPROPERTIES:
+      case DELEGATE:
+      case DEPENDSON:
+      case DEPRECATED:
+      case DONTCOLLAPSECATEGORIES:
+      case EDFINDABLE:
+      case EDITCONST:
+      case EDITINLINE:
+      case EDITINLINENEW:
+      case EDITINLINEUSE:
+      case END:
+      case ENUM:
+      case EVENT:
+      case EXEC:
+      case EXPORT:
+      case EXPORTSTRUCTS:
+      case EXTENDS:
       case FALSE:
+      case FINAL:
       case FLOAT:
+      case FUNCTION:
       case GLOBAL:
+      case GLOBALCONFIG:
+      case GUID:
+      case HIDECATEGORIES:
+      case HIDEDROPDOWN:
+      case IGNORES:
+      case INPUT:
+      case INSTANCED:
       case INT:
+      case ITERATOR:
+      case LATENT:
+      case LOCALIZED:
       case NAME:
+      case NATIVE:
+      case NATIVEREPLICATION:
+      case NOEDITINLINEW:
+      case NOEXPORT:
       case NONE:
+      case NOTPLACEABLE:
       case OBJECT:
+      case OPERATOR:
+      case OPTIONAL:
+      case OUT:
+      case PACKAGE:
+      case PEROBJECTCONFIG:
+      case PLACEABLE:
+      case POSTOPERATOR:
+      case PREOPERATOR:
+      case PRIVATE:
+      case PROTECTED:
+      case PUBLIC:
+      case RELIABLE:
+      case REPLICATION:
+      case SAFEREPLACE:
+      case SHOWCATEGORIES:
+      case SIMULATED:
+      case SINGULAR:
+      case _SKIP:
+      case STATE:
       case STRING:
+      case STRUCTDEFAULTPROPERTIES:
       case SUPER:
+      case SWITCH:
+      case TRANSIENT:
+      case TRAVEL:
       case TRUE:
+      case UNRELIABLE:
+      case WITHIN:
       case INTEGER_LITERAL:
       case FLOATING_POINT_LITERAL:
       case IDENTIFIER:
@@ -4122,7 +7914,7 @@ public class UnrealScriptParser implements UnrealScriptParserConstants {
         Expression();
         break;
       default:
-        jj_la1[168] = jj_gen;
+        jj_la1[176] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4176,6 +7968,18 @@ See above
     case ABSTRACT:
       jj_consume_token(ABSTRACT);
       break;
+    case COLLAPSECATEGORIES:
+      jj_consume_token(COLLAPSECATEGORIES);
+      break;
+    case DONTCOLLAPSECATEGORIES:
+      jj_consume_token(DONTCOLLAPSECATEGORIES);
+      break;
+    case EDITINLINENEW:
+      jj_consume_token(EDITINLINENEW);
+      break;
+    case EXPORTSTRUCTS:
+      jj_consume_token(EXPORTSTRUCTS);
+      break;
     case GUID:
       jj_consume_token(GUID);
       jj_consume_token(LPAREN);
@@ -4188,23 +7992,29 @@ See above
       jj_consume_token(INTEGER_LITERAL);
       jj_consume_token(RPAREN);
       break;
-    case TRANSIENT:
-      jj_consume_token(TRANSIENT);
+    case NOEXPORT:
+      jj_consume_token(NOEXPORT);
       break;
-    case PLACEABLE:
-      jj_consume_token(PLACEABLE);
+    case NOEDITINLINEW:
+      jj_consume_token(NOEDITINLINEW);
       break;
     case NOTPLACEABLE:
       jj_consume_token(NOTPLACEABLE);
       break;
-    case EXPORTSTRUCTS:
-      jj_consume_token(EXPORTSTRUCTS);
+    case PEROBJECTCONFIG:
+      jj_consume_token(PEROBJECTCONFIG);
       break;
-    case EDITINLINENEW:
-      jj_consume_token(EDITINLINENEW);
+    case PLACEABLE:
+      jj_consume_token(PLACEABLE);
+      break;
+    case SAFEREPLACE:
+      jj_consume_token(SAFEREPLACE);
+      break;
+    case TRANSIENT:
+      jj_consume_token(TRANSIENT);
       break;
     default:
-      jj_la1[169] = jj_gen;
+      jj_la1[177] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4220,7 +8030,7 @@ See above
       jj_consume_token(FALSE);
       break;
     default:
-      jj_la1[170] = jj_gen;
+      jj_la1[178] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4268,6 +8078,9 @@ See above
     case NATIVE:
       jj_consume_token(NATIVE);
       break;
+    case NOEXPORT:
+      jj_consume_token(NOEXPORT);
+      break;
     case PRIVATE:
       jj_consume_token(PRIVATE);
       break;
@@ -4281,23 +8094,35 @@ See above
       jj_consume_token(TRAVEL);
       break;
     default:
-      jj_la1[171] = jj_gen;
+      jj_la1[179] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
 // STATEPARAMS = auto | simulated
-// Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
   final public void StateParams() throws ParseException {
-    jj_consume_token(AUTO);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case AUTO:
+      jj_consume_token(AUTO);
+      break;
+    case SIMULATED:
+      jj_consume_token(SIMULATED);
+      break;
+    default:
+      jj_la1[180] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
   }
 
 // CONSTFUNCPARAMS = final | iterator | latent | simulated | singular | static |
 //                   exec | protected | private
-// Moved "simulated" to StateAndConstFuncParams prevent choice conflicts
   final public void ConstFuncParams() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case EXEC:
+      jj_consume_token(EXEC);
+      break;
     case FINAL:
       jj_consume_token(FINAL);
       break;
@@ -4307,31 +8132,26 @@ See above
     case LATENT:
       jj_consume_token(LATENT);
       break;
+    case PRIVATE:
+      jj_consume_token(PRIVATE);
+      break;
+    case PROTECTED:
+      jj_consume_token(PROTECTED);
+      break;
+    case SIMULATED:
+      jj_consume_token(SIMULATED);
+      break;
     case SINGULAR:
       jj_consume_token(SINGULAR);
       break;
     case STATIC:
       jj_consume_token(STATIC);
       break;
-    case EXEC:
-      jj_consume_token(EXEC);
-      break;
-    case PROTECTED:
-      jj_consume_token(PROTECTED);
-      break;
-    case PRIVATE:
-      jj_consume_token(PRIVATE);
-      break;
     default:
-      jj_la1[172] = jj_gen;
+      jj_la1[181] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-  }
-
-// Prevent choice conflicts between StateParams and ConstFuncParams
-  final public void StateAndConstFuncParams() throws ParseException {
-    jj_consume_token(SIMULATED);
   }
 
 // BASICTYPE = byte | int | float | string | bool | name | class
@@ -4350,7 +8170,7 @@ See above
       BasicClassType();
       break;
     default:
-      jj_la1[173] = jj_gen;
+      jj_la1[182] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4377,7 +8197,7 @@ See above
       jj_consume_token(NAME);
       break;
     default:
-      jj_la1[174] = jj_gen;
+      jj_la1[183] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4399,15 +8219,22 @@ See above
       BasicTypeSimple();
       break;
     case CLASS:
-      jj_consume_token(CLASS);
-      if (jj_2_32(2)) {
-        ClassTypeEnd();
+      if (jj_2_29(2147483647)) {
+        ClassType();
       } else {
-        ;
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case CLASS:
+          jj_consume_token(CLASS);
+          break;
+        default:
+          jj_la1[184] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
       }
       break;
     default:
-      jj_la1[175] = jj_gen;
+      jj_la1[185] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4426,7 +8253,7 @@ See above
       jj_consume_token(DELEGATE);
       break;
     default:
-      jj_la1[176] = jj_gen;
+      jj_la1[186] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4447,7 +8274,7 @@ See above
       BasicType();
       break;
     default:
-      jj_la1[177] = jj_gen;
+      jj_la1[187] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4466,7 +8293,11 @@ See above
       break;
     case CLASS:
       jj_consume_token(CLASS);
-      jj_consume_token(NAME_LITERAL);
+      if (jj_2_30(2147483647)) {
+        jj_consume_token(NAME_LITERAL);
+      } else {
+        ;
+      }
       break;
     case STRING_LITERAL:
       jj_consume_token(STRING_LITERAL);
@@ -4479,7 +8310,7 @@ See above
       NoneLiteral();
       break;
     default:
-      jj_la1[178] = jj_gen;
+      jj_la1[188] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4492,38 +8323,14 @@ See above
 // We use productions to match >>>, >> and > so that we can keep the
 // type declaration syntax with generics clean
   final public void RUNSIGNEDSHIFT() throws ParseException {
-    if (( getToken(1).kind == GT ) &&
-            ( ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT )) {
-
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    jj_consume_token(GT);
-    jj_consume_token(GT);
-    jj_consume_token(GT);
+    jj_consume_token(RUNSIGNEDSHIFT);
   }
 
   final public void RSIGNEDSHIFT() throws ParseException {
-    if (( getToken(1).kind == GT ) &&
-            ( ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT)) {
-
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    jj_consume_token(GT);
-    jj_consume_token(GT);
+    jj_consume_token(RSIGNEDSHIFT);
   }
 
   final public void GT() throws ParseException {
-    if (( getToken(1).kind == GT ) &&
-            ( ((Token.GTToken)getToken(1)).realKind == GT )) {
-
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
     jj_consume_token(GT);
   }
 
@@ -4737,26 +8544,70 @@ See above
     finally { jj_save(29, xla); }
   }
 
-  private boolean jj_2_31(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_31(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(30, xla); }
+  private boolean jj_3_30() {
+    if (jj_scan_token(NAME_LITERAL)) return true;
+    return false;
   }
 
-  private boolean jj_2_32(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_32(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(31, xla); }
+  private boolean jj_3R_75() {
+    if (jj_3R_49()) return true;
+    return false;
   }
 
-  private boolean jj_3R_57() {
+  private boolean jj_3R_52() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(120)) {
+    if (jj_3R_75()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(124)) {
+    if (jj_scan_token(85)) return true;
+    }
+    xsp = jj_scanpos;
+    if (jj_3R_76()) {
+    jj_scanpos = xsp;
+    if (jj_3R_77()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_29() {
+    if (jj_3R_65()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_79() {
+    if (jj_3R_97()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_105() {
+    if (jj_3R_112()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_78() {
+    if (jj_scan_token(CLASS)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(16)) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_90() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_105()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(26)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_56() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(122)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(126)) {
     jj_scanpos = xsp;
     if (jj_scan_token(16)) {
     jj_scanpos = xsp;
@@ -4776,129 +8627,32 @@ See above
     return false;
   }
 
-  private boolean jj_3R_77() {
-    if (jj_3R_86()) return true;
+  private boolean jj_3R_68() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_97()) jj_scanpos = xsp;
+    if (jj_3R_89()) {
+    jj_scanpos = xsp;
+    if (jj_3R_90()) return true;
+    }
     return false;
   }
 
-  private boolean jj_3_19() {
+  private boolean jj_3R_89() {
+    if (jj_3R_104()) return true;
+    return false;
+  }
+
+  private boolean jj_3_11() {
     if (jj_3R_53()) return true;
     return false;
   }
 
-  private boolean jj_3R_58() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_80()) return true;
-    if (jj_scan_token(RPAREN)) return true;
+  private boolean jj_3R_72() {
+    if (jj_3R_93()) return true;
     return false;
   }
 
-  private boolean jj_3R_106() {
-    if (jj_3R_45()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_56() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_76()) {
-    jj_scanpos = xsp;
-    if (jj_3R_77()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_76() {
-    if (jj_3R_96()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_87() {
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_106()) jj_scanpos = xsp;
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
-  private boolean jj_3_20() {
-    if (jj_3R_54()) return true;
-    return false;
-  }
-
-  private boolean jj_3_30() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_58()) {
-    jj_scanpos = xsp;
-    if (jj_3R_59()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_90() {
-    if (jj_3R_102()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_69() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_90()) {
-    jj_scanpos = xsp;
-    if (jj_3R_91()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_85() {
-    if (jj_3R_96()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_65() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_85()) jj_scanpos = xsp;
-    if (jj_3R_86()) return true;
-    if (jj_3R_87()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_80() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(129)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(120)) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_26() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  private boolean jj_3_27() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(ASSIGN)) return true;
-    return false;
-  }
-
-  private boolean jj_3_28() {
-    if (jj_scan_token(LBRACE)) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_102() {
+  private boolean jj_3R_104() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(21)) {
@@ -4909,7 +8663,7 @@ See above
     jj_scanpos = xsp;
     if (jj_scan_token(72)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(106)) {
+    if (jj_scan_token(107)) {
     jj_scanpos = xsp;
     if (jj_scan_token(77)) return true;
     }
@@ -4920,841 +8674,1207 @@ See above
     return false;
   }
 
-  private boolean jj_3_18() {
-    if (jj_3R_55()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_66() {
-    if (jj_scan_token(ORASSIGN)) return true;
-    if (jj_scan_token(LSHIFTASSIGN)) return true;
-    return false;
-  }
-
-  private boolean jj_3_16() {
-    if (jj_3R_53()) return true;
-    return false;
-  }
-
-  private boolean jj_3_29() {
-    if (jj_scan_token(ASSIGN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_101() {
-    if (jj_3R_57()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_96() {
-    if (jj_scan_token(CLASS)) return true;
-    if (jj_scan_token(NAME_LITERAL)) return true;
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_17() {
-    if (jj_3R_54()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_99() {
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_83() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_99()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3_15() {
-    if (jj_3R_55()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_61() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(57)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(73)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(74)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(103)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(105)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(52)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(95)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(94)) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_60() {
-    if (jj_scan_token(LT)) return true;
-    if (jj_3R_81()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_48() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(148)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(147)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(142)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(143)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(153)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(154)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(186)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(161)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(162)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(163)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(152)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(149)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(144)) {
-    jj_scanpos = xsp;
-    if (jj_3_16()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(150)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(151)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(187)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(165)) {
-    jj_scanpos = xsp;
-    if (jj_3_17()) {
-    jj_scanpos = xsp;
-    if (jj_3_18()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(157)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(158)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(164)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(159)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(160)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(42)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(34)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(166)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(27)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(167)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(168)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(173)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(175)) {
-    jj_scanpos = xsp;
-    if (jj_3R_66()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(178)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(179)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(169)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(170)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(176)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(171)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(172)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(141)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(180)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(181)) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_72() {
-    if (jj_scan_token(ORASSIGN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_81() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(129)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(85)) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_13() {
-    if (jj_3R_53()) return true;
-    return false;
-  }
-
-  private boolean jj_3_4() {
-    if (jj_3R_44()) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_95() {
-    if (jj_scan_token(GLOBAL)) return true;
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_25() {
-    if (jj_3R_45()) return true;
-    return false;
-  }
-
-  private boolean jj_3_14() {
-    if (jj_3R_54()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_42() {
-    if (jj_scan_token(ARRAY)) return true;
-    if (jj_scan_token(LT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_82() {
-    if (jj_scan_token(LBRACKET)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_52() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(148)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(147)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(142)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(143)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(153)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(154)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(186)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(161)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(162)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(163)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(152)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(149)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(144)) {
-    jj_scanpos = xsp;
-    if (jj_3_13()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(150)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(151)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(187)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(165)) {
-    jj_scanpos = xsp;
-    if (jj_3_14()) {
-    jj_scanpos = xsp;
-    if (jj_3_15()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(157)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(158)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(164)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(159)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(160)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(42)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(34)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(166)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(27)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(167)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(168)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(173)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(175)) {
-    jj_scanpos = xsp;
-    if (jj_3R_72()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(178)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(179)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(169)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(170)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(176)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(171)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(172)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(141)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(180)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(181)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(155)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(156)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(146)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(145)) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_43() {
-    if (jj_3R_61()) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_43()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(NATIVE)) return true;
-    return false;
-  }
-
-  private boolean jj_3_10() {
-    if (jj_3R_51()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_98() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(113)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(56)) return true;
-    }
-    return false;
-  }
-
   private boolean jj_3_12() {
-    if (jj_3R_48()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_104() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_103() {
-    if (jj_3R_51()) return true;
-    return false;
-  }
-
-  private boolean jj_3_6() {
-    if (jj_3R_46()) return true;
-    return false;
-  }
-
-  private boolean jj_3_11() {
-    if (jj_3R_52()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_94() {
-    if (jj_scan_token(SUPER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_104()) jj_scanpos = xsp;
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_71() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_94()) {
-    jj_scanpos = xsp;
-    if (jj_3R_95()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_63() {
-    if (jj_3R_83()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_51() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_71()) jj_scanpos = xsp;
-    if (jj_3R_56()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_46() {
-    if (jj_3R_65()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_47() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(ASSIGN)) return true;
-    if (jj_scan_token(NEW)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_3R_42()) return true;
-    return false;
-  }
-
-  private boolean jj_3_9() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  private boolean jj_3_24() {
-    if (jj_3R_57()) return true;
+    if (jj_3R_53()) return true;
     return false;
   }
 
   private boolean jj_3R_93() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_24()) {
+    if (jj_scan_token(17)) {
     jj_scanpos = xsp;
-    if (jj_3R_103()) return true;
+    if (jj_scan_token(19)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(20)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(24)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(26)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(28)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(29)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(30)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(33)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(36)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(37)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(38)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(39)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(41)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(43)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(44)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(45)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(46)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(47)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(49)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(50)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(51)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(52)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(53)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(54)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(55)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(57)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(61)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(63)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(65)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(66)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(67)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(69)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(70)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(71)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(73)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(74)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(76)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(77)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(78)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(79)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(81)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(82)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(84)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(86)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(87)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(88)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(89)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(90)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(91)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(92)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(93)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(94)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(95)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(96)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(97)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(98)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(100)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(101)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(102)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(103)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(104)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(105)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(109)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(111)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(112)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(113)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(115)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(120)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
     }
     return false;
   }
 
-  private boolean jj_3R_89() {
+  private boolean jj_3R_80() {
+    if (jj_scan_token(ORASSIGN)) return true;
+    if (jj_scan_token(LSHIFTASSIGN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_53() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_9()) {
+    if (jj_scan_token(88)) {
     jj_scanpos = xsp;
-    if (jj_3_10()) {
+    if (jj_scan_token(28)) {
     jj_scanpos = xsp;
-    if (jj_3R_101()) return true;
+    if (jj_scan_token(104)) return true;
     }
     }
-    return false;
-  }
-
-  private boolean jj_3R_62() {
-    if (jj_3R_82()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_92() {
-    if (jj_scan_token(LPAREN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_88() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_45()) return true;
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_68() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_88()) {
-    jj_scanpos = xsp;
-    if (jj_3R_89()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_70() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_92()) {
-    jj_scanpos = xsp;
-    if (jj_3R_93()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_105() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(155)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(156)) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_73() {
-    return false;
-  }
-
-  private boolean jj_3_8() {
-    if (jj_3R_48()) return true;
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_67() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(157)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(158)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(155)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(156)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(146)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(145)) return true;
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_64() {
-    if (jj_3R_84()) return true;
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    if (jj_3R_45()) return true;
-    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
   private boolean jj_3R_49() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_67()) jj_scanpos = xsp;
-    if (jj_3R_68()) return true;
-    xsp = jj_scanpos;
-    if (jj_3R_105()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_84() {
-    if (jj_3R_49()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_8()) { jj_scanpos = xsp; break; }
+    if (jj_scan_token(131)) {
+    jj_scanpos = xsp;
+    if (jj_3R_72()) return true;
     }
     return false;
   }
 
-  private boolean jj_3R_74() {
+  private boolean jj_3R_95() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(52)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(57)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(73)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(74)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(94)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(95)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(102)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(103)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(106)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
     return false;
   }
 
-  private boolean jj_3R_53() {
-    jj_lookingAhead = true;
-    jj_semLA = ( getToken(1).kind == GT ) &&
-        ( ((Token.GTToken)getToken(1)).realKind == GT );
-    jj_lookingAhead = false;
-    if (!jj_semLA || jj_3R_73()) return true;
-    if (jj_scan_token(GT)) return true;
+  private boolean jj_3R_130() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_88()) return true;
     return false;
   }
 
-  private boolean jj_3_23() {
+  private boolean jj_3R_58() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(150)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(149)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(144)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(145)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(155)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(156)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(188)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(163)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(164)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(165)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(154)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(151)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(146)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(186)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(152)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(153)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(189)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(167)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(185)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(184)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(159)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(160)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(166)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(161)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(162)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(42)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(34)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(168)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(27)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(169)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(170)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(175)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(177)) {
+    jj_scanpos = xsp;
+    if (jj_3R_80()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(180)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(181)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(171)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(172)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(178)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(173)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(174)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(143)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(182)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(183)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_94() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(19)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(102)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_92() {
+    if (jj_3R_91()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_127() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_scan_token(NAME_LITERAL)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_130()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_128() {
     if (jj_3R_56()) return true;
     return false;
   }
 
-  private boolean jj_3R_50() {
-    if (jj_3R_69()) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_70()) return true;
+  private boolean jj_3R_136() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_3R_101()) return true;
     return false;
   }
 
-  private boolean jj_3R_100() {
-    if (jj_scan_token(DOT)) return true;
+  private boolean jj_3_10() {
+    if (jj_3R_52()) return true;
+    if (jj_3R_49()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_70() {
+    if (jj_3R_91()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_121() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(129)) {
+    if (jj_scan_token(16)) jj_scanpos = xsp;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_97() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(114)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(85)) return true;
+    if (jj_scan_token(56)) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3_6() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_3R_49()) return true;
+    return false;
+  }
+
+  private boolean jj_3_5() {
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_126() {
+    if (jj_3R_129()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_47() {
+    if (jj_scan_token(OBJECT)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_57() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_scan_token(NEW)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_71() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_3R_49()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_92()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_109() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_3R_108()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_120() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_126()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(83)) return true;
+    }
+    xsp = jj_scanpos;
+    if (jj_3R_127()) jj_scanpos = xsp;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_69() {
+    if (jj_3R_49()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_115() {
+    if (jj_3R_122()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_114() {
+    if (jj_3R_119()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_48() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_69()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(35)) return true;
+    }
+    xsp = jj_scanpos;
+    if (jj_3R_70()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_71()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_113() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_120()) jj_scanpos = xsp;
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(NAME_LITERAL)) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_121()) jj_scanpos = xsp;
     return false;
   }
 
   private boolean jj_3R_44() {
+    if (jj_3R_67()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_74() {
+    if (jj_3R_95()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_51() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_74()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(NATIVE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_102() {
+    if (jj_3R_57()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(129)) {
+    if (jj_3R_113()) {
+    jj_scanpos = xsp;
+    if (jj_3R_114()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_108() {
+    if (jj_3R_48()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_115()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_138() {
+    if (jj_3R_67()) return true;
+    return false;
+  }
+
+  private boolean jj_3_9() {
+    if (jj_3R_51()) return true;
+    return false;
+  }
+
+  private boolean jj_3_17() {
+    if (jj_3R_58()) return true;
+    return false;
+  }
+
+  private boolean jj_3_18() {
+    if (jj_3R_59()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_124() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_18()) {
+    jj_scanpos = xsp;
+    if (jj_3R_128()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_87() {
+    if (jj_3R_103()) return true;
+    return false;
+  }
+
+  private boolean jj_3_4() {
+    if (jj_3R_48()) return true;
+    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(CLASS)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_123() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_62()) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_101() {
+    if (jj_3R_108()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_117() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_123()) {
+    jj_scanpos = xsp;
+    if (jj_3R_124()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_43()) {
+    jj_scanpos = xsp;
+    if (jj_3R_44()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_46()) {
+    jj_scanpos = xsp;
+    if (jj_3R_47()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_43() {
+    if (jj_3R_66()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_46() {
+    if (jj_3R_68()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_118() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(157)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(158)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_139() {
+    if (jj_3R_62()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_85() {
+    if (jj_3R_101()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_111() {
+    if (jj_3R_58()) return true;
+    if (jj_3R_110()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_116() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(159)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(160)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(157)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(158)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(148)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(147)) return true;
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_100() {
+    if (jj_3R_68()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_110() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_116()) jj_scanpos = xsp;
+    if (jj_3R_117()) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_118()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_84() {
+    if (jj_3R_48()) return true;
+    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(CLASS)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_137() {
+    if (jj_3R_66()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_132() {
+    if (jj_scan_token(COMMA)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_139()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_135() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_137()) {
+    jj_scanpos = xsp;
+    if (jj_3R_138()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_83() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_100()) {
     jj_scanpos = xsp;
     if (jj_scan_token(85)) return true;
     }
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_62()) return true;
+    if (jj_scan_token(RPAREN)) return true;
     xsp = jj_scanpos;
-    if (jj_3R_62()) {
-    jj_scanpos = xsp;
-    if (jj_3R_63()) return true;
+    if (jj_3R_136()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_103() {
+    if (jj_3R_110()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_111()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  private boolean jj_3R_75() {
+  private boolean jj_3R_82() {
+    if (jj_3R_45()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_135()) jj_scanpos = xsp;
+    if (jj_3R_101()) return true;
     return false;
   }
 
-  private boolean jj_3R_54() {
-    jj_lookingAhead = true;
-    jj_semLA = ( getToken(1).kind == GT ) &&
-        ( ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT);
-    jj_lookingAhead = false;
-    if (!jj_semLA || jj_3R_74()) return true;
-    if (jj_scan_token(GT)) return true;
-    if (jj_scan_token(GT)) return true;
+  private boolean jj_3R_61() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_82()) {
+    jj_scanpos = xsp;
+    if (jj_3R_83()) {
+    jj_scanpos = xsp;
+    if (jj_3R_84()) {
+    jj_scanpos = xsp;
+    if (jj_3R_85()) return true;
+    }
+    }
+    }
     return false;
   }
 
-  private boolean jj_3_22() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  private boolean jj_3_31() {
+  private boolean jj_3_28() {
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(NAME_LITERAL)) return true;
     return false;
   }
 
-  private boolean jj_3_7() {
-    if (jj_3R_47()) return true;
+  private boolean jj_3R_131() {
+    if (jj_3R_62()) return true;
+    return false;
+  }
+
+  private boolean jj_3_16() {
+    if (jj_3R_57()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_122() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_131()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_132()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_64() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_3R_88()) return true;
+    if (jj_scan_token(RBRACKET)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_73() {
+    if (jj_3R_94()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_50() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_73()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(STATE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_62() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_86()) {
+    jj_scanpos = xsp;
+    if (jj_3R_87()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_86() {
+    if (jj_3R_102()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_66() {
+    if (jj_scan_token(STATIC)) return true;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_8() {
+    if (jj_3R_50()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_67() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(35)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(31)) return true;
+    }
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_63() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_88()) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_134() {
+    if (jj_3R_45()) return true;
+    if (jj_3R_67()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_129() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_134()) jj_scanpos = xsp;
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_133() {
+    if (jj_3R_49()) return true;
     return false;
   }
 
   private boolean jj_3R_45() {
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(NAME_LITERAL)) return true;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_27() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_7()) {
+    if (jj_3R_63()) {
     jj_scanpos = xsp;
     if (jj_3R_64()) return true;
     }
     return false;
   }
 
-  private boolean jj_3_1() {
+  private boolean jj_3R_106() {
+    if (jj_scan_token(DOT)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_133()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(85)) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_96() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_106()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_88() {
+    if (jj_3R_62()) return true;
+    return false;
+  }
+
+  private boolean jj_3_23() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3_24() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    return false;
+  }
+
+  private boolean jj_3_25() {
+    if (jj_scan_token(LBRACE)) return true;
     if (jj_scan_token(LPAREN)) return true;
     return false;
   }
 
-  private boolean jj_3R_59() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_3R_80()) return true;
-    if (jj_scan_token(RBRACKET)) return true;
+  private boolean jj_3R_125() {
+    if (jj_3R_49()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_119() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_125()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(85)) return true;
+    }
+    if (jj_3R_96()) return true;
     return false;
   }
 
   private boolean jj_3R_55() {
-    jj_lookingAhead = true;
-    jj_semLA = ( getToken(1).kind == GT ) &&
-        ( ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT );
-    jj_lookingAhead = false;
-    if (!jj_semLA || jj_3R_75()) return true;
-    if (jj_scan_token(GT)) return true;
-    if (jj_scan_token(GT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_32() {
-    if (jj_3R_60()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_97() {
-    if (jj_3R_87()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_86() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(129)) {
+    if (jj_scan_token(131)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(85)) return true;
+    if (jj_scan_token(20)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(49)) return true;
     }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_100()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(COLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3_26() {
+    if (jj_scan_token(ASSIGN)) return true;
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3_15() {
+    if (jj_3R_56()) return true;
+    return false;
+  }
+
+  private boolean jj_3_22() {
+    if (jj_3R_62()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_99() {
+    if (jj_scan_token(GLOBAL)) return true;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_54() {
+    if (jj_scan_token(SWITCH)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_62()) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    if (jj_scan_token(LBRACE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_65() {
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(LT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_107() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_112() {
+    if (jj_3R_65()) return true;
+    if (jj_3R_119()) return true;
+    if (jj_scan_token(186)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_81() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_98()) {
+    jj_scanpos = xsp;
+    if (jj_3R_99()) return true;
     }
     return false;
   }
 
-  private boolean jj_3R_79() {
-    if (jj_3R_98()) return true;
+  private boolean jj_3R_98() {
+    if (jj_scan_token(SUPER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_107()) jj_scanpos = xsp;
+    if (jj_scan_token(DOT)) return true;
     return false;
   }
 
-  private boolean jj_3_21() {
-    if (jj_3R_55()) return true;
+  private boolean jj_3R_59() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_81()) jj_scanpos = xsp;
+    if (jj_3R_61()) return true;
     return false;
   }
 
   private boolean jj_3R_91() {
-    if (jj_scan_token(CLASS)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_32()) jj_scanpos = xsp;
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_3R_88()) return true;
+    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 
-  private boolean jj_3R_78() {
-    if (jj_scan_token(CLASS)) return true;
-    if (jj_scan_token(NAME_LITERAL)) return true;
+  private boolean jj_3_21() {
+    if (jj_3R_56()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_77() {
+    if (jj_3R_96()) return true;
+    return false;
+  }
+
+  private boolean jj_3_14() {
+    if (jj_3R_55()) return true;
+    return false;
+  }
+
+  private boolean jj_3_13() {
+    if (jj_3R_54()) return true;
+    return false;
+  }
+
+  private boolean jj_3_20() {
+    if (jj_3R_61()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_60() {
+    if (jj_3R_68()) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_76() {
+    if (jj_3R_91()) return true;
+    return false;
+  }
+
+  private boolean jj_3_19() {
+    if (jj_3R_60()) return true;
     return false;
   }
 
@@ -5768,11 +9888,8 @@ See above
   private int jj_ntk;
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
-  /** Whether we are looking ahead. */
-  private boolean jj_lookingAhead = false;
-  private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[179];
+  final private int[] jj_la1 = new int[189];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -5788,24 +9905,24 @@ See above
       jj_la1_init_5();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x80000000,0x0,0x0,0x0,0x0,0x0,0x40020000,0x0,0x40020000,0x0,0x0,0x0,0x0,0x4000000,0x80000000,0x4000000,0x0,0x4a12000,0x80000000,0x4000000,0x0,0x0,0x0,0x0,0x80000000,0x0,0xc0000000,0x0,0x4a00000,0x0,0x0,0x0,0x0,0x0,0x4a00000,0x0,0x0,0x0,0x0,0x0,0x0,0x84a00000,0x0,0x84a00000,0x80000000,0x4a00000,0x0,0x0,0x0,0x0,0x0,0x0,0x80000,0x0,0x80000,0x80000,0x0,0x0,0x0,0x0,0x0,0x100000,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x14a40000,0x0,0x4a00000,0x0,0x0,0x4a00000,0x0,0x4a00000,0x0,0x10000000,0x10000000,0x14a40000,0x4a40000,0x0,0x4f12000,0x0,0x0,0x4a00000,0x0,0x0,0x100000,0x4f12000,0x4f12000,0x0,0x2000000,0x0,0x4000000,0x4f12000,0x4f12000,0x4a12000,0x10000,0x100000,0x4f12000,0x4012000,0x4a12000,0x4012000,0x0,0x4a12000,0x0,0x0,0x4a12000,0x0,0x0,0x0,0x0,0x4012000,0x4a12000,0x4000000,0x0,0x0,0x0,0x10000,0x0,0x4000000,0x0,0x0,0x0,0x0,0x8000000,0x0,0x0,0x8000000,0x0,0x0,0x0,0x8000000,0x0,0x0,0x0,0x4a12000,0x0,0x4012000,0x4a12000,0x0,0x0,0x4000000,0x4012000,0x0,0x0,0x0,0x4012000,0x0,0x0,0x4012000,0x100000,0x100000,0x0,0x100000,0x4a12000,0x4a12000,0x4a12000,0x0,0x0,0x0,0x0,0x0,0x0,0x4a12000,0x20000,0x0,0xc0000000,0x0,0x4a00000,0xa00000,0x4a00000,0x0,0x4a00000,0x4012000,};
+      jj_la1_0 = new int[] {0x80000000,0x80000000,0x0,0x0,0x751a0000,0x0,0x60020000,0x0,0x60020000,0x0,0x0,0x0,0x751a0000,0x751a0000,0x0,0x4000000,0x80000000,0x0,0x4000000,0x75bb2000,0x0,0x75bb2000,0x80000000,0x4a00000,0x0,0x751a0000,0x0,0x751a0000,0x0,0x0,0x0,0x80000000,0x0,0xc0000000,0x0,0x0,0x4a40000,0x0,0x0,0x751a0000,0x751a0000,0x0,0x0,0x751b2000,0x751b2000,0x75ba0000,0x0,0x0,0x0,0x0,0x0,0x0,0x84a00000,0x0,0x84a00000,0x0,0x0,0x0,0x80000000,0x80000000,0x4a00000,0x80000000,0x80000000,0x0,0x80000000,0x0,0x0,0x0,0x80000,0x0,0x0,0x0,0x0,0x80000,0x0,0x0,0x100000,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x75be0000,0x751a0000,0x75be0000,0x0,0x0,0x75be0000,0x0,0x75be0000,0x0,0x75be0000,0x10000000,0x75be0000,0x0,0x75fb2000,0x0,0x0,0x75be0000,0x4a40000,0x751a0000,0x0,0x400000,0x75bb2000,0x75fb2000,0x0,0x2000000,0x0,0x751a0000,0x75fb2000,0x75fb2000,0x75bb2000,0x10000,0x75fb2000,0x100000,0x75bb2000,0x75bb2000,0x75bb2000,0x0,0x75bb2000,0x0,0x0,0x75bb2000,0x0,0x0,0x0,0x0,0x4012000,0x75bb2000,0x751a0000,0x0,0x0,0x0,0x10000,0x0,0x751a0000,0x8000000,0x8000000,0x8000000,0x8000000,0x0,0x8000000,0x0,0x0,0x0,0x75bb2000,0x0,0x75bb2000,0x75bb2000,0x0,0x0,0x75ba0000,0x75bb2000,0x0,0x0,0x0,0x75bb2000,0x0,0x0,0x75bb2000,0x100000,0x100000,0x0,0x100000,0x75bb2000,0x75bb2000,0x75bb2000,0x0,0x0,0x0,0x0,0x0,0x75bb2000,0x20020000,0x0,0xc0000000,0x80000,0x0,0x4a00000,0xa00000,0x4000000,0x4a00000,0x0,0x4a00000,0x4012000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x40000,0x2,0x0,0x10,0x0,0x800000,0x404040,0x0,0x404040,0x0,0x0,0x0,0x0,0x0,0x8,0x0,0x0,0x45000000,0x8,0x0,0x0,0x0,0x0,0x0,0x40000,0x0,0x8020b880,0x0,0x4040000,0x0,0x0,0x0,0x0,0x0,0x4000000,0x0,0x200000,0x800000,0x200000,0x0,0x0,0x4000000,0x0,0x4000000,0x0,0x4000000,0x0,0x0,0x0,0x0,0x0,0x0,0x22180020,0x0,0x22180020,0x0,0x0,0x0,0x800000,0x0,0x22180020,0x20000,0x0,0x0,0x2100000,0x22180020,0x2100000,0x0,0x2100000,0x20080020,0x0,0x4000000,0x0,0x4000000,0x0,0x0,0x4000000,0x0,0x4000000,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x5d020101,0x0,0x0,0x4000000,0x0,0x0,0x20000,0x5d020101,0x5d020101,0x10000,0x0,0x8,0x0,0x5d020101,0x5d020101,0x45000000,0x0,0x20000,0x5d020101,0x41000000,0x45000000,0x41000000,0x0,0x45000000,0x0,0x0,0x45000000,0x0,0x0,0x0,0x0,0x1000000,0x45000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x404,0x0,0x0,0x404,0x0,0x0,0x0,0x404,0x0,0x0,0x0,0x45000000,0x0,0x41000000,0x45000000,0x0,0x0,0x40000000,0x41000000,0x0,0x40000000,0x40000000,0x41000000,0x0,0x0,0x41000000,0x0,0x0,0x0,0x0,0x45000000,0x45000000,0x45000000,0x0,0x0,0x0,0x0,0x0,0x0,0x45000000,0x404000,0x1000000,0x8020b880,0x2100000,0x4000000,0x4000000,0x4000000,0x20080020,0x4000000,0x1000000,};
+      jj_la1_1 = new int[] {0x40002,0x40002,0x10,0x0,0xa2fefaf2,0x800000,0x404240,0x0,0x404240,0x0,0x0,0x0,0xa2fefaf2,0xa2fefaf2,0x0,0x0,0x8,0x0,0x0,0xe7fefafa,0x0,0xe7fefafa,0x8,0x4000000,0x0,0xa2fefafa,0x0,0xa2fefafa,0x0,0x0,0x0,0x40000,0x0,0x8020b880,0x0,0x0,0x4040000,0x0,0x0,0xa2fefaf2,0xa2fefaf2,0x0,0x0,0xa3fefaf2,0xa3fefaf2,0xa6fefaf2,0x0,0x200000,0x800000,0x200000,0x0,0x0,0x4040000,0x0,0x4040000,0x0,0x0,0x0,0x0,0x0,0x4040000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x22180020,0x22180020,0x0,0x0,0x800000,0x0,0x0,0x22180020,0x20000,0x0,0x0,0x2100000,0x22180020,0x0,0x2100000,0x2100000,0x20080020,0x0,0xa6fefaf2,0xa2fefaf2,0xa6fefaf2,0x0,0x0,0xa6fefaf2,0x0,0xa6fefaf2,0x0,0xa6fefaf2,0x0,0xa6fefaf2,0x0,0xfffefbfb,0x0,0x0,0xa6fefaf2,0x4000000,0xa2fefaf2,0x0,0x18000101,0xe7fefafa,0xfffefbfb,0x10000,0x0,0x8,0xa2fefafa,0xfffefbfb,0xfffefbfb,0xe7fefafa,0x0,0xfffefbfb,0x20000,0xe7fefafa,0xe7fefafa,0xe7fefafa,0x0,0xe7fefafa,0x0,0x0,0xe7fefafa,0x0,0x0,0x0,0x0,0x1000000,0xe7fefafa,0xa2fefafa,0x0,0x0,0x0,0x0,0x0,0xa2fefaf2,0x404,0x404,0x404,0x404,0x0,0x404,0x0,0x0,0x0,0xe7fefafa,0x0,0xe7fefafa,0xe7fefafa,0x0,0x0,0xe6fefafa,0xe7fefafa,0x0,0x40000000,0x40000000,0xe7fefafa,0x0,0x0,0xe7fefafa,0x0,0x0,0x0,0x0,0xe7fefafa,0xe7fefafa,0xe7fefafa,0x0,0x0,0x0,0x0,0x0,0xe7fefafa,0x404200,0x1000000,0x8020b880,0x0,0x2100000,0x4000000,0x4000000,0x0,0x4000000,0x20080020,0x4000000,0x1000000,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x810c006,0x0,0x810c006,0x0,0x200000,0x200000,0x0,0x0,0x0,0x0,0x0,0x282100,0x0,0x200000,0x200000,0x0,0x200000,0x0,0x0,0x0,0xc0005040,0x0,0x202100,0x0,0x0,0x0,0x0,0x0,0x202100,0x0,0x4000,0x0,0x4000,0x0,0x0,0x282100,0x0,0x282100,0x0,0x282100,0x0,0x0,0x0,0x10,0x0,0x0,0xf0404600,0x0,0xf0404600,0x0,0x0,0x0,0x0,0x20,0xf0404600,0x0,0x0,0x0,0xc0000600,0xf0400600,0xc0000600,0x0,0xc0000600,0x30400000,0x0,0x1a02100,0x0,0x202100,0x30400000,0x0,0x202100,0x30000000,0x202100,0x0,0x1000000,0x1000000,0x1a02100,0x202100,0x800,0x282111,0x0,0x0,0x202100,0x200000,0x0,0x0,0x282111,0x282111,0x0,0x0,0x0,0x200000,0x282111,0x282111,0x282100,0x0,0x0,0x282111,0x280000,0x282100,0x280000,0x0,0x282100,0x0,0x0,0x282100,0x0,0x0,0x0,0x0,0x80000,0x282100,0x280000,0x0,0x0,0x0,0x0,0x0,0x200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x282100,0x0,0x280000,0x282100,0x0,0x0,0x200000,0x280000,0x0,0x0,0x0,0x280000,0x0,0x0,0x280000,0x0,0x0,0x0,0x0,0x282100,0x282100,0x282100,0x0,0x0,0x0,0x0,0x0,0x0,0x282100,0x810c002,0x0,0xc0005040,0xc0000600,0x2100,0x2100,0x2100,0x0,0x2100,0x80000,};
+      jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0xfff6f6ee,0x0,0xc16c006,0x0,0xc16c006,0x200000,0x0,0x200000,0xfff6f6ee,0xfff6f6ee,0x0,0x0,0x0,0x0,0x0,0xfffef7ee,0x0,0xfffef7ee,0x0,0x202100,0x0,0xffd6f6ee,0x0,0xffd6f6ee,0x0,0x0,0x0,0x0,0x0,0xc0045040,0x200000,0x200000,0x202100,0x0,0x0,0xffd6f6ee,0xffd6f6ee,0x0,0x0,0xffdef6ee,0xffdef6ee,0xfff6f7ee,0x0,0x4000,0x0,0x4000,0x0,0x0,0x282100,0x0,0x282100,0x0,0x0,0x0,0x0,0x0,0x282100,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0xf0404600,0xf0404600,0x0,0x0,0x0,0x0,0x20,0xf0404600,0x0,0x0,0x0,0xc0000600,0xf0400600,0x0,0xc0000600,0xc0000600,0x30400000,0x0,0xfff6f7ee,0xffd6f6ee,0xfff6f7ee,0x30400000,0x0,0xfff6f7ee,0x30000000,0xfff6f7ee,0x0,0xfff6f7ee,0x1000000,0xfff6f7ee,0x800,0xfffef7ff,0x0,0x0,0xfff6f7ee,0x2100,0xfff6f6ee,0x0,0x11,0xfffef7ee,0xfffef7ff,0x0,0x0,0x0,0xffd6f6ee,0xfffef7ff,0xfffef7ff,0xfffef7ee,0x0,0xfffef7ff,0x0,0xfffef7ee,0xfffef7ee,0xfffef7ee,0x0,0xfffef7ee,0x0,0x0,0xfffef7ee,0x0,0x0,0x0,0x0,0x80000,0xfffef7ee,0xffdef6ee,0x0,0x0,0x0,0x0,0x0,0xfff6f6ee,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xfffef7ee,0x0,0xfffef7ee,0xfffef7ee,0x0,0x0,0xfff6f7ee,0xfffef7ee,0x0,0x0,0x0,0xfffef7ee,0x0,0x0,0xfffef7ee,0x0,0x0,0x0,0x0,0xfffef7ee,0xfffef7ee,0xfffef7ee,0x0,0x0,0x0,0x0,0x0,0xfffef7ee,0xc16c002,0x0,0xc0045040,0x0,0xc0000600,0x2100,0x2100,0x0,0x2100,0x0,0x2100,0x80000,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x100800,0x0,0x4,0x0,0x0,0x0,0x408020,0x0,0x408020,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x11022400,0x200,0x0,0x0,0x0,0x0,0x0,0x100800,0x0,0x18000,0x0,0xc00,0x0,0x0,0x0,0x0,0x0,0x400,0x0,0x0,0x0,0x0,0x100000,0x1000,0x200400,0x0,0x200400,0x0,0x200400,0x0,0x0,0x0,0x40002,0x40002,0x40002,0x3c0,0x40,0x380,0x0,0x0,0x0,0x0,0x0,0x280,0x0,0x0,0x0,0x280,0x280,0x280,0x0,0x280,0x0,0x0,0x400,0x0,0x200400,0x0,0x1000000,0x400,0x0,0x400,0x0,0x0,0x0,0x400,0x400,0x0,0x11826408,0x0,0x0,0x400,0x0,0x0,0x0,0x11826408,0x11826408,0x0,0x0,0x0,0x1000000,0x11826408,0x11826408,0x11022400,0x0,0x0,0x11826408,0x11022000,0x11022400,0x11022000,0x0,0x11022400,0x0,0x0,0x11022400,0x0,0x0,0x0,0x0,0x11020000,0x11022400,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x11022400,0x0,0x11022000,0x11022400,0x0,0x0,0x2000,0x11022000,0x0,0x2000,0x2000,0x11022000,0x0,0x0,0x11022000,0x0,0x0,0x0,0x0,0x11022400,0x11022400,0x11022400,0x0,0x0,0x1000000,0x0,0x0,0x0,0x11022400,0x8000,0x20000,0x18000,0x280,0x400,0x400,0x400,0x0,0x200400,0x11020000,};
+      jj_la1_3 = new int[] {0x201000,0x201000,0x0,0x0,0x10ba3f7,0x0,0x1010030,0x0,0x1010030,0x0,0x0,0x0,0x10ba3f7,0x10ba3f7,0x0,0x0,0x0,0x400,0x0,0x450febf7,0x0,0x450febf7,0x400,0x800,0x0,0x10ba3f7,0x0,0x10ba3f7,0x0,0x0,0x0,0x201000,0x0,0x30000,0x0,0x0,0x1800,0x0,0x0,0x10ba3f7,0x10ba3f7,0x0,0x0,0x450fa3f7,0x450fa3f7,0x10babf7,0x0,0x0,0x0,0x0,0x200000,0x2000,0xc00c00,0x0,0xc00c00,0x0,0x0,0x400000,0x400,0x400,0x800800,0x0,0x0,0x0,0x0,0x80002,0x80002,0x80002,0x6c4,0x4c4,0x0,0x0,0x0,0x40,0x0,0x4c0,0x0,0x0,0x0,0x4c0,0x4c0,0x0,0x4c0,0x4c0,0x0,0x0,0x10babf7,0x10ba3f7,0x18babf7,0x0,0x4000000,0x10babf7,0x0,0x10babf7,0x0,0x10babf7,0x100,0x10babf7,0x0,0x470febff,0x0,0x0,0x10babf7,0x800,0x10ba3f7,0x0,0x2000008,0x450febf7,0x470febff,0x0,0x0,0x0,0x10ba3f7,0x470febff,0x470febff,0x450febf7,0x0,0x470febff,0x0,0x450febf7,0x450febf7,0x450febf7,0x0,0x450febf7,0x0,0x0,0x450febf7,0x0,0x0,0x0,0x0,0x44040000,0x450febf7,0x10ba3f7,0x0,0x0,0x0,0x0,0x0,0x10ba3f7,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x450febf7,0x0,0x450febf7,0x450febf7,0x0,0x0,0x10bebf7,0x450febf7,0x0,0x4000,0x4000,0x450febf7,0x0,0x0,0x450febf7,0x0,0x0,0x0,0x0,0x450febf7,0x450febf7,0x450febf7,0x0,0x0,0x0,0x0,0x0,0x450febf7,0x10010,0x40000,0x30000,0x40,0x4c0,0x800,0x800,0x0,0x800,0x0,0x800800,0x44040000,};
    }
    private static void jj_la1_init_4() {
-      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x800,0x2,0x2,0x1000,0x0,0x0,0x0,0x800,0x78060012,0x0,0x2,0x2,0x1000,0x2,0x800,0x0,0x10,0x0,0x2,0x2,0x10100,0x800,0x10100,0x10100,0x0,0x2,0x800,0x0,0x0,0x0,0x0,0x0,0x2,0x800,0x2,0x0,0x2,0x80000000,0x80000000,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x10,0x0,0x0,0x0,0x2,0x800,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x800,0x2,0x2,0x2,0x0,0x2,0x2,0x0,0x2,0x2000,0x0,0x0,0x2,0x2,0x0,0x78060452,0x440,0x800,0x2,0x2,0x100,0x2,0x78060452,0x78060452,0x0,0x0,0x0,0x2,0x78060452,0x78060452,0x78060012,0x12,0x2,0x78060452,0x18000012,0x78060012,0x18000012,0x800,0x78060012,0x80000,0x80000,0x780e0012,0x78060000,0x78060000,0x18000000,0x18000000,0x0,0x12,0x2,0x800,0x800,0x10,0x0,0x10,0x12,0x2,0x2,0x739c000,0xc00000,0xf8062000,0x739c000,0xc00000,0xe0002000,0x180000,0x721c000,0xc00000,0xe0000000,0x2000,0x78060000,0x60000000,0x78060012,0x60000,0x12,0x60012,0x18000000,0x18000000,0x2,0x12,0x10,0x0,0x0,0x18000012,0x18002000,0x18002000,0x18000012,0x2,0x2,0x2,0x2,0x78060012,0x78060012,0x78060012,0x1000,0x110,0x2,0x800,0x800,0x800,0x78060012,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x8,0x0,0x0,0x40,0x0,0x8,0x2000,0x8,0x8,0x8,0x4000,0x0,0x0,0x0,0x0,0xe0180048,0x2000,0xe0180048,0x0,0x0,0x4000,0x8,0x4000,0x8,0x400,0x400,0x2000,0x0,0x40,0x0,0x8,0x8,0x8,0x2000,0x40400,0x8,0x0,0x40400,0x0,0x8,0x8,0x8,0x2000,0x0,0x0,0x0,0x0,0x0,0x8,0x2000,0x8,0x8100,0x8100,0x0,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x40,0x0,0x0,0x0,0x0,0x8,0x2000,0x0,0x0,0x0,0x40,0x0,0x0,0x0,0x2000,0x8,0x8,0x8,0x0,0x8,0x8,0x0,0x8,0x8000,0x8,0x0,0x8,0x0,0xe0181148,0x1100,0x2000,0x8,0x0,0x8,0x400,0x100,0xe0181048,0xe0181148,0x0,0x0,0x0,0x8,0xe0181148,0xe0181148,0xe0180048,0x48,0xe0181148,0x8,0x60000048,0xe0180048,0x60000048,0x2000,0xe0180048,0x200000,0x200000,0xe0380048,0xe0180000,0xe0180000,0x60000000,0x60000000,0x0,0x48,0x8,0x2000,0x2000,0x40,0x0,0x40,0x48,0xffff8008,0x9fe78008,0xffff8000,0x9fe78000,0x600000,0x9f870000,0x8000,0xe0180000,0x80000000,0xe0180048,0x180000,0x48,0x180048,0x60000000,0x60000000,0x8,0x48,0x40,0x0,0x0,0x60000048,0x60008000,0x60008000,0x60000048,0x8,0x8,0x8,0x8,0xe0180048,0xe0180048,0xe0180048,0x4000,0x440,0x2000,0x2000,0x2000,0xe0180048,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_init_5() {
-      jj_la1_5 = new int[] {0x0,0x0,0x0,0x0,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100000,0x100000,0x100000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x400000e,0x8000020,0x3dffd1,0x400000e,0x8000020,0x3dffd1,0x100000,0x400000e,0x8000020,0x200051,0xdff80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xdff80,0xdff80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_5 = new int[] {0x0,0x0,0x0,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xa,0x0,0x2,0xa,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x1,0x0,0x0,0x0,0x0,0x1,0x1,0x1,0x0,0x1,0x0,0x0,0x1,0x0,0x0,0x1,0x400000,0x400000,0x400001,0x1,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x37f7ffff,0x37f7ffff,0x37f7ffff,0x37f7ffff,0x400000,0x378001ff,0x37fe00,0x1,0x1,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x37fe00,0x37fe00,0x0,0x0,0x0,0x0,0x0,0x1,0x1,0x1,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[32];
+  final private JJCalls[] jj_2_rtns = new JJCalls[30];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -5820,7 +9937,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 179; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 189; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -5835,7 +9952,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 179; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 189; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -5846,7 +9963,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 179; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 189; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -5857,7 +9974,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 179; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 189; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -5867,7 +9984,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 179; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 189; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -5877,7 +9994,7 @@ See above
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 179; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 189; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -5940,7 +10057,7 @@ See above
 
 /** Get the specific Token. */
   final public Token getToken(int index) {
-    Token t = jj_lookingAhead ? jj_scanpos : token;
+    Token t = token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
       else t = t.next = token_source.getNextToken();
@@ -5989,12 +10106,12 @@ See above
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[188];
+    boolean[] la1tokens = new boolean[190];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 179; i++) {
+    for (int i = 0; i < 189; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -6018,7 +10135,7 @@ See above
         }
       }
     }
-    for (int i = 0; i < 188; i++) {
+    for (int i = 0; i < 190; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -6045,7 +10162,7 @@ See above
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 30; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -6082,8 +10199,6 @@ See above
             case 27: jj_3_28(); break;
             case 28: jj_3_29(); break;
             case 29: jj_3_30(); break;
-            case 30: jj_3_31(); break;
-            case 31: jj_3_32(); break;
           }
         }
         p = p.next;

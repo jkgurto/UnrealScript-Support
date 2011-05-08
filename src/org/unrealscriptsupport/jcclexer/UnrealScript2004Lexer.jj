@@ -143,7 +143,7 @@ MORE :
 <IN_STRING_LITERAL>
 SKIP :
 {
-    < ~["\""] >
+    < "\\\"" | ~["\""] >
 }
 
 // End of string literal
@@ -152,6 +152,21 @@ TOKEN :
 {
     <STRING_LITERAL: "\"" > : DEFAULT
 }
+/*TOKEN :
+{
+    < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+    >
+}*/
 
 // Start of name literal
 MORE :
