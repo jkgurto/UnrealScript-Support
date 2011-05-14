@@ -1,5 +1,8 @@
 /**
  * Comment.
+ *
+ * @author asdf
+ * @version 1.0
  */
 /*
  * Comment.
@@ -9,12 +12,14 @@ class ParserTest1 extends Mutator config(Test)
         native
 	exportstructs
         editinlinenew
-	hidecategories(Movement,Collision,Lighting,LightColor,Karma,Force,Wind);
+	hidecategories(Movement,Collision,Lighting,LightColor,Karma,Force,Wind)
+        CacheExempt HideDropDown;
 
 #call
 #error
 #exec TEXTURE IMPORT NAME=NameForTextureToImportAs FILE=PATH\TO\SomeTexture.pcx GROUP=SomeGroup MIPS=OFF FLAGS=2 PALETTE=SomeTexPalette LODSET=2
 #exec Texture Import File=Textures\S_Actor.pcx Name=S_Actor Mips=Off MASKED=1
+#exec Texture Import File=Textures\S_Wind.tga Name=S_Wind Mips=Off
 #include
 
 `define <macroname>[<(paramA[,paramB...])>] [<macrodefinition>]
@@ -44,6 +49,29 @@ var(MyCategory) const editconst bool MyBool;
 var(MyCategory) const bool MyBool;
 
 var(Object) name InitialState;
+
+var pointer varname{int};
+var pointer varname{type};
+var const pointer      pCanvasUtil; // sjs
+var cache string SoundPackage;
+
+struct CachedSound
+{
+	var name CacheName;
+	var sound CacheSound;
+};
+
+struct native init MutatorRecord
+{
+    var() const     string      ClassName;
+    var() const     string      FriendlyName;
+    var() const     string      Description;
+    var() const     string      IconMaterialName;
+    var() const     string      ConfigMenuClassName;
+    var() const     string      GroupName;
+    var   const     int         RecordIndex;
+    var   const     byte        bActivated;
+};
 
 var class<actor> ActorClass;
 
@@ -139,7 +167,8 @@ var localized string ACDisplayText[PROPNUM];
 var localized string ACDescText[PROPNUM];
 var(Events) name          Event;         // The event this actor causes.
 
-var localized int variablename<tag1=value|tag2=value>;
+/// @todo FIXME
+//var localized int variablename<tag1=value|tag2=value>;
 
 var(Path) config enum EPathStyle
 {
@@ -147,12 +176,104 @@ var(Path) config enum EPathStyle
 	PATHSTYLE_Bezier
 } PathStyle;
 
+cpptext{}
+
+const a=blah;
+
+cpptext { }
+
+const a=blah;
+
 cpptext
 {
     //...
-    void DrawTile(UTexture* Tex, FLOAT X, FLOAT Y, FLOAT XL, FLOAT YL, FLOAT U, FLOAT V, FLOAT UL, FLOAT VL, const FLinearColor& Color);
+    void DrawTile(UTexture* Tex,
+                  FLOAT X, FLOAT Y,
+                  FLOAT XL, FLOAT YL,
+                  FLOAT U, FLOAT V,
+                  FLOAT UL, FLOAT VL,
+                  const FLinearColor& Color);
+    virtual void ResolutionChanged(int ResX, int ResY) {}
+    virtual void ResetInput() {}
     //...
+
+    // AnimNotify interface.
+	virtual void Notify( UMeshInstance *Instance, AActor *Owner ) {};
+	// UObject interface.
+	virtual void PostEditChange();
+
+    virtual FColor GetColor(FLOAT TimeSeconds) { return Color; }
 }
+
+const a=blah;
+
+cpptext{
+#ifdef WITH_KARMA
+    virtual MdtConstraintID getKConstraint() const;
+    virtual McdModelID getKModel() const;
+
+	virtual void physKarma(FLOAT DeltaTime);
+
+	virtual void PostEditChange();
+	virtual void PostEditMove();
+
+    virtual void KUpdateConstraintParams();
+
+	virtual void CheckForErrors(); // used for checking that this constraint is valid buring map build
+	virtual void RenderEditorSelected(FLevelSceneNode* SceneNode,FRenderInterface* RI, FDynamicActor* FDA);
+	virtual UBOOL CheckOwnerUpdated();
+
+	virtual void preKarmaStep(FLOAT DeltaTime) {};
+	virtual void postKarmaStep() {};
+#endif
+
+virtual void PostEditChange();
+	virtual UBOOL CheckCircularReferences( TArray<class UMaterial*>& History );
+	virtual void PreSetMaterial(FLOAT TimeSeconds);
+	virtual void Serialize(FArchive& Ar);
+}
+
+const a=blah;
+
+/// @todo FIXME nested braces
+/*cpptext
+{
+	// UTexModifier interface
+	virtual FMatrix* GetMatrix(FLOAT TimeSeconds);
+	void PostLoad()
+	{
+		Super::PostLoad();
+		//!!OLDVER
+		if( ConstantRotation )
+		{
+			ConstantRotation = 0;
+			TexRotationType = TR_ConstantlyRotating;
+		}
+	}
+
+        { {asd {asd} } } {}
+}*/
+
+const a=blah;
+
+/*cpptext
+{
+	void Render(FRenderInterface* RI);
+
+	virtual UBitmapMaterial* Get(FTime Time,UViewport* Viewport);
+	virtual FBaseTexture* GetRenderInterface();
+	virtual void Destroy();
+	virtual void PostEditChange();
+};*/
+
+const a=blah;
+
+var()	SceneSubtitles.ESST_Mode SubTitleMode;
+var() TexOscillatorTriggered.ERetriggerAction RetriggerAction;
+var		(Global)	rangevector			GlobalOffsetRange;
+var (Local)			bool						RespawnDeadParticles;
+var() editinline editconst noexport private   editconstarray transient array<int>    RandomPool;
+var private pointer NativeID3Tag[2];
 
 replication
 {
@@ -204,6 +325,117 @@ native simulated final function PlayOwnedSound
 	optional bool		Attenuate
 );
 
+// Draw a vertical line
+final function DrawVertical(float X, float height)
+{
+	local float cX,cY;
+
+	CX = CurX; CY = CurY;
+    CurX = X;
+    DrawTile(Texture'engine.WhiteSquareTexture', 2, height, 0, 0, 2, 2);
+    CurX = CX; CurY = CY;
+}
+
+// In this state nothing will happen if this hinge is triggered or untriggered.
+auto state Default
+{
+ignores Trigger, Untrigger;
+
+}
+
+event PostBeginPlay()
+{
+	if ( Maps.Length == 0 )
+		Warn(Name@"has no maps configured!");
+
+	Super.PostBeginPlay();
+}
+
+// static function
+static function GetHitEffects( out class<xEmitter> HitEffects[4], int VictemHealth );
+
+// function static
+function static int GetNumPositions()
+{
+	return NUM_POSITIONS;
+}
+
+static function string GetString(
+    optional int Switch,
+    optional PlayerReplicationInfo RelatedPRI_1,
+    optional PlayerReplicationInfo RelatedPRI_2,
+    optional Object OptionalObject
+    )
+{
+    if ( class<Actor>(OptionalObject) != None )
+        return class<Actor>(OptionalObject).static.GetLocalString(Switch, RelatedPRI_1, RelatedPRI_2);
+    return "";
+
+    desire *= (class<Armor>(InventoryType).default.ArmorAbsorption * 0.01);
+}
+
+simulated function DrawRoute()
+{
+    local int i;
+    local Controller C;
+    /// @todo FIXME
+    //local vector Start, End, RealStart;;
+    local vector Start, End, RealStart;
+    local bool bPath;
+}
+
+final function Dump( optional string group )
+{
+local int i;
+	log("** Dumping settings array for PlayInfo object '"$Name$"' **");
+
+	log("** Classes:"@InfoClasses.Length);
+	for ( i = 0; i < InfoClasses.Length; i++ )
+		log("   "$i$")"@InfoClasses[i].Name);
+	log("");
+
+	log("** Groups:"@Groups.Length);
+	for (i = 0; i < Groups.Length; i++)
+		log("   "$i$")"@Groups[i]);
+	log("");
+
+	Log("** Settings:"@Settings.Length);
+	for (i = 0; i<Settings.Length; i++)
+	{
+		if ( group == "" || group ~= Settings[i].Grouping )
+		{
+			Log(i$")"@Settings[i].SettingName);
+			log("            DisplayName:"@Settings[i].DisplayName);
+			log("              ClassFrom:"@Settings[i].ClassFrom);
+			log("                  Group:"@Settings[i].Grouping);
+			log("                  Value:"@Settings[i].Value);
+			log("                   Data:"@Settings[i].Data);
+			log("                 Weight:"@Settings[i].Weight);
+			log("                 Struct:"@Settings[i].bStruct);
+			log("                 Global:"@Settings[i].bGlobal);
+			log("                 MPOnly:"@Settings[i].bMPOnly);
+			log("               SecLevel:"@Settings[i].SecLevel);
+			log("               ArrayDim:"@Settings[i].ArrayDim);
+			log("              bAdvanced:"@Settings[i].bAdvanced);
+			log("              ExtraPriv:"@Settings[i].ExtraPriv);
+			log("             RenderType:"@GetEnum(enum'EPlayInfoType',Settings[i].RenderType));
+			log("");
+		}
+	}
+}
+
+simulated function Timer()
+{
+	local int i;
+	local PlayerReplicationInfo OldHolder[2];
+	local Controller C;
+}
+
+function InitVoiceReplicationInfo()
+{
+	log(Name@"VoiceReplicationInfo created:"@VoiceReplicationInfo,'VoiceChat');
+}
+
 function FunctionExample(name Event) { }
 
 function FunctionExample(actor Other)
@@ -221,11 +453,26 @@ function FunctionExample(actor Other)
     GetItemName(String(MoveTarget));
     i = MapHandler.GetGameIndex(string(Level.Game.Class));
 
+    // Check empty string
+    if (Mid(Params, p, 1) == "") { ; }
+
     // Check nested quotes
-    if (Mid(Params, p, 1) == "\"")
-    {
-        ;
-    }
+    // "
+    if (Mid(Params, p, 1) == "\"") { ; }
+    // '
+    if (Mid(Params, p, 1) == "\'") { ; }
+    // '
+    if (Mid(Params, p, 1) == "'") { ; }
+
+    // Check nested escapes "\\"
+    // \"
+    if (Mid(Params, p, 1) == "\\\"") { ; }
+    // \
+    if (Mid(Params, p, 1) == "\\") { ; }
+    // newline
+    if (Mid(Params, p, 1) == "\n") { ; }
+    // \n
+    if (Mid(Params, p, 1) == "\\n") { ; }
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo)
@@ -241,14 +488,89 @@ local int i;
 	PlayInfo.AddSetting(default.ServerGroup, "LoginDelaySeconds", default.ACDisplayText[i++], 200, 1, "Text", "3;0:999",,True,True);
 }
 
-static event string GetDescriptionText(string PropName)
+static event string checkSwitch(string PropName)
 {
+        switch (e)
+	{
+            default:
+                e();
+	}
+
+        switch (e)
+	{
+            case a:
+            case b:
+            case c:
+                d();
+                if(asdf) { ; }
+                e();
+            default:
+                e();
+                f();
+                if(asdf) { ; }
+	}
+
+        switch (e)
+	{
+            case a:
+            case b:
+            case c:
+                d();
+            default:
+                e();
+	}
+
+        switch (ee)
+	{
+		case aa:
+                    a();
+		case bb:
+                    b();
+		case cc:
+                    c();
+		case dd:
+                    d();
+	}
+
+        switch (PropName)
+	{
+		case "GamePassword":
+		case "IPPolicies":
+		case "AdminPassword":
+		case "LoginDelaySeconds":
+                    return a;
+	}
+
+        switch (PropName)
+	{
+		case "GamePassword":
+                    a();
+		case "IPPolicies":
+                    b();
+		case "AdminPassword":
+                    c();
+		case "LoginDelaySeconds":
+                    d();
+	}
+
 	switch (PropName)
 	{
 		case "GamePassword": 	  return default.ACDescText[0];
 		case "IPPolicies":		  return default.ACDescText[1];
 		case "AdminPassword":	  return default.ACDescText[2];
 		case "LoginDelaySeconds": return default.ACDescText[3];
+	}
+
+        // Take the appropriate action depending on the result received from the VoiceReplicationInfo
+	switch ( Result )
+	{
+		case JCR_NeedPassword:  ClientOpenMenu(ChatPasswordMenuClass, false, VCR.GetTitle(), "NEEDPW");     break;
+		case JCR_WrongPassword: ClientOpenMenu(ChatPasswordMenuClass, False, VCR.GetTitle(), "WRONGPW");	break;
+		case JCR_Success:       Level.Game.ChangeVoiceChannel(PlayerReplicationInfo, ChannelIndex, -1);
+		default:
+			if ( ChannelIndex>VoiceReplicationInfo.GetPublicChannelCount(true) )
+				ChatRoomMessage(Result, ChannelIndex);
+
 	}
 
 	return Super.GetDescriptionText(PropName);
@@ -776,6 +1098,32 @@ function void checkNew() {
     O = new WAClass; // works because WebApplication extends Object
     O = new OClass;  // works because the metaclass of OClass is Object
     O = new pkg.OClass;
+
+    Level.ObjectPool = new(xLevel) class'ObjectPool';
+
+    if(Result == None)
+		Result = new(Outer) ObjectClass;
+
+NewObj = new class'Engine.LightFunction';
+NewObj = new(Self,'NewLight') class'Engine.LightFunction';
+NewObj = new(None,'NewLight') class'Engine.LightFunction' (LightFunctionTemplate);
+Result = new(Outer) ObjectClass;
+return new(None, Repl(RecordName, " ", Chr(27))) class'MaplistRecord';
+AdminManager = new(self) Level.Game.AccessControl.AdminClass;
+AddCameraEffect(new EffectClass);
+FireMode[m] = new(self) FireModeClass[m];
+
+    if ( Level.ObjectPool == None )
+		Level.ObjectPool = new(xLevel) class'ObjectPool';
+
+    if ( AdminManager == None && Level != None && Level.Game != None && Level.Game.AccessControl != None)
+	{
+		if (Level.Game.AccessControl.AdminClass == None)
+			Log("AdminClass is None");
+		else
+			AdminManager = new(self) Level.Game.AccessControl.AdminClass;
+	}
+
 }
 
 final operator(18) int : ( int A, int B )
@@ -1149,4 +1497,51 @@ defaultproperties
 
     // Objects
     ObjectProp=ObjectClass'ObjectName'
+
+    MainScale=(Scale=(X=1,Y=1,Z=1),SheerRate=0,SheerAxis=SHEER_None)
+    DefaultContent(0)=(Classes=("UTClassic.MutUTClassic",
+    "UnrealGame.MutLowGrav","UnrealGame.MutBigHead",
+    "XGame.xTeamGame","XGame.xDeathMatch","XGame.xCTFGame",
+    "XGame.InstagibCTF","XGame.xVehicleCTFGame","XGame.xDoubleDom",
+    "XGame.xBombingRun","XGame.MutRegen","XGame.MutInstaGib",
+    "XGame.MutQuadJump","XGame.MutSpeciesStats","XGame.MutVampire",
+    "XGame.MutSlomoDeath","XGame.MutNoAdrenaline","XGame.MutZoomInstagib",
+    "XWeapons.Translauncher","XWeapons.ShockRifle","XWeapons.LinkGun",
+    "XWeapons.MutArena","XWeapons.Minigun","XWeapons.BioRifle",
+    "XWeapons.FlakCannon","XWeapons.RocketLauncher",
+    "XWeapons.ShieldGun","XWeapons.SniperRifle","XWeapons.Painter",
+    "XWeapons.MutNoSuperWeapon","XWeapons.AssaultRifle","XWeapons.Redeemer",
+    "Vehicles.Bulldog"),
+    Maps=("BR-Anubis","BR-Bifrost","BR-Disclosure",
+    "BR-IceFields","BR-Skyline","BR-Slaughterhouse","BR-TwinTombs",
+    "CTF-Chrome","CTF-Citadel","CTF-December","CTF-Face3","CTF-Geothermal",
+    "CTF-Lostfaith","CTF-Magma","CTF-Maul","CTF-Orbital2","DM-Antalus",
+    "DM-Asbestos","DM-Compressed","DM-Flux2","DM-Gael","DM-Inferno",
+    "DM-Insidious","DM-Leviathan","DM-Oceanic","DM-Phobos2","DM-Plunge",
+    "DM-1on1-Serpentine","DM-TokaraForest","DM-TrainingDay","DOM-Core",
+    "DOM-OutRigger","DOM-Ruination","DOM-ScorchedEarth","DOM-SepukkuGorge",
+    "DOM-Suntemple","TUT-BR","TUT-CTF","TUT-DM","TUT-DOM2"))
+
+    AlphaOperation=AO_Use_Mask;
+    // MT_Combiner
+    MaterialType=2
+
+Steering=0
+    Throttle=0
+
+	ExitPositions(0)=(X=0,Y=0,Z=0)
+
+	DrivePos=(X=0,Y=0,Z=0)
+	DriveRot=()
+
+	bHistoryWarmup = true;
+
+
+    Physics=PHYS_Karma
+	bEdShouldSnap=True
+	bStatic=False
+	bShadowCast=False
+	bCollideActors=True
+	bCollideWorld=False
+
 }

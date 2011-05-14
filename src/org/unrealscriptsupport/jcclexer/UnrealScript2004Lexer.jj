@@ -64,37 +64,29 @@ TOKEN :
 
 /* COMMENTS */
 
-// Start of Javadoc or multi-line comment
-MORE :
-{
-  <"/**" ~["/"]> { input_stream.backup(1); } : IN_JAVADOC_COMMENT
-|
-  "/*" : IN_MULTI_LINE_COMMENT
-}
-
-// Single line comment
+// -- Single line comment
 TOKEN :
 {
   <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
 }
 
-// Compiler directives
+// -- Compiler directives
 TOKEN :
 {
   <COMPILER_DIRECTIVE: "#" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
 }
 
-// Preprocessor
+// -- Preprocessor
 TOKEN :
 {
   <PREPROCESSOR_DIRECTIVE: "`" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
 }
 
-// End of Javadoc comment
-<IN_JAVADOC_COMMENT>
-TOKEN :
+// -- Multiline
+// Start of multi-line comment
+MORE :
 {
-  <JAVADOC_COMMENT: "*/"> : DEFAULT
+  <"/*" ~["*"]> { input_stream.backup(1); } : IN_MULTI_LINE_COMMENT
 }
 
 // End of multi-line comment
@@ -104,18 +96,33 @@ TOKEN :
   <MULTI_LINE_COMMENT: "*/"> : DEFAULT
 }
 
-// Inside Javadoc or multi-line comment
+// Inside multi-line comment
 <IN_MULTI_LINE_COMMENT>
 SKIP :
 {
   < ~[] >
 }
 
-// Inside Javadoc comment
-/*<IN_JAVADOC_COMMENT>
+// -- Javadoc
+// Start of Javadoc comment
+MORE :
+{
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_JAVADOC_COMMENT
+}
+
+// End of Javadoc comment
+<IN_JAVADOC_COMMENT>
 TOKEN :
 {
-    <JAVADOC_TAG: "@author" |
+  <JAVADOC_COMMENT: "*/"> : DEFAULT
+}
+
+// Inside Javadoc comment
+//<IN_JAVADOC_COMMENT>
+//MORE :
+//{
+    // Start of Javadoc tag
+    /*<JAVADOC_TAG: ("@author" |
                   "@date" |
                   "@deprecated" |
                   "@licence" |
@@ -124,15 +131,35 @@ TOKEN :
                   "@see" |
                   "@serial" |
                   "@since" |
-                  "@version" >
-}*/
+                  "@version") >*/
+    //<JAVADOC_TAG: ("@" (["a"-"z"])+) >
+    //<JAVADOC_TAG: "@" >
+//    < "@" > : IN_JAVADOC_TAG
+//}
 
 <IN_JAVADOC_COMMENT>
 SKIP :
 {
-  < ~[] >
+    //< ~["@"] >
+    < ~[] >
 }
 
+// -- Javadoc tag
+// End of Javadoc tag
+/*<IN_JAVADOC_TAG>
+TOKEN :
+{
+    < JAVADOC_TAG: (" " | "\t" | "\n" | "\r" | "\f") > : IN_JAVADOC_COMMENT
+}
+
+// Inside Javadoc tag
+<IN_JAVADOC_TAG>
+SKIP :
+{
+    < ~[" ", "\t", "\n", "\r", "\f"] >
+}*/
+
+// -- String literal
 // Start of string literal
 MORE :
 {
@@ -143,7 +170,17 @@ MORE :
 <IN_STRING_LITERAL>
 SKIP :
 {
-    < "\\\"" | ~["\""] >
+    <
+    // Nested quotes \"
+    "\\\"" |
+
+    // Escaped escape \
+    // Problem with "\\"
+    ("\\" ~["\""]) |
+
+    // Anything else
+    ~["\"", "\\"]
+    >
 }
 
 // End of string literal
@@ -188,17 +225,48 @@ TOKEN :
     <NAME_LITERAL: "\'"> : DEFAULT
 }
 
+// Start of cpptext
+MORE :
+{
+    < "cpptext" (<WHITESPACE>)* "{" > : IN_CPPCODE
+    //"cpptext" : IN_CPPCODE
+    //"cpptext{" : IN_CPPCODE
+}
+
+// Inside C++ code
+<IN_CPPCODE>
+SKIP :
+{
+    //< ~["}"] >
+    <
+    // Nested braces
+    ("{" (~["}"])* "}") |
+
+    // End brace
+    ~["}"]
+    >
+}
+
+// End of C++ code
+<IN_CPPCODE>
+TOKEN :
+{
+    <CPPCODE: "}" > : DEFAULT
+}
+
 /* RESERVED WORDS AND LITERALS */
 
 TOKEN :
 {
   < ABSTRACT: "abstract" >
+| < ALLOWABSTRACT: "allowabstract" >
 | < ARRAY: "array" >
 | < AUTO: "auto" >
 | < BEGIN: "begin" >
 | < BOOLEAN: "bool" >
 | < BREAK: "break" >
 | < BYTE: "byte" >
+| < CACHE: "cache" >
 | < CACHEEXEMPT: "cacheexempt" >
 | < CASE: "case" >
 | < CLASS: "class" >
@@ -208,21 +276,26 @@ TOKEN :
 | < CONFIG: "config" >
 | < CONST: "const" >
 | < CONTINUE: "continue" >
-| < CPPTEXT: "cpptext" >
+//| < CPPTEXT: "cpptext" >
 | < CROSS: "cross" >
+| < DATABINDING: "databinding" >
 | < _DEFAULT: "default" >
 | < _DEFAULTPROPERTIES: "defaultproperties" >
 | < DELEGATE: "delegate" >
-| < DEPENDSON: "dependsOn" >
+| < DEPENDSON: "dependson" >
 | < DEPRECATED: "deprecated" >
 | < DO: "do" >
 | < DONTCOLLAPSECATEGORIES: "dontcollapsecategories" >
 | < DOTPRODUCT: "dot" >
+| < DUPLICATETRANSIENT: "duplicatetransient" >
 | < EDFINDABLE: "edfindable" >
 | < EDITCONST: "editconst" >
+| < EDITCONSTARRAY: "editconstarray" >
+| < EDITFIXEDSIZE: "editfixedsize" >
 | < EDITINLINE: "editinline" >
 | < EDITINLINENEW: "editinlinenew" >
 | < EDITINLINEUSE: "editinlineuse" >
+| < EDITORONLY: "editoronly" >
 | < ELSE: "else" >
 | < END: "end" >
 | < ENUM: "enum" >
@@ -245,9 +318,11 @@ TOKEN :
 | < HIDEDROPDOWN: "hidedropdown" >
 | < IF: "if" >
 | < IGNORES: "ignores" >
+| < INIT: "init" >
 | < INPUT: "input" >
 | < INSTANCED: "instanced" >
 | < INT: "int" >
+| < INTERP: "interp" >
 | < ITERATOR: "iterator" >
 | < LATENT: "latent" >
 | < LOCAL: "local" >
@@ -256,9 +331,13 @@ TOKEN :
 | < NATIVE: "native" >
 | < NATIVEREPLICATION: "nativereplication" >
 | < NEW: "new" >
+| < NOCLEAR: "noclear" >
 | < NOEDITINLINEW: "noteditinlinenew">
 | < NOEXPORT: "noexport">
+| < NOIMPORT: "noimport">
 | < NONE: "none" >
+| < NONTRANSACTIONAL: "nontransactional" >
+| < NOTFORCONSOLE: "notforconsole">
 | < NOTPLACEABLE: "notplaceable">
 | < OBJECT: "object">
 | < OPERATOR: "operator">
@@ -267,6 +346,7 @@ TOKEN :
 | < PACKAGE: "package">
 | < PEROBJECTCONFIG: "perobjectconfig">
 | < PLACEABLE: "placeable">
+| < POINTER: "pointer" >
 | < POSTOPERATOR: "postoperator" >
 | < PREOPERATOR: "preoperator" >
 | < PRIVATE: "private" >
@@ -274,11 +354,14 @@ TOKEN :
 | < PUBLIC: "public" >
 | < RELIABLE: "reliable" >
 | < REPLICATION: "replication" >
+| < REPNOTIFY: "repnotify" >
+| < REPRETRY: "repretry" >
 | < RETURN: "return" >
 | < SAFEREPLACE: "safereplace" >
 | < SHOWCATEGORIES: "showcategories" >
 | < SIMULATED: "simulated" >
 | < SINGULAR: "singular" >
+| < _SKIP: "skip" >
 | < STATE: "state" >
 | < STATIC: "static" >
 | < STRING: "string" >
@@ -292,6 +375,7 @@ TOKEN :
 | < UNRELIABLE: "unreliable" >
 | < UNTIL: "until" >
 | < VAR: "var" >
+| < VIRTUAL: "virtual" >
 | < VOID: "void" >
 | < WITHIN: "within" >
 | < WHILE: "while" >

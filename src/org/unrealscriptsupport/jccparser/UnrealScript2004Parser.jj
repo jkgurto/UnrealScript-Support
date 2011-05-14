@@ -152,7 +152,6 @@ SKIP :
 | "\f">
 }
 
-/* COMMENTS */
 
 /* COMMENTS */
 
@@ -220,16 +219,23 @@ MORE :
 <IN_STRING_LITERAL>
 SKIP :
 {
-    < "\\\"" | ~["\""] >
+    <
+    // Nested quotes \"
+    "\\\"" |
+
+    // Escaped escape \
+    // Problem with "\\"
+    ("\\" ~["\""]) |
+
+    // Anything else
+    ~["\"", "\\"]
+    >
 }
 
 // End of string literal
 <IN_STRING_LITERAL>
 TOKEN :
 {
-    /*< ESCAPED_CHAR: "\\" >
-    {
-    }*/
     <STRING_LITERAL: "\"" > : DEFAULT
 }
 
@@ -254,36 +260,47 @@ TOKEN :
 }
 
 // Start of cpptext
-/*MORE :
+MORE :
 {
-    "cpptext" : IN_CPPTEXT
+    < "cpptext" (<WHITESPACE>)* "{" > : IN_CPPCODE
+    //"cpptext" : IN_CPPCODE
+    //"cpptext{" : IN_CPPCODE
 }
 
-// Inside cpptext
-<IN_CPPTEXT>
+// Inside C++ code
+<IN_CPPCODE>
 SKIP :
 {
-    < ~["}"] >
+    //< ~["}"] >
+    <
+    // Nested braces
+    ("{" (~["}"])* "}") |
+
+    // End brace
+    ~["}"]
+    >
 }
 
-// End of cpptext
-<IN_CPPTEXT>
-TOKEN :
+// End of C++ code
+<IN_CPPCODE>
+SKIP :
 {
-    <CPPTEXT: "}"> : DEFAULT
-}*/
+    <CPPCODE: "}" > : DEFAULT
+}
 
 /* RESERVED WORDS AND LITERALS */
 
 TOKEN :
 {
   < ABSTRACT: "abstract" >
+| < ALLOWABSTRACT: "allowabstract" >
 | < ARRAY: "array" >
 | < AUTO: "auto" >
 | < BEGIN: "begin" >
 | < BOOLEAN: "bool" >
 | < BREAK: "break" >
 | < BYTE: "byte" >
+| < CACHE: "cache" >
 | < CACHEEXEMPT: "cacheexempt" >
 | < CASE: "case" >
 | < CLASS: "class" >
@@ -293,8 +310,9 @@ TOKEN :
 | < CONFIG: "config" >
 | < CONST: "const" >
 | < CONTINUE: "continue" >
-| < CPPTEXT: "cpptext" >
+//| < CPPTEXT: "cpptext" >
 | < CROSS: "cross" >
+| < DATABINDING: "databinding" >
 | < _DEFAULT: "default" >
 | < _DEFAULTPROPERTIES: "defaultproperties" >
 | < DELEGATE: "delegate" >
@@ -303,11 +321,15 @@ TOKEN :
 | < DO: "do" >
 | < DONTCOLLAPSECATEGORIES: "dontcollapsecategories" >
 | < DOTPRODUCT: "dot" >
+| < DUPLICATETRANSIENT: "duplicatetransient" >
 | < EDFINDABLE: "edfindable" >
 | < EDITCONST: "editconst" >
+| < EDITCONSTARRAY: "editconstarray" >
+| < EDITFIXEDSIZE: "editfixedsize" >
 | < EDITINLINE: "editinline" >
 | < EDITINLINENEW: "editinlinenew" >
 | < EDITINLINEUSE: "editinlineuse" >
+| < EDITORONLY: "editoronly" >
 | < ELSE: "else" >
 | < END: "end" >
 | < ENUM: "enum" >
@@ -330,9 +352,11 @@ TOKEN :
 | < HIDEDROPDOWN: "hidedropdown" >
 | < IF: "if" >
 | < IGNORES: "ignores" >
+| < INIT: "init" >
 | < INPUT: "input" >
 | < INSTANCED: "instanced" >
 | < INT: "int" >
+| < INTERP: "interp" >
 | < ITERATOR: "iterator" >
 | < LATENT: "latent" >
 | < LOCAL: "local" >
@@ -341,9 +365,13 @@ TOKEN :
 | < NATIVE: "native" >
 | < NATIVEREPLICATION: "nativereplication" >
 | < NEW: "new" >
+| < NOCLEAR: "noclear" >
 | < NOEDITINLINEW: "noteditinlinenew">
 | < NOEXPORT: "noexport">
+| < NOIMPORT: "noimport">
 | < NONE: "none" >
+| < NONTRANSACTIONAL: "nontransactional" >
+| < NOTFORCONSOLE: "notforconsole">
 | < NOTPLACEABLE: "notplaceable">
 | < OBJECT: "object">
 | < OPERATOR: "operator">
@@ -352,6 +380,7 @@ TOKEN :
 | < PACKAGE: "package">
 | < PEROBJECTCONFIG: "perobjectconfig">
 | < PLACEABLE: "placeable">
+| < POINTER: "pointer" >
 | < POSTOPERATOR: "postoperator" >
 | < PREOPERATOR: "preoperator" >
 | < PRIVATE: "private" >
@@ -359,6 +388,8 @@ TOKEN :
 | < PUBLIC: "public" >
 | < RELIABLE: "reliable" >
 | < REPLICATION: "replication" >
+| < REPNOTIFY: "repnotify" >
+| < REPRETRY: "repretry" >
 | < RETURN: "return" >
 | < SAFEREPLACE: "safereplace" >
 | < SHOWCATEGORIES: "showcategories" >
@@ -1219,7 +1250,6 @@ void CompilationUnit():
 {
     try {
         ClassDeclaration()
-        ( Declarations() | CppText() )*
         Body()
         ( DefaultPropertiesBlock() )?
 
@@ -1242,7 +1272,7 @@ void ClassDeclaration():
 {
 }
 {
-    "class" (VarName() | "object") ("extends" PackageIdentifier())? (ClassParams())* ";"
+    "class" VarName() ("extends" PackageIdentifier())? (ClassParams())* ";"
 }
 
 
@@ -1279,7 +1309,7 @@ void IdentifierList():
 void PackageIdentifier():
 {}
 {
-    (VarName() | "object") PackageIdentifierEnd()
+    VarName() PackageIdentifierEnd()
 }
 
 // Workaround for choice conflicts
@@ -1287,7 +1317,7 @@ void PackageIdentifier():
 void PackageIdentifierEnd():
 {}
 {
-    ("." (VarName() | "object"))?
+    (LOOKAHEAD(".") "." VarName())?
 }
 
 void ClassIdentifierStart():
@@ -1302,7 +1332,9 @@ void ClassIdentifierStart():
 void QualifiedIdentifier():
 {}
 {
-    (ClassIdentifierStart() QualifiedIdentifierStart())? IdDotId()
+    (LOOKAHEAD(ClassIdentifierStart())
+     ClassIdentifierStart() QualifiedIdentifierStart())?
+    IdDotId()
 }
 
 void QualifiedIdentifierStart():
@@ -1318,7 +1350,8 @@ void QualifiedIdentifierStart():
 void FuncCall():
 {}
 {   
-    (ClassIdentifierStart() (FuncCallStart())? )?
+    (LOOKAHEAD(ClassIdentifierStart())
+     ClassIdentifierStart() (LOOKAHEAD(FuncCallStart()) FuncCallStart())? )?
     IdDotId() FuncCallEnd()
 }
 
@@ -1341,30 +1374,60 @@ void FuncCallOrQualifiedIdentifier():
 {}
 {
     // "class'ClassName'." etc
-    LOOKAHEAD(ClassIdentifierStart())
-    ( ClassIdentifierStart()
-          // default, static or const?
-        ( ( LOOKAHEAD(FuncCallStart() | QualifiedIdentifierStart())
-            (FuncCallStart() | QualifiedIdentifierStart()) )?
-          // x.y().z()
-          IdDotIdFuncCallEndRep() )
-    ) |
-    // Type cast - "(arg)" is required
-    // Pawn(Owner).Weapon.OutOfAmmo()
-    // class<name>(asdf)
-    LOOKAHEAD(BasicTypeOrClassType() | "object" "(")
-    ( (BasicTypeOrClassType() | "object") "(" Expression() ")" ("." IdDotIdFuncCallEndRep())? ) |
+    LOOKAHEAD(ClassNameIdStart()) ClassNameId() |
     // x.y.Class
-    LOOKAHEAD(IdDotId() "." "class")
-    (IdDotId() "." "class") |
+    LOOKAHEAD(ClassId()) ClassId() |
+    // Type cast - "(arg)" is required
+    // Pawn(Owner).Weapon.OutOfAmmo() <- would also match IdDotIdFuncCallEndRep()
+    // But (Owner) is not an expression, VarName() only, and only 1 arg allowed
+    // class<name>(asdf) <- Would match this
+    // class<Actor>(OptionalObject).static.GetLocalString(Switch, RelatedPRI_1, RelatedPRI_2);
+    LOOKAHEAD(CastIdStart()) CastId() |
+    //CastId()
     // x.y().z()
+    //LOOKAHEAD(IdDotIdFuncCallEndRep()) IdDotIdFuncCallEndRep() //|
     IdDotIdFuncCallEndRep()
+}
+
+void ClassNameId():
+{}
+{
+    ClassNameIdStart()
+    // default, static or const?
+    ( ( LOOKAHEAD(FuncCallStart() | QualifiedIdentifierStart())
+        (FuncCallStart() | QualifiedIdentifierStart()) )?
+    // x.y().z()
+    IdDotIdFuncCallEndRep() )
+}
+
+void ClassNameIdStart():
+{}
+{
+    ClassIdentifierStart()
+}
+
+void CastId():
+{}
+{
+    CastIdStart() (LOOKAHEAD(".") "." IdDotIdFuncCallEndRep())?
+}
+
+void CastIdStart():
+{}
+{
+    BasicTypeOrClassType() "(" VarName() ")"
+}
+
+void ClassId():
+{}
+{
+    IdDotId() "." "class"
 }
 
 void IdDotIdFuncCallEndRep():
 {}
 {
-    IdDotIdFuncCallEnd() ("." IdDotIdFuncCallEnd())*
+    IdDotIdFuncCallEnd() (LOOKAHEAD(".") "." IdDotIdFuncCallEnd())*
 }
 
 void IdDotIdFuncCallEnd():
@@ -1383,7 +1446,7 @@ void IdDotId():
 {
     // testPawnArray[1]
     // default.x
-    (VarName() | "default") (ArrayDeclEnd())?
+    VarName() (ArrayDeclEnd())?
     // .Weapon.OutOfAmmo();
     (LOOKAHEAD("." VarName()) "."  VarName() (ArrayDeclEnd())?)*
 }
@@ -1422,30 +1485,56 @@ void ConstDecl():
 void VarDecl():
 {}
 {
-    "var" ( ConfigGroup() )? ( VarParams() )*
+    LOOKAHEAD(PointerDeclStart()) PointerDecl() | NormalVarDecl()
+}
+
+void NormalVarDecl():
+{}
+{
+    "var" ( ConfigGroup() )? ( LOOKAHEAD(VarParams()) VarParams() )*
     VarTypeThenIdentifier()
 }
 
+void PointerDecl():
+{}
+{
+    PointerDeclStart()
+    VarName() (ArrayDeclEnd())?
+    ("{"
+        (LOOKAHEAD(BasicTypeOrClassType())
+         BasicTypeOrClassType() | VarName())
+    "}")?
+}
+
+void PointerDeclStart():
+{}
+{
+    "var" ( ConfigGroup() )? ( VarParams() )* "pointer"
+}
 
 // CONFIGGROUP = LBRACK ( IDENTIFIER )? RBRACK
 void ConfigGroup():
 {}
 {
-    "(" (<IDENTIFIER> | "object")? ")"
+    "(" (VarName())? ")"
 }
 
 
 // VARTYPE = PACKAGEIDENTIFIER | ENUMDECL | STRUCTDECL | ARRAYDECL | CLASSTYPE | BASICTYPE
 // VARIDENTIFIER = IDENTIFIER
+
+// Type can be a package identifier
+// eg.
+// var() SceneSubtitles.ESST_Mode SubTitleMode;
 void VarTypeThenIdentifier():
 {}
 {
-    (DynArrayDecl() |
-    EnumDecl() |
-    StructDecl() |
-    BasicTypeOrClassType() |
-    "object" |
-    <IDENTIFIER>)
+    (LOOKAHEAD(DynArrayDeclStart()) DynArrayDecl() |
+     LOOKAHEAD(EnumDeclStart()) EnumDecl() |
+     LOOKAHEAD(StructDeclStart()) StructDecl() |
+     LOOKAHEAD(BasicTypeOrClassType()) BasicTypeOrClassType() |
+     PackageIdentifier())
+
     VarEnd() ("," VarEnd())*
 }
 
@@ -1465,75 +1554,126 @@ void VarName():
 void VarNameAlsoKeyword():
 {}
 {
-    "abstract" |
-    "auto" |
-    "begin" |
-    "cacheexempt" |
-    "class" | /// @todo FIXME Object
-    "coerce" |
-    "collapsecategories" |
-    "config" |
-    "cpptext" |
-    "defaultproperties" |
-    "delegate" |
-    "dependson" |
-    "deprecated" |
-    "dontcollapsecategories" |
-    "edfindable" |
-    "editconst" |
-    "editinline" |
-    "editinlinenew" |
-    "editinlineuse" |
-    "end" |
-    "enum" |
-    "event" |
-    "exec" |
-    "export" |
-    "exportstructs" |
-    "extends" |
-    "final" |
-    "function" |
-    "globalconfig" |
-    "guid" |
-    "hidecategories" |
-    "hidedropdown" |
-    "ignores" |
-    "input" |
-    "instanced" |
-    "iterator" |
-    "latent" |
-    "localized" |
-    "name" | /// @todo FIXME Object
-    "native" |
-    "nativereplication" |
-    "noteditinlinenew" |
-    "noexport" |
-    "notplaceable" |
-    "operator" |
-    "optional" |
-    "out" |
-    "package" |
-    "perobjectconfig" |
-    "placeable" |
-    "postoperator" |
-    "preoperator" |
-    "private" |
-    "protected" |
-    "public" |
-    "reliable" |
-    "replication" |
-    "safereplace" |
-    "showcategories" |
-    "simulated" |
-    "singular" |
-    "skip" |
-    "state" |
-    "structdefaultproperties" |
-    "switch" |
-    "transient" |
-    "travel" |
-    "unreliable" |
-    "within"
+  <ABSTRACT>
+| <ALLOWABSTRACT>
+| <ARRAY>
+| <AUTO>
+| <BEGIN>
+| <BOOLEAN>
+| <BREAK>
+| <BYTE>
+| <CACHE>
+| <CACHEEXEMPT>
+| <CASE>
+| <CLASS>
+| <CLOCKWISEFROM>
+| <COERCE>
+| <COLLAPSECATEGORIES>
+| <CONFIG>
+| <CONST>
+| <CONTINUE>
+//| <CPPTEXT>
+| <CROSS>
+| <DATABINDING>
+| <_DEFAULT>
+| <_DEFAULTPROPERTIES>
+| <DELEGATE>
+| <DEPENDSON>
+| <DEPRECATED>
+| <DO>
+| <DONTCOLLAPSECATEGORIES>
+| <DOTPRODUCT>
+| <DUPLICATETRANSIENT>
+| <EDFINDABLE>
+| <EDITCONST>
+| <EDITFIXEDSIZE>
+| <EDITINLINE>
+| <EDITINLINENEW>
+| <EDITINLINEUSE>
+| <EDITORONLY>
+| <ELSE>
+| <END>
+| <ENUM>
+| <EVENT>
+| <EXEC>
+| <EXPORT>
+| <EXPORTSTRUCTS>
+| <EXTENDS>
+| <FALSE>
+| <FINAL>
+| <FLOAT>
+| <FOR>
+| <FOREACH>
+| <FUNCTION>
+| <GLOBAL>
+| <GLOBALCONFIG>
+| <GOTO>
+| <GUID>
+| <HIDECATEGORIES>
+| <HIDEDROPDOWN>
+| <IF>
+| <IGNORES>
+| <INIT>
+| <INPUT>
+| <INSTANCED>
+| <INT>
+| <INTERP>
+| <ITERATOR>
+| <LATENT>
+| <LOCAL>
+| <LOCALIZED>
+| <NAME>
+| <NATIVE>
+| <NATIVEREPLICATION>
+| <NEW>
+| <NOCLEAR>
+| <NOEDITINLINEW>
+| <NOEXPORT>
+| <NOIMPORT>
+| <NONE>
+| <NONTRANSACTIONAL>
+| <NOTFORCONSOLE>
+| <NOTPLACEABLE>
+| <OBJECT>
+| <OPERATOR>
+| <OPTIONAL>
+| <OUT>
+| <PACKAGE>
+| <PEROBJECTCONFIG>
+| <PLACEABLE>
+| <POINTER>
+| <POSTOPERATOR>
+| <PREOPERATOR>
+| <PRIVATE>
+| <PROTECTED>
+| <PUBLIC>
+| <RELIABLE>
+| <REPLICATION>
+| <REPNOTIFY>
+| <REPRETRY>
+| <RETURN>
+| <SAFEREPLACE>
+| <SHOWCATEGORIES>
+| <SIMULATED>
+| <SINGULAR>
+| <_SKIP>
+| <STATE>
+| <STATIC>
+| <STRING>
+| <STRUCT>
+| <STRUCTDEFAULTPROPERTIES>
+| <SUPER>
+| <SWITCH>
+| <TRANSIENT>
+| <TRAVEL>
+| <TRUE>
+| <UNRELIABLE>
+| <UNTIL>
+| <VAR>
+| <VIRTUAL>
+| <VOID>
+| <WITHIN>
+| <WHILE>
 }
 
 void ArrayDeclEndOrVarTags():
@@ -1552,20 +1692,20 @@ void VarTags():
 {}
 {
     // Do not use Expression() - matches last GT()
-    "<" <IDENTIFIER> "=" VarTagsValue() ("|" <IDENTIFIER> "=" VarTagsValue())* GT()
+    "<" VarName() "=" VarTagsValue() ("|" VarName() "=" VarTagsValue())* GT()
 }
 
 void VarTagsValue():
 {}
 {
-    (VarName() | Literal())+
+    (LOOKAHEAD(Literal()) Literal() | VarName())+
 }
 
 // ARRAYDECL = IDENTIFIER LSBRACK INTVAL RSBRACK
 void ArrayDecl():
 {}
 {
-    <IDENTIFIER> ArrayDeclEnd()
+    VarName() ArrayDeclEnd()
 }
 
 // Workaround for choice conflicts
@@ -1581,9 +1721,17 @@ void ArrayDeclEnd():
 void DynArrayDecl():
 {}
 {
-    "array" "<" (PackageIdentifier() | BasicTypeOrClassType()) GT()
+    DynArrayDeclStart()
+        (LOOKAHEAD(BasicTypeOrClassType())
+         BasicTypeOrClassType() |
+         PackageIdentifier()) GT()
 }
 
+void DynArrayDeclStart():
+{}
+{
+    "array" "<"
+}
 
 // CLASSTYPE = class LABRACK PACKAGEIDENTIFIER RABRACK
 void ClassType():
@@ -1603,16 +1751,21 @@ void ClassTypeStart():
 void EnumDecl():
 {}
 {
-    "enum" <IDENTIFIER> "{" EnumOptions() "}"
+    EnumDeclStart() VarName() "{" EnumOptions() "}"
 }
 
+void EnumDeclStart():
+{}
+{
+    "enum"
+}
 
 // ENUMOPTIONS = IDENTIFIER ( COMMA IDENTIFIER )*
 // Trailing "," ok
 void EnumOptions():
 {}
 {
-    <IDENTIFIER> (LOOKAHEAD("," <IDENTIFIER>) "," <IDENTIFIER> )* (",")?
+    VarName() (LOOKAHEAD("," VarName()) "," VarName() )* (",")?
 }
 
 
@@ -1621,16 +1774,22 @@ void EnumOptions():
 void StructDecl():
 {}
 {
-    "struct" (StructParams())* VarName() ("extends" PackageIdentifier())?
-                           "{" StructBody() "}"
+    StructDeclStart() (LOOKAHEAD(StructParams()) StructParams())*
+        VarName() ("extends" PackageIdentifier())?
+        "{" StructBody() "}"
 }
 
+void StructDeclStart():
+{}
+{
+    "struct"
+}
 
 // STRUCTPARAMS = ( native | export )
 void StructParams():
 {}
 {
-    ("native" | "export")
+    ("export" | "init" | "native")
 }
 
 
@@ -1641,34 +1800,67 @@ void StructBody():
     (VarDecl() ";")+ (StructDefaultPropertiesBlock())?
 }
 
-void CppText():
+/*void CppText():
 {}
 {
-    //<CPPTEXT>
-    "cpptext" "{" (CppFunc() ";")* "}"
+    "cpptext" "{" (CppFunc())* "}"
 }
 
 void CppFunc():
 {}
 {
-    CppType() <IDENTIFIER> "("
-    ( CppType() <IDENTIFIER> ("," CppType() <IDENTIFIER>)* )?
-    ")" (("=" <INTEGER_LITERAL>) | "{" "}")?
+    LOOKAHEAD(CppVirtualFuncStart()) CppVirtualFunc() | CppNormalFunc()
+}
+
+void CppFuncArgs():
+{}
+{
+    "("
+    ( CppType() CppVarName() ("," CppType() CppVarName())* )?
+    ")"
+}
+
+void CppNormalFunc():
+{}
+{
+    CppType() CppVarName()
+    CppFuncArgs()
+    ( ";" | ("{" "}") )
+}
+
+void CppVirtualFunc():
+{}
+{
+    CppVirtualFuncStart() CppType() CppVarName()
+    CppFuncArgs()
+    ( (("=" <INTEGER_LITERAL>)? ";") | ("{" "}") )
+}
+
+void CppVirtualFuncStart():
+{}
+{
+    "virtual"
 }
 
 void CppType():
 {}
 {
-    ("virtual")? ("static" | "const")?
-    (BasicType() | "void" | "none" | "object" | ("enum" <IDENTIFIER>) | <IDENTIFIER>)
+    ("static" | "const")?
+    (BasicType() | "void" | "none" | "object" | ("enum" CppVarName()) | CppVarName())
     (CppPtrRef())?
+}
+
+void CppVarName():
+{}
+{
+    <IDENTIFIER>
 }
 
 void CppPtrRef():
 {}
 {
     "&" | (("const")? "*" ("*")?)
-}
+}*/
 
 // Replication parts
 // REPLICATIONBLOCK = replication LCBRACK ( REPLICATIONBODY )* RCBRACK
@@ -1693,7 +1885,8 @@ void ReplicationBody():
 void Body():
 {}
 {
-    ( LOOKAHEAD(StateDeclStart()) StateDecl() |
+    ( Declarations() | /*CppText() |*/
+      LOOKAHEAD(StateDeclStart()) StateDecl() |
       FunctionDecl() |
       ReplicationBlock() )*
 }
@@ -1703,8 +1896,8 @@ void Body():
 void StateDecl():
 {}
 {
-    StateDeclStart() ("(" ")")? <IDENTIFIER>
-        (ConfigGroup())? ("extends" <IDENTIFIER>)? StateBody()
+    StateDeclStart() ("(" ")")? VarName()
+        (ConfigGroup())? ("extends" PackageIdentifier())? StateBody()
 }
 
 void StateDeclStart():
@@ -1718,7 +1911,11 @@ void StateDeclStart():
 void StateBody():
 {}
 {
-    "{" (StateIgnore())? (FunctionDecl())* (LabelStatement())* "}"
+    "{"
+        (StateIgnore())?
+        (FunctionDecl())*
+        ( LabelStatement() (CodeLine())* )*
+    "}"
 }
 
 
@@ -1742,11 +1939,13 @@ void FunctionDecl():
 // FUNCTIONPARAMS = CONSTFUNCPARAMS | native ( LBRACK INTVAL RBRACK )?
 // Native functions can have const after them
 // native function int doSomething(string myData) const;
+
+// ConstFuncParams() can be before or after "function"
 void NormalOrOperatorFunc():
 {}
 {
     LOOKAHEAD(NativeFuncParamsStart())
-    ( NativeFuncParams() FuncEnd() ("const")? FunctionBody() ) |
+    ( NativeFuncParams() (ConstFuncParams())* FuncEnd() ("const")? FunctionBody() ) |
     ( (ConstFuncParams())* FuncEnd() FunctionBody() )
 }
 
@@ -1754,7 +1953,6 @@ void NativeFuncParams():
 {}
 {
     NativeFuncParamsStart() ("(" <INTEGER_LITERAL> ")")?
-    (ConstFuncParams())*
 }
 
 void NativeFuncParamsStart():
@@ -1776,7 +1974,8 @@ void FuncEnd():
 void NormalFuncEnd():
 {}
 {
-     FunctionType()
+     FunctionType() 
+        (LOOKAHEAD(ConstFuncParams() ReturnTypeThenIdentifier()) ConstFuncParams())*
         ReturnTypeThenIdentifier() "(" ( FunctionArgs() ("," FunctionArgs())* )? ")"
 }
 
@@ -1788,12 +1987,13 @@ void NormalFuncEnd():
 void ReturnTypeThenIdentifier():
 {}
 {
-    ("void" VarName()) |
-    (LocalTypeEnd() VarName()) |
-    // Look ahead 2 - check for (func identifier) or just (identifier)
-    ( LOOKAHEAD(2)
-     (PackageIdentifierOrArrayDecl() VarName()) |
-     VarName() )
+    LOOKAHEAD("void" VarName())
+        ("void" VarName()) |
+    LOOKAHEAD(LocalTypeEnd() VarName())
+        (LocalTypeEnd() VarName()) |
+    LOOKAHEAD(PackageIdentifierOrArrayDecl() VarName())
+        (PackageIdentifierOrArrayDecl() VarName()) |
+    VarName()
 }
 
 // OPERATORFUNC = ( FUNCTIONPARAMS )* OPERATORTYPE FUNCTIONBODY
@@ -1816,8 +2016,10 @@ void OperatorType():
 void BinaryOperator():
 {}
 {
-    "operator" "(" (<INTEGER_LITERAL> | <IDENTIFIER>) ")" (PackageIdentifier() | LocalTypeEnd()) OpIdentifier()
-                           "(" FunctionArgs() "," FunctionArgs() ")"
+    "operator" "(" (<INTEGER_LITERAL> | <IDENTIFIER>) ")"
+        (LOOKAHEAD(LocalTypeEnd()) LocalTypeEnd() | PackageIdentifier())
+        OpIdentifier()
+        "(" FunctionArgs() "," FunctionArgs() ")"
 }
 
 // requires one argument
@@ -1826,8 +2028,10 @@ void BinaryOperator():
 void UnaryOperator():
 {}
 {
-    ( "preoperator" | "postoperator" ) (PackageIdentifier() | LocalTypeEnd()) OpIdentifier()
-                           "(" FunctionArgs() ")"
+    ( "preoperator" | "postoperator" )
+        (LOOKAHEAD(LocalTypeEnd()) LocalTypeEnd() | PackageIdentifier())
+        OpIdentifier()
+        "(" FunctionArgs() ")"
 }
 
 // FUNCTIONARGS = ( optional | out | coerce )? FUNCTIONARGTYPE IDENTIFIER
@@ -1837,9 +2041,20 @@ void UnaryOperator():
 void FunctionArgs():
 {}
 {
-    ( "optional" (LOOKAHEAD(FuncArgParamsNotOpt()) FuncArgParamsNotOpt())?
-      FunctionArgTypeAndName() ("=" UnaryExpression())? ) |
-    ( (LOOKAHEAD(FuncArgParamsNotOpt()) FuncArgParamsNotOpt())? FunctionArgTypeAndName() )
+    LOOKAHEAD("optional") OptionalFunctionArg() | FunctionArg()
+}
+
+void OptionalFunctionArg():
+{}
+{
+    "optional" FunctionArg() ("=" UnaryExpression())?
+}
+
+void FunctionArg():
+{}
+{
+    (LOOKAHEAD(FuncArgParamsNotOpt()) FuncArgParamsNotOpt())*
+    FunctionArgTypeAndName()
 }
 
 void FuncArgParamsNotOpt():
@@ -1851,14 +2066,14 @@ void FuncArgParamsNotOpt():
 void FunctionArgTypeAndName():
 {}
 {
-    FunctionArgType() VarName()
+    FunctionArgType() VarName() (ArrayDeclEnd())?
 }
 
 // FUNCTIONARGTYPE = BASICTYPE | PACKAGEIDENTIFIER
 void FunctionArgType():
 {}
 {
-    BasicTypeOrClassType() | PackageIdentifier() | DynArrayDecl()
+    LOOKAHEAD(LocalTypeEnd()) LocalTypeEnd() | PackageIdentifier()
 }
 
 
@@ -1866,7 +2081,7 @@ void FunctionArgType():
 void FunctionBody():
 {}
 {
-    ";" | ( "{" (LocalDecl())* (CodeLine())* "}" )
+    ";" | ( "{" (LOOKAHEAD(LocalDeclStart()) LocalDecl())* (CodeLine())* "}" )
 }
 
 
@@ -1874,7 +2089,19 @@ void FunctionBody():
 void LocalDecl():
 {}
 {
-    "local" LocalType() VarName() ( "," VarName() )* ";"
+    LocalDeclStart() LocalType() LocalEnd() ( "," LocalEnd() )* ";"
+}
+
+void LocalEnd():
+{}
+{
+    VarName() (ArrayDeclEnd())?
+}
+
+void LocalDeclStart():
+{}
+{
+    "local"
 }
 
 
@@ -1882,7 +2109,7 @@ void LocalDecl():
 void LocalType():
 {}
 {
-    (PackageIdentifierOrArrayDecl() | LocalTypeEnd())
+    LOOKAHEAD(LocalTypeEnd()) LocalTypeEnd() | PackageIdentifierOrArrayDecl()
 }
 
 // LocalType without PackageIdentifier and ArrayDecl
@@ -1897,7 +2124,7 @@ void LocalTypeEnd():
 void PackageIdentifierOrArrayDecl():
 {}
 {
-    (VarName() | "object") (ArrayDeclEnd() | PackageIdentifierEnd())
+    VarName() (ArrayDeclEnd() | PackageIdentifierEnd())
 }
 
 // Code parts
@@ -1909,19 +2136,19 @@ void CodeLine():
     //( STATEMENT | ASSIGNMENT | IFTHENELSE | WHILELOOP | DOLOOP
     //   | SWITCHCASE | RETURNFUNC | FOREACHLOOP | FORLOOP )
     try {
-        IfStatement() |
-        WhileStatement() |
-        DoStatement() |
-        ForStatement() |
-        ForEachStatement() |
-        BreakStatement() |
-        ContinueStatement() |
-        ReturnStatement() |
-        GotoStatement() |
+        LOOKAHEAD(IfStatementStart()) IfStatement() |
+        LOOKAHEAD(WhileStatementStart()) WhileStatement() |
+        LOOKAHEAD(DoStatementStart()) DoStatement() |
+        LOOKAHEAD(ForStatementStart()) ForStatement() |
+        LOOKAHEAD(ForEachStatementStart()) ForEachStatement() |
+        LOOKAHEAD(BreakStatement()) BreakStatement() |
+        LOOKAHEAD(ContinueStatement()) ContinueStatement() |
+        LOOKAHEAD(ReturnStatementStart()) ReturnStatement() |
+        LOOKAHEAD(GotoStatementStart()) GotoStatement() |
+        LOOKAHEAD(SwitchStart()) SwitchStatement() |
 
         CodeBlock() |
 
-        LOOKAHEAD(SwitchStart()) SwitchStatement() |
         LOOKAHEAD(LabelStatementStart()) LabelStatement() |
         (Expression() ";") |
         //Statement() |
@@ -1962,21 +2189,39 @@ void Assignment():
 void IfStatement():
 {}
 {
-    "if" "(" Expression() ")" CodeLine() ( LOOKAHEAD(1) "else" CodeLine() )?
+    IfStatementStart() Expression() ")" CodeLine() ( LOOKAHEAD(1) "else" CodeLine() )?
+}
+
+void IfStatementStart():
+{}
+{
+    "if" "("
 }
 
 // WHILELOOP = while LBRACK EXPR RBRACK CODEBLOCK
 void WhileStatement():
 {}
 {
-    "while" "(" Expression() ")" CodeLine()
+    WhileStatementStart() Expression() ")" CodeLine()
+}
+
+void WhileStatementStart():
+{}
+{
+    "while" "("
 }
 
 // DOLOOP = do CODEBLOCK until LBRACK EXPR RBRACK
 void DoStatement():
 {}
 {
-    "do" CodeLine() "until" "(" Expression() ")" ";"
+    DoStatementStart() "(" Expression() ")" ";"
+}
+
+void DoStatementStart():
+{}
+{
+    "do" CodeLine() "until"
 }
 
 // SWITCHCASE = switch LBRACK EXPR RBRACK LCBRACK ( CASERULE )+ ( DEFAULTRULE )? RCBRACK
@@ -1984,8 +2229,8 @@ void SwitchStatement():
 {}
 {
     SwitchStart()
-        (SwitchLabel())*
-        (DefaultLabel())?
+        (LOOKAHEAD(SwitchLabelStart()) SwitchLabel())*
+        (LOOKAHEAD(DefaultLabelStart()) DefaultLabel())?
     "}"
 }
 
@@ -1999,21 +2244,50 @@ void SwitchStart():
 void SwitchLabel():
 {}
 {
-    "case" (LOOKAHEAD(Literal()) Literal() | QualifiedIdentifier()) ":" (LOOKAHEAD(1) CodeLine())*
+    (SwitchLabelStart() (LOOKAHEAD(Literal()) Literal() | QualifiedIdentifier()) ":")
+    // Lookahead - check next line is not "case" or "default"
+    //( (LOOKAHEAD(SwitchLabelStart()) SwitchLabel() |
+      //LOOKAHEAD(DefaultLabelStart()) DefaultLabel() |
+    //  CodeLine()) )*
+    //( LOOKAHEAD( { (getToken(1).kind != CASE) && (getToken(1).kind != DEFAULT) } )
+    //  CodeLine() )*
+    ( LOOKAHEAD(1)
+      (LOOKAHEAD(SwitchLabelStart()) SwitchLabel() |
+       LOOKAHEAD(DefaultLabelStart()) DefaultLabel() |
+       CodeLine()) )*
+}
+
+void SwitchLabelStart():
+{}
+{
+    "case"
 }
 
 // DEFAULTRULE = default CODEBLOCK
 void DefaultLabel():
 {}
 {
-    "default" ":" (CodeLine())+
+    DefaultLabelStart() ":" (LOOKAHEAD(1) CodeLine())+
+}
+
+void DefaultLabelStart():
+{}
+{
+    "default"
 }
 
 // RETURNFUNC = return ( EXPR )? SEMICOLON
 void ReturnStatement():
 {}
 {
-  "return" ( Expression() )? ";"
+    ReturnStatementStart()
+    (Expression())? ";"
+}
+
+void ReturnStatementStart():
+{}
+{
+    "return"
 }
 
 // eg.
@@ -2024,19 +2298,26 @@ void ReturnStatement():
 void GotoStatement():
 {}
 {
-    "goto" ( <IDENTIFIER> | <NAME_LITERAL> | ("(" <NAME_LITERAL> ")") ) ";"
+    GotoStatementStart() ( <IDENTIFIER> | <NAME_LITERAL> | ("(" <NAME_LITERAL> ")") ) ";"
+}
+
+void GotoStatementStart():
+{}
+{
+    "goto"
 }
 
 // STATELABELS = ( IDENTIFIER COLON ( CODELINE )* )*
 void LabelStatement():
 {}
 {
-    LabelStatementStart() (LOOKAHEAD(1) CodeLine())*
+    LabelStatementStart() //(LOOKAHEAD(1) CodeLine())*
 }
 
 void LabelStatementStart():
 {}
 {
+    // Don't mix up with "case:" and "default:"
     (<IDENTIFIER> | "begin" | "end") ":"
 }
 
@@ -2044,8 +2325,13 @@ void LabelStatementStart():
 void ForEachStatement():
 {}
 {
-    // foreach FUNCCALL CODEBLOCK
-    "foreach" FuncCall() CodeLine()
+    ForEachStatementStart() FuncCall() CodeLine()
+}
+
+void ForEachStatementStart():
+{}
+{
+    "foreach"
 }
 
 
@@ -2053,10 +2339,16 @@ void ForEachStatement():
 void ForStatement():
 {}
 {
-    "for" "("
+    ForStatementStart()
                 [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
           ")"
     CodeLine()
+}
+
+void ForStatementStart():
+{}
+{
+    "for" "("
 }
 
 void ForInit():
@@ -2092,7 +2384,7 @@ void Expression():
     //ConditionalExpression() (LOOKAHEAD(2) AssignmentOperator() Expression())?
     //Operand() ( LOOKAHEAD(2) OpIdentifier() Operand() )*
     //ConditionalExpression()
-    LOOKAHEAD(NewStart()) NewExpression() | BinaryExpression()
+    BinaryExpression()
 }
 
 void TernaryExpression():
@@ -2124,6 +2416,7 @@ void exp2():
 {
     ( "+" | "-" | "++" | "--" | "~" | "!" )?
     exp1()
+    // Force lookahead of 1 - match post operator before pre?
     ( LOOKAHEAD(1)("++" | "--") )?
 }
 
@@ -2131,29 +2424,113 @@ void exp1():
 {}
 {
     "(" Expression() ")" |
+    LOOKAHEAD(NewStatementStart()) NewStatement() |
+    FuncCallOrIdentifierSpecifierOrLiteral()
+}
+
+void FuncCallOrIdentifierSpecifierOrLiteral():
+{}
+{
     // Order is important
-    // Match class'name'.func() before class'name'
-    (LOOKAHEAD(3) FuncCallOrIdentifierSpecifier() | Literal())
-    //(FuncCallOrIdentifierSpecifier() | Literal())
+    // Match class'name'.func() before class'name' in literal
+    // Same with class<name>(castedvar) and class<name>
+    (LOOKAHEAD(ClassNameIdStart() | CastIdStart()) FuncCallOrIdentifierSpecifier() |
+     LOOKAHEAD(Literal()) Literal() |
+     FuncCallOrIdentifierSpecifier())
 }
 
 // new operator in UE3
 // ObjectVar = new[(InOuter, InName, InFlags)] <class'InClass'>[(InTemplate)];
+// <class'InClass'> could be like class'InClass' or a variable name, ObjectClass
+// eg.
+// NewObj = new class'Engine.LightFunction';
+// NewObj = new(Self,'NewLight') class'Engine.LightFunction';
+// NewObj = new(None,'NewLight') class'Engine.LightFunction' (LightFunctionTemplate);
+// Result = new(Outer) ObjectClass;
+// return new(None, Repl(RecordName, " ", Chr(27))) class'MaplistRecord';
 void NewExpression():
 {}
 {
-    NewStart() (
-        ( ( "(" (QualifiedIdentifier() | "none") ("," <NAME_LITERAL> ("," ArrayIndex())? )? ")")?
-        "class" <NAME_LITERAL> ("(" <IDENTIFIER> (<NAME_LITERAL>)? ")")? ) |
-
-        PackageIdentifier()
-    )
+    NewExpressionStart1() NewStatement()
 }
 
-void NewStart():
+void NewExpressionStart():
 {}
 {
-    <IDENTIFIER> "=" "new"
+    NewExpressionStart1() NewStatementStart()
+}
+
+void NewExpressionStart1():
+{}
+{
+    VarName() "="
+}
+
+void NewStatement():
+{}
+{
+    // (param1, 'param2', param3) class'classname'
+    NewStatementStart() (NewParams())? NewClass()
+
+    //LOOKAHEAD(NewParamsStart() | NewClassStart())
+    //((NewParams())? NewClass()) |
+    //PackageIdentifier()
+}
+
+void NewStatementStart():
+{}
+{
+    "new"
+}
+
+// (param1)
+// (param1, 'param2')
+// (param1, 'param2', param3)
+// params could also be the result of a function call
+void NewParams():
+{}
+{
+    //NewParamsStart() Expression() ("," Expression() ("," Expression())? )? ")"
+    //NewParamsStart() QualifiedIdentifier() ("," <NAME_LITERAL> ("," ArrayIndex())? )? ")"
+    NewParamsStart() NewParam1() ("," NewParam2() ("," ArrayIndex())? )? ")"
+}
+
+void NewParam1():
+{}
+{
+    FuncCallOrQualifiedIdentifier()
+}
+
+void NewParam2():
+{}
+{
+    <NAME_LITERAL> | FuncCallOrQualifiedIdentifier()
+}
+
+void NewParam3():
+{}
+{
+    ArrayIndex()
+}
+
+void NewParamsStart():
+{}
+{
+    "("
+}
+
+// class'classname' (intemplate'name')
+void NewClass():
+{}
+{
+    NewClassStart() (LOOKAHEAD("(" VarName() (<NAME_LITERAL>)? ")") "(" VarName() (<NAME_LITERAL>)? ")")?
+}
+
+// class'classname'
+void NewClassStart():
+{}
+{
+    LOOKAHEAD("class" <NAME_LITERAL>) ("class" <NAME_LITERAL>) | IdDotId()
 }
 
 // OPIDENTIFIER = IDENTIFIER | OPERATORNAMES
@@ -2328,8 +2705,7 @@ void PrimaryExpression():
 void PrimaryPrefix():
 {}
 {
-    "(" Expression() ")" |
-    (LOOKAHEAD(3) Literal() | FuncCallOrIdentifierSpecifier())
+    "(" Expression() ")" | FuncCallOrIdentifierSpecifierOrLiteral()
 }
 
 /*void PrimarySuffix():
@@ -2346,8 +2722,33 @@ void PrimaryPrefix():
 void FuncCallOrIdentifierSpecifier():
 {}
 {
-    ("super" ("(" <IDENTIFIER> ")")? "." | "global" ".")?
+    (LOOKAHEAD(SuperSpecifierStart() | GlobalSpecifierStart())
+     (SuperSpecifier() | GlobalSpecifier()))?
     FuncCallOrQualifiedIdentifier()
+}
+
+void SuperSpecifier():
+{}
+{
+    SuperSpecifierStart() ("(" <IDENTIFIER> ")")? "."
+}
+
+void SuperSpecifierStart():
+{}
+{
+    "super"
+}
+
+void GlobalSpecifier():
+{}
+{
+    GlobalSpecifierStart() "."
+}
+
+void GlobalSpecifierStart():
+{}
+{
+    "global"
 }
 
 void EmptyStatement():
@@ -2396,38 +2797,40 @@ void StructDefaultPropertiesBlock():
 void DefProp():
 {}
 {
-    ("begin" "object" "class" "=" <IDENTIFIER> "name" "=" <IDENTIFIER>
-    (DefProp2())*
+    LOOKAHEAD("begin")
+    ("begin" "object" "class" "=" VarName() "name" "=" VarName()
+    (LOOKAHEAD(DefPropLine()) DefPropLine())*
     "end" "object") |
 
-    DefProp2()
+    DefPropLine()
 }
 
-void DefProp2():
+void DefPropLine():
 {}
 {
     DefPropIdentifier()
 
-    (LOOKAHEAD("=")
-        ( "="
+    (LOOKAHEAD("=") ("=" DefPropExpression()) | DefPropArray3())
 
-            (LOOKAHEAD("{" "(") DefPropStruct2() |
-            (LOOKAHEAD("(" <IDENTIFIER> "=") DefPropStruct1() |
-            (LOOKAHEAD("(" <IDENTIFIER>) DefPropArray1() |
-            DefPropValue()
-            )
-            )
-            )
-        ) |
+    // Usually no semicolon at end of line
+    // But adding one is allowed
+    (";")?
+}
 
-        DefPropArray3())
+void DefPropExpression():
+{}
+{
+    LOOKAHEAD(DefPropStruct2Start()) DefPropStruct2() |
+    LOOKAHEAD(DefPropStruct1Start()) DefPropStruct1() |
+    LOOKAHEAD(DefPropArray1Start()) DefPropArray1() |
+    DefPropValue()
 }
 
 // DEFPROPIDENTIFIER = IDENTIFIER ( ( LBRACK INTVAL RBRACK ) | ( LSBRACK INTVAL RSBRACK ) )?
 void DefPropIdentifier():
 {}
 {
-    <IDENTIFIER> ( LOOKAHEAD(3)(("(" ArrayIndex() ")") | ("[" ArrayIndex() "]")) )?
+    VarName() ( LOOKAHEAD(3)(("(" ArrayIndex() ")") | ("[" ArrayIndex() "]")) )?
 }
 
 void ArrayIndex():
@@ -2440,12 +2843,22 @@ void ArrayIndex():
 // Default properties block
 // Filling dynamic array type 1
 // ArrayProp=(Value1,Value2,Value3)
+// eg.
+// DrivePos=(X=0,Y=0,Z=0)
+// Can be empty
+// DriveRot=()
 void DefPropArray1():
 {}
 {
-    "("
-        DefPropValue() ("," DefPropValue())*
+    DefPropArray1Start()
+        (DefPropExpression() ("," DefPropExpression())*)?
     ")"
+}
+
+void DefPropArray1Start():
+{}
+{
+    "("
 }
 
 // ArrayProp(0)=Value1
@@ -2455,7 +2868,7 @@ void DefPropArray1():
 void DefPropArray3():
 {}
 {
-    "." <IDENTIFIER> "(" DefPropValue() ")"
+    "." VarName() "(" DefPropValue() ")"
 }
 
 
@@ -2467,20 +2880,33 @@ void DefPropArray3():
 // Default properties block
 // Filling struct type 1
 // StructProperty=(InnerStructPropertyA=Value1,InnerStructPropertyB=Value2)
+// MainScale=(Scale=(X=1,Y=1,Z=1),SheerRate=0,SheerAxis=SHEER_None)
 void DefPropStruct1():
 {}
 {
-    "("
-        <IDENTIFIER> "=" DefPropValue() ("," <IDENTIFIER> "=" DefPropValue())*
+    DefPropStruct1Start()
+        DefPropExpression() ("," VarName() "=" DefPropExpression())*
     ")"
+}
+
+void DefPropStruct1Start():
+{}
+{
+    "(" VarName() "="
 }
 
 void DefPropStruct2():
 {}
 {
-    "{" "("
-        <IDENTIFIER> "=" DefPropValue() ("," <IDENTIFIER> "=" DefPropValue())*
+    DefPropStruct2Start()
+        VarName() "=" DefPropExpression() ("," VarName() "=" DefPropExpression())*
     ")" "}"
+}
+
+void DefPropStruct2Start():
+{}
+{
+    "{" "("
 }
 
 void DefPropValue():
@@ -2531,6 +2957,7 @@ void ConstClassParams():
     "native" |
     "nativereplication" |
     "abstract" |
+    "cacheexempt" |
     "collapsecategories" |
     "dontcollapsecategories" |
     "editinlinenew" |
@@ -2542,6 +2969,7 @@ void ConstClassParams():
     <INTEGER_LITERAL> ","
     <INTEGER_LITERAL> ")") |
 
+    "hidedropdown" |
     "noexport" |
     "noteditinlinenew" |
     "notplaceable" |
@@ -2565,21 +2993,37 @@ void BooleanLiteral():
 void VarParams():
 {}
 {
+    "allowabstract" |
+    "cache" |
     "config" |
     "const" |
+    "databinding" |
+    "deprecated" |
+    "duplicatetransient" |
     "edfindable" |
     "editconst" |
+    "editconstarray" |
+    "editfixedsize" |
     "editinline" |
     "editinlineuse" |
-    "deprecated" |
+    "editoronly" |
     "export" |
     "globalconfig" |
+    "init" |
     "input" |
+    "instanced" |
+    "interp" |
     "localized" |
     "native" |
+    "noclear" |
     "noexport" |
+    "noimport" |
+    "nontransactional" |
+    "notforconsole" |
     "private" |
     "protected" |
+    "repnotify" |
+    "repretry" |
     "transient" |
     "travel"
 }
@@ -2651,16 +3095,23 @@ void ResultType():
 void Literal():
 {}
 {
-  <INTEGER_LITERAL> |
-  <FLOATING_POINT_LITERAL> |
-  <NAME_LITERAL> |
-  ("class" (LOOKAHEAD(<NAME_LITERAL>) <NAME_LITERAL>)?) |
-  <STRING_LITERAL> |
-  BooleanLiteral() |
-  NoneLiteral()
+    <INTEGER_LITERAL> |
+    <FLOATING_POINT_LITERAL> |
+    <NAME_LITERAL> |
+    LOOKAHEAD(ConstantLiteral()) ConstantLiteral() |
+    ("class" (LOOKAHEAD(<NAME_LITERAL>) <NAME_LITERAL>)?) |
+    <STRING_LITERAL> |
+    BooleanLiteral() |
+    NoneLiteral()
 }
 
-
+// General object constants are specified by the object type followed by the
+// object name in single quotes, for example: texture'Default'
+void ConstantLiteral():
+{}
+{
+    VarName() <NAME_LITERAL>
+}
 
 void NoneLiteral():
 {}

@@ -19,11 +19,12 @@
     <fontcolor name="class" default="keyword" foreColor="magenta"/>
     <fontcolor name="comment" default="comment"/>
     <fontcolor name="compiler-directive" default="comment" foreColor="009900"/>
+    <fontcolor name="cpp-code" default="comment" foreColor="008866"/>
     <fontcolor name="preprocessor-directive" default="comment" foreColor="009900"/>
     <fontcolor name="error" default="error"/>
-    <fontcolor name="javadoc-comment" default="comment" foreColor="006633"/>
+    <fontcolor name="javadoc-comment" default="comment" foreColor="663399"/>
     <fontcolor name="identifier" default="identifier"/>
-    <fontcolor name="javadoc-tag" default="comment" foreColor="006633">
+    <fontcolor name="javadoc-tag" default="comment" foreColor="996699">
         <font style="bold" />
     </fontcolor>
     <fontcolor name="keyword" default="keyword"/>

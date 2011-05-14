@@ -13,377 +13,415 @@ public interface UnrealScriptParserConstants {
   /** RegularExpression Id. */
   int WHITESPACE = 1;
   /** RegularExpression Id. */
-  int SINGLE_LINE_COMMENT = 4;
+  int SINGLE_LINE_COMMENT = 2;
   /** RegularExpression Id. */
-  int COMPILER_DIRECTIVE = 5;
+  int COMPILER_DIRECTIVE = 3;
   /** RegularExpression Id. */
-  int PREPROCESSOR_DIRECTIVE = 6;
+  int PREPROCESSOR_DIRECTIVE = 4;
   /** RegularExpression Id. */
-  int JAVADOC_COMMENT = 7;
+  int MULTI_LINE_COMMENT = 6;
   /** RegularExpression Id. */
-  int MULTI_LINE_COMMENT = 8;
+  int JAVADOC_COMMENT = 9;
   /** RegularExpression Id. */
   int STRING_LITERAL = 13;
   /** RegularExpression Id. */
   int NAME_LITERAL = 16;
   /** RegularExpression Id. */
-  int ABSTRACT = 17;
+  int CPPCODE = 19;
   /** RegularExpression Id. */
-  int ARRAY = 18;
+  int ABSTRACT = 20;
   /** RegularExpression Id. */
-  int AUTO = 19;
+  int ALLOWABSTRACT = 21;
   /** RegularExpression Id. */
-  int BEGIN = 20;
+  int ARRAY = 22;
   /** RegularExpression Id. */
-  int BOOLEAN = 21;
+  int AUTO = 23;
   /** RegularExpression Id. */
-  int BREAK = 22;
+  int BEGIN = 24;
   /** RegularExpression Id. */
-  int BYTE = 23;
+  int BOOLEAN = 25;
   /** RegularExpression Id. */
-  int CACHEEXEMPT = 24;
+  int BREAK = 26;
   /** RegularExpression Id. */
-  int CASE = 25;
+  int BYTE = 27;
   /** RegularExpression Id. */
-  int CLASS = 26;
+  int CACHE = 28;
   /** RegularExpression Id. */
-  int CLOCKWISEFROM = 27;
+  int CACHEEXEMPT = 29;
   /** RegularExpression Id. */
-  int COERCE = 28;
+  int CASE = 30;
   /** RegularExpression Id. */
-  int COLLAPSECATEGORIES = 29;
+  int CLASS = 31;
   /** RegularExpression Id. */
-  int CONFIG = 30;
+  int CLOCKWISEFROM = 32;
   /** RegularExpression Id. */
-  int CONST = 31;
+  int COERCE = 33;
   /** RegularExpression Id. */
-  int CONTINUE = 32;
+  int COLLAPSECATEGORIES = 34;
   /** RegularExpression Id. */
-  int CPPTEXT = 33;
+  int CONFIG = 35;
   /** RegularExpression Id. */
-  int CROSS = 34;
+  int CONST = 36;
   /** RegularExpression Id. */
-  int _DEFAULT = 35;
+  int CONTINUE = 37;
   /** RegularExpression Id. */
-  int _DEFAULTPROPERTIES = 36;
+  int CROSS = 38;
   /** RegularExpression Id. */
-  int DELEGATE = 37;
+  int DATABINDING = 39;
   /** RegularExpression Id. */
-  int DEPENDSON = 38;
+  int _DEFAULT = 40;
   /** RegularExpression Id. */
-  int DEPRECATED = 39;
+  int _DEFAULTPROPERTIES = 41;
   /** RegularExpression Id. */
-  int DO = 40;
+  int DELEGATE = 42;
   /** RegularExpression Id. */
-  int DONTCOLLAPSECATEGORIES = 41;
+  int DEPENDSON = 43;
   /** RegularExpression Id. */
-  int DOTPRODUCT = 42;
+  int DEPRECATED = 44;
   /** RegularExpression Id. */
-  int EDFINDABLE = 43;
+  int DO = 45;
   /** RegularExpression Id. */
-  int EDITCONST = 44;
+  int DONTCOLLAPSECATEGORIES = 46;
   /** RegularExpression Id. */
-  int EDITINLINE = 45;
+  int DOTPRODUCT = 47;
   /** RegularExpression Id. */
-  int EDITINLINENEW = 46;
+  int DUPLICATETRANSIENT = 48;
   /** RegularExpression Id. */
-  int EDITINLINEUSE = 47;
+  int EDFINDABLE = 49;
   /** RegularExpression Id. */
-  int ELSE = 48;
+  int EDITCONST = 50;
   /** RegularExpression Id. */
-  int END = 49;
+  int EDITCONSTARRAY = 51;
   /** RegularExpression Id. */
-  int ENUM = 50;
+  int EDITFIXEDSIZE = 52;
   /** RegularExpression Id. */
-  int EVENT = 51;
+  int EDITINLINE = 53;
   /** RegularExpression Id. */
-  int EXEC = 52;
+  int EDITINLINENEW = 54;
   /** RegularExpression Id. */
-  int EXPORT = 53;
+  int EDITINLINEUSE = 55;
   /** RegularExpression Id. */
-  int EXPORTSTRUCTS = 54;
+  int EDITORONLY = 56;
   /** RegularExpression Id. */
-  int EXTENDS = 55;
+  int ELSE = 57;
   /** RegularExpression Id. */
-  int FALSE = 56;
+  int END = 58;
   /** RegularExpression Id. */
-  int FINAL = 57;
+  int ENUM = 59;
   /** RegularExpression Id. */
-  int FLOAT = 58;
+  int EVENT = 60;
   /** RegularExpression Id. */
-  int FOR = 59;
+  int EXEC = 61;
   /** RegularExpression Id. */
-  int FOREACH = 60;
+  int EXPORT = 62;
   /** RegularExpression Id. */
-  int FUNCTION = 61;
+  int EXPORTSTRUCTS = 63;
   /** RegularExpression Id. */
-  int GLOBAL = 62;
+  int EXTENDS = 64;
   /** RegularExpression Id. */
-  int GLOBALCONFIG = 63;
+  int FALSE = 65;
   /** RegularExpression Id. */
-  int GOTO = 64;
+  int FINAL = 66;
   /** RegularExpression Id. */
-  int GUID = 65;
+  int FLOAT = 67;
   /** RegularExpression Id. */
-  int HIDECATEGORIES = 66;
+  int FOR = 68;
   /** RegularExpression Id. */
-  int HIDEDROPDOWN = 67;
+  int FOREACH = 69;
   /** RegularExpression Id. */
-  int IF = 68;
+  int FUNCTION = 70;
   /** RegularExpression Id. */
-  int IGNORES = 69;
+  int GLOBAL = 71;
   /** RegularExpression Id. */
-  int INPUT = 70;
+  int GLOBALCONFIG = 72;
   /** RegularExpression Id. */
-  int INSTANCED = 71;
+  int GOTO = 73;
   /** RegularExpression Id. */
-  int INT = 72;
+  int GUID = 74;
   /** RegularExpression Id. */
-  int ITERATOR = 73;
+  int HIDECATEGORIES = 75;
   /** RegularExpression Id. */
-  int LATENT = 74;
+  int HIDEDROPDOWN = 76;
   /** RegularExpression Id. */
-  int LOCAL = 75;
+  int IF = 77;
   /** RegularExpression Id. */
-  int LOCALIZED = 76;
+  int IGNORES = 78;
   /** RegularExpression Id. */
-  int NAME = 77;
+  int INIT = 79;
   /** RegularExpression Id. */
-  int NATIVE = 78;
+  int INPUT = 80;
   /** RegularExpression Id. */
-  int NATIVEREPLICATION = 79;
+  int INSTANCED = 81;
   /** RegularExpression Id. */
-  int NEW = 80;
+  int INT = 82;
   /** RegularExpression Id. */
-  int NOEDITINLINEW = 81;
+  int INTERP = 83;
   /** RegularExpression Id. */
-  int NOEXPORT = 82;
+  int ITERATOR = 84;
   /** RegularExpression Id. */
-  int NONE = 83;
+  int LATENT = 85;
   /** RegularExpression Id. */
-  int NOTPLACEABLE = 84;
+  int LOCAL = 86;
   /** RegularExpression Id. */
-  int OBJECT = 85;
+  int LOCALIZED = 87;
   /** RegularExpression Id. */
-  int OPERATOR = 86;
+  int NAME = 88;
   /** RegularExpression Id. */
-  int OPTIONAL = 87;
+  int NATIVE = 89;
   /** RegularExpression Id. */
-  int OUT = 88;
+  int NATIVEREPLICATION = 90;
   /** RegularExpression Id. */
-  int PACKAGE = 89;
+  int NEW = 91;
   /** RegularExpression Id. */
-  int PEROBJECTCONFIG = 90;
+  int NOCLEAR = 92;
   /** RegularExpression Id. */
-  int PLACEABLE = 91;
+  int NOEDITINLINEW = 93;
   /** RegularExpression Id. */
-  int POSTOPERATOR = 92;
+  int NOEXPORT = 94;
   /** RegularExpression Id. */
-  int PREOPERATOR = 93;
+  int NOIMPORT = 95;
   /** RegularExpression Id. */
-  int PRIVATE = 94;
+  int NONE = 96;
   /** RegularExpression Id. */
-  int PROTECTED = 95;
+  int NONTRANSACTIONAL = 97;
   /** RegularExpression Id. */
-  int PUBLIC = 96;
+  int NOTFORCONSOLE = 98;
   /** RegularExpression Id. */
-  int RELIABLE = 97;
+  int NOTPLACEABLE = 99;
   /** RegularExpression Id. */
-  int REPLICATION = 98;
+  int OBJECT = 100;
   /** RegularExpression Id. */
-  int RETURN = 99;
+  int OPERATOR = 101;
   /** RegularExpression Id. */
-  int SAFEREPLACE = 100;
+  int OPTIONAL = 102;
   /** RegularExpression Id. */
-  int SHOWCATEGORIES = 101;
+  int OUT = 103;
   /** RegularExpression Id. */
-  int SIMULATED = 102;
+  int PACKAGE = 104;
   /** RegularExpression Id. */
-  int SINGULAR = 103;
+  int PEROBJECTCONFIG = 105;
   /** RegularExpression Id. */
-  int STATE = 104;
+  int PLACEABLE = 106;
   /** RegularExpression Id. */
-  int STATIC = 105;
+  int POINTER = 107;
   /** RegularExpression Id. */
-  int STRING = 106;
+  int POSTOPERATOR = 108;
   /** RegularExpression Id. */
-  int STRUCT = 107;
+  int PREOPERATOR = 109;
   /** RegularExpression Id. */
-  int STRUCTDEFAULTPROPERTIES = 108;
+  int PRIVATE = 110;
   /** RegularExpression Id. */
-  int SUPER = 109;
+  int PROTECTED = 111;
   /** RegularExpression Id. */
-  int SWITCH = 110;
+  int PUBLIC = 112;
   /** RegularExpression Id. */
-  int TRANSIENT = 111;
+  int RELIABLE = 113;
   /** RegularExpression Id. */
-  int TRAVEL = 112;
+  int REPLICATION = 114;
   /** RegularExpression Id. */
-  int TRUE = 113;
+  int REPNOTIFY = 115;
   /** RegularExpression Id. */
-  int UNRELIABLE = 114;
+  int REPRETRY = 116;
   /** RegularExpression Id. */
-  int UNTIL = 115;
+  int RETURN = 117;
   /** RegularExpression Id. */
-  int VAR = 116;
+  int SAFEREPLACE = 118;
   /** RegularExpression Id. */
-  int VOID = 117;
+  int SHOWCATEGORIES = 119;
   /** RegularExpression Id. */
-  int WITHIN = 118;
+  int SIMULATED = 120;
   /** RegularExpression Id. */
-  int WHILE = 119;
+  int SINGULAR = 121;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 120;
+  int _SKIP = 122;
   /** RegularExpression Id. */
-  int DECIMAL_LITERAL = 121;
+  int STATE = 123;
   /** RegularExpression Id. */
-  int HEX_LITERAL = 122;
+  int STATIC = 124;
   /** RegularExpression Id. */
-  int OCTAL_LITERAL = 123;
+  int STRING = 125;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 124;
+  int STRUCT = 126;
   /** RegularExpression Id. */
-  int DECIMAL_FLOATING_POINT_LITERAL = 125;
+  int STRUCTDEFAULTPROPERTIES = 127;
   /** RegularExpression Id. */
-  int DECIMAL_EXPONENT = 126;
+  int SUPER = 128;
   /** RegularExpression Id. */
-  int HEXADECIMAL_FLOATING_POINT_LITERAL = 127;
+  int SWITCH = 129;
   /** RegularExpression Id. */
-  int HEXADECIMAL_EXPONENT = 128;
+  int TRANSIENT = 130;
   /** RegularExpression Id. */
-  int IDENTIFIER = 129;
+  int TRAVEL = 131;
   /** RegularExpression Id. */
-  int LETTER = 130;
+  int TRUE = 132;
   /** RegularExpression Id. */
-  int PART_LETTER = 131;
+  int UNRELIABLE = 133;
   /** RegularExpression Id. */
-  int LPAREN = 132;
+  int UNTIL = 134;
   /** RegularExpression Id. */
-  int RPAREN = 133;
+  int VAR = 135;
   /** RegularExpression Id. */
-  int LBRACE = 134;
+  int VIRTUAL = 136;
   /** RegularExpression Id. */
-  int RBRACE = 135;
+  int VOID = 137;
   /** RegularExpression Id. */
-  int LBRACKET = 136;
+  int WITHIN = 138;
   /** RegularExpression Id. */
-  int RBRACKET = 137;
+  int WHILE = 139;
   /** RegularExpression Id. */
-  int SEMICOLON = 138;
+  int INTEGER_LITERAL = 140;
   /** RegularExpression Id. */
-  int COMMA = 139;
+  int DECIMAL_LITERAL = 141;
   /** RegularExpression Id. */
-  int DOT = 140;
+  int HEX_LITERAL = 142;
   /** RegularExpression Id. */
-  int ASSIGN = 141;
+  int OCTAL_LITERAL = 143;
   /** RegularExpression Id. */
-  int AT = 142;
+  int FLOATING_POINT_LITERAL = 144;
   /** RegularExpression Id. */
-  int DOLLARS = 143;
+  int DECIMAL_FLOATING_POINT_LITERAL = 145;
   /** RegularExpression Id. */
-  int LT = 144;
+  int DECIMAL_EXPONENT = 146;
   /** RegularExpression Id. */
-  int BANG = 145;
+  int HEXADECIMAL_FLOATING_POINT_LITERAL = 147;
   /** RegularExpression Id. */
-  int TILDE = 146;
+  int HEXADECIMAL_EXPONENT = 148;
   /** RegularExpression Id. */
-  int HOOK = 147;
+  int IDENTIFIER = 149;
   /** RegularExpression Id. */
-  int COLON = 148;
+  int LETTER = 150;
   /** RegularExpression Id. */
-  int EQ = 149;
+  int PART_LETTER = 151;
   /** RegularExpression Id. */
-  int LE = 150;
+  int LPAREN = 152;
   /** RegularExpression Id. */
-  int GE = 151;
+  int RPAREN = 153;
   /** RegularExpression Id. */
-  int NE = 152;
+  int LBRACE = 154;
   /** RegularExpression Id. */
-  int SC_OR = 153;
+  int RBRACE = 155;
   /** RegularExpression Id. */
-  int SC_AND = 154;
+  int LBRACKET = 156;
   /** RegularExpression Id. */
-  int INCR = 155;
+  int RBRACKET = 157;
   /** RegularExpression Id. */
-  int DECR = 156;
+  int SEMICOLON = 158;
   /** RegularExpression Id. */
-  int PLUS = 157;
+  int COMMA = 159;
   /** RegularExpression Id. */
-  int MINUS = 158;
+  int DOT = 160;
   /** RegularExpression Id. */
-  int STAR = 159;
+  int ASSIGN = 161;
   /** RegularExpression Id. */
-  int SLASH = 160;
+  int AT = 162;
   /** RegularExpression Id. */
-  int BIT_AND = 161;
+  int DOLLARS = 163;
   /** RegularExpression Id. */
-  int BIT_OR = 162;
+  int LT = 164;
   /** RegularExpression Id. */
-  int XOR = 163;
+  int BANG = 165;
   /** RegularExpression Id. */
-  int REM = 164;
+  int TILDE = 166;
   /** RegularExpression Id. */
-  int LSHIFT = 165;
+  int HOOK = 167;
   /** RegularExpression Id. */
-  int EXPONENT = 166;
+  int COLON = 168;
   /** RegularExpression Id. */
-  int ATASSIGN = 167;
+  int EQ = 169;
   /** RegularExpression Id. */
-  int DOLLARSASSIGN = 168;
+  int LE = 170;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 169;
+  int GE = 171;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 170;
+  int NE = 172;
   /** RegularExpression Id. */
-  int STARASSIGN = 171;
+  int SC_OR = 173;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 172;
+  int SC_AND = 174;
   /** RegularExpression Id. */
-  int ANDASSIGN = 173;
+  int INCR = 175;
   /** RegularExpression Id. */
-  int ORASSIGN = 174;
+  int DECR = 176;
   /** RegularExpression Id. */
-  int XORASSIGN = 175;
+  int PLUS = 177;
   /** RegularExpression Id. */
-  int REMASSIGN = 176;
+  int MINUS = 178;
   /** RegularExpression Id. */
-  int LSHIFTASSIGN = 177;
+  int STAR = 179;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 178;
+  int SLASH = 180;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFTASSIGN = 179;
+  int BIT_AND = 181;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFT = 180;
+  int BIT_OR = 182;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFT = 181;
+  int XOR = 183;
   /** RegularExpression Id. */
-  int GT = 182;
+  int REM = 184;
   /** RegularExpression Id. */
-  int ALL = 183;
+  int LSHIFT = 185;
+  /** RegularExpression Id. */
+  int EXPONENT = 186;
+  /** RegularExpression Id. */
+  int ATASSIGN = 187;
+  /** RegularExpression Id. */
+  int DOLLARSASSIGN = 188;
+  /** RegularExpression Id. */
+  int PLUSASSIGN = 189;
+  /** RegularExpression Id. */
+  int MINUSASSIGN = 190;
+  /** RegularExpression Id. */
+  int STARASSIGN = 191;
+  /** RegularExpression Id. */
+  int SLASHASSIGN = 192;
+  /** RegularExpression Id. */
+  int ANDASSIGN = 193;
+  /** RegularExpression Id. */
+  int ORASSIGN = 194;
+  /** RegularExpression Id. */
+  int XORASSIGN = 195;
+  /** RegularExpression Id. */
+  int REMASSIGN = 196;
+  /** RegularExpression Id. */
+  int LSHIFTASSIGN = 197;
+  /** RegularExpression Id. */
+  int RSIGNEDSHIFTASSIGN = 198;
+  /** RegularExpression Id. */
+  int RUNSIGNEDSHIFTASSIGN = 199;
+  /** RegularExpression Id. */
+  int RUNSIGNEDSHIFT = 200;
+  /** RegularExpression Id. */
+  int RSIGNEDSHIFT = 201;
+  /** RegularExpression Id. */
+  int GT = 202;
+  /** RegularExpression Id. */
+  int ALL = 203;
 
   /** Lexical state. */
   int DEFAULT = 0;
   /** Lexical state. */
-  int IN_JAVADOC_COMMENT = 1;
+  int IN_MULTI_LINE_COMMENT = 1;
   /** Lexical state. */
-  int IN_MULTI_LINE_COMMENT = 2;
+  int IN_JAVADOC_COMMENT = 2;
   /** Lexical state. */
   int IN_STRING_LITERAL = 3;
   /** Lexical state. */
   int IN_NAME_LITERAL = 4;
+  /** Lexical state. */
+  int IN_CPPCODE = 5;
 
   /** Literal token values. */
   String[] tokenImage = {
     "<EOF>",
     "<WHITESPACE>",
-    "<token of kind 2>",
-    "\"/*\"",
     "<SINGLE_LINE_COMMENT>",
     "<COMPILER_DIRECTIVE>",
     "<PREPROCESSOR_DIRECTIVE>",
+    "<token of kind 5>",
     "\"*/\"",
+    "<token of kind 7>",
+    "<token of kind 8>",
     "\"*/\"",
-    "<token of kind 9>",
     "<token of kind 10>",
     "\"\\\"\"",
     "<token of kind 12>",
@@ -391,13 +429,18 @@ public interface UnrealScriptParserConstants {
     "\"\\\'\"",
     "<token of kind 15>",
     "\"\\\'\"",
+    "<token of kind 17>",
+    "<token of kind 18>",
+    "\"}\"",
     "\"abstract\"",
+    "\"allowabstract\"",
     "\"array\"",
     "\"auto\"",
     "\"begin\"",
     "\"bool\"",
     "\"break\"",
     "\"byte\"",
+    "\"cache\"",
     "\"cacheexempt\"",
     "\"case\"",
     "\"class\"",
@@ -407,21 +450,25 @@ public interface UnrealScriptParserConstants {
     "\"config\"",
     "\"const\"",
     "\"continue\"",
-    "\"cpptext\"",
     "\"cross\"",
+    "\"databinding\"",
     "\"default\"",
     "\"defaultproperties\"",
     "\"delegate\"",
-    "\"dependsOn\"",
+    "\"dependson\"",
     "\"deprecated\"",
     "\"do\"",
     "\"dontcollapsecategories\"",
     "\"dot\"",
+    "\"duplicatetransient\"",
     "\"edfindable\"",
     "\"editconst\"",
+    "\"editconstarray\"",
+    "\"editfixedsize\"",
     "\"editinline\"",
     "\"editinlinenew\"",
     "\"editinlineuse\"",
+    "\"editoronly\"",
     "\"else\"",
     "\"end\"",
     "\"enum\"",
@@ -444,9 +491,11 @@ public interface UnrealScriptParserConstants {
     "\"hidedropdown\"",
     "\"if\"",
     "\"ignores\"",
+    "\"init\"",
     "\"input\"",
     "\"instanced\"",
     "\"int\"",
+    "\"interp\"",
     "\"iterator\"",
     "\"latent\"",
     "\"local\"",
@@ -455,9 +504,13 @@ public interface UnrealScriptParserConstants {
     "\"native\"",
     "\"nativereplication\"",
     "\"new\"",
+    "\"noclear\"",
     "\"noteditinlinenew\"",
     "\"noexport\"",
+    "\"noimport\"",
     "\"none\"",
+    "\"nontransactional\"",
+    "\"notforconsole\"",
     "\"notplaceable\"",
     "\"object\"",
     "\"operator\"",
@@ -466,6 +519,7 @@ public interface UnrealScriptParserConstants {
     "\"package\"",
     "\"perobjectconfig\"",
     "\"placeable\"",
+    "\"pointer\"",
     "\"postoperator\"",
     "\"preoperator\"",
     "\"private\"",
@@ -473,11 +527,14 @@ public interface UnrealScriptParserConstants {
     "\"public\"",
     "\"reliable\"",
     "\"replication\"",
+    "\"repnotify\"",
+    "\"repretry\"",
     "\"return\"",
     "\"safereplace\"",
     "\"showcategories\"",
     "\"simulated\"",
     "\"singular\"",
+    "\"skip\"",
     "\"state\"",
     "\"static\"",
     "\"string\"",
@@ -491,6 +548,7 @@ public interface UnrealScriptParserConstants {
     "\"unreliable\"",
     "\"until\"",
     "\"var\"",
+    "\"virtual\"",
     "\"void\"",
     "\"within\"",
     "\"while\"",

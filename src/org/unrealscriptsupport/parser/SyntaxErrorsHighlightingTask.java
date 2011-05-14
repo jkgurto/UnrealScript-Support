@@ -70,10 +70,10 @@ class SyntaxErrorsHighlightingTask extends ParserResultTask {
                                                         endLine)
                             + token.endColumn;
 
-                    if (start < 0) {
+                    if ( (start < 0) || (start > document.getLength()) ) {
                         start = 0;
                     }
-                    if (end < 0) {
+                    if ( (end < 0) || (end > document.getLength()) ) {
                         end = 0;
                     }
 
