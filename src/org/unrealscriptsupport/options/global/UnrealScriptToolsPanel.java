@@ -8,6 +8,8 @@ import java.awt.Color;
 import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 
@@ -26,7 +28,7 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
     
     private List<String> namesList = new LinkedList<String>();
     private int selectionIndex = -1;
-    private ToolCollectionData selection = null;
+    private boolean busy = false;
 
     public UnrealScriptToolsPanel(UnrealScriptToolsOptionsPanelController controller) {
         this.controller = controller;
@@ -116,12 +118,12 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
-                    .addComponent(jLabel1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(removeButton, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
                             .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE))
@@ -137,7 +139,7 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addButton)
@@ -156,11 +158,7 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(UnrealScriptToolsPanel.class, "UnrealScriptToolsPanel.jLabel2.text")); // NOI18N
 
         collectionNameTextField.setText(org.openide.util.NbBundle.getMessage(UnrealScriptToolsPanel.class, "UnrealScriptToolsPanel.collectionNameTextField.text")); // NOI18N
-        collectionNameTextField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                collectionNameTextFieldKeyTyped(evt);
-            }
-        });
+        collectionNameTextField.getDocument().addDocumentListener(new CollectionNameDocumentListener());
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(UnrealScriptToolsPanel.class, "UnrealScriptToolsPanel.jPanel3.border.title"))); // NOI18N
 
@@ -294,7 +292,12 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
      */
     private void collectionListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_collectionListValueChanged
 
-        updateSelection();
+        // Prevent more events when the contents of prefsList are set
+        if (!busy) {
+            busy = true;
+            updateSelection();
+            busy = false;
+        }
         return;
     }//GEN-LAST:event_collectionListValueChanged
 
@@ -302,33 +305,76 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
      * Update name in collectionList when name in the text field is changed.
      * @param evt
      */
-    private void collectionNameTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_collectionNameTextFieldKeyTyped
-
-        editName();
-        return;
-    }//GEN-LAST:event_collectionNameTextFieldKeyTyped
-
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
 
-        addItem(new ToolCollectionData(NEW_ITEM_NAME));
+        // Prevent more events when the contents of prefsList are set
+        if (!busy) {
+            busy = true;
+            addItem(new ToolCollectionData(NEW_ITEM_NAME));
+            busy = false;
+        }
         return;
     }//GEN-LAST:event_addButtonActionPerformed
 
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
 
-        removeItem();
+        // Prevent more events when the contents of prefsList are set
+        if (!busy) {
+            busy = true;
+            removeItem();
+            busy = false;
+        }
         return;
     }//GEN-LAST:event_removeButtonActionPerformed
 
 
     private void duplicateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duplicateButtonActionPerformed
 
-        duplicateItem();
+        // Prevent more events when the contents of prefsList are set
+        if (!busy) {
+            busy = true;
+            duplicateItem();
+            busy = false;
+        }
         return;
     }//GEN-LAST:event_duplicateButtonActionPerformed
 
+    /**
+     * Synchronises name in collectionNameTextField with the nameList.
+     * Reference:
+     * http://download.oracle.com/javase/tutorial/uiswing/events/documentlistener.html
+     */
+    class CollectionNameDocumentListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            if (!busy) {
+                busy = true;
+                editName();
+                busy = false;
+            }
+        }
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            if (!busy) {
+                busy = true;
+                editName();
+                busy = false;
+            }
+        }
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            //Plain text components do not fire these events
+        }
+    }
+
     private void addItem(ToolCollectionData item) {
+
+        // -- If something was previously selected, save it
+        //if (selection != null) {
+        //    copyTextToSelection();
+        //}
 
         // -- Add an item to the list
         // - Check name is not duplicated
@@ -354,13 +400,12 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
         // - Add to end of namesList
         namesList.add(item.name);
 
+
         // - Add namesList to collectionList
         collectionList.setListData(namesList.toArray());
 
         // Nothing was selected, but new item added
-        //if (selectionIndex < 0) {
-        //    selectionIndex = 0;
-        //}
+        // Or something was selected, but new item added
         // Select new item
         selectionIndex = namesList.indexOf(item.name);
         // Preserve selection
@@ -380,17 +425,23 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
         }
 
         // -- Remove
+        // - Save selectionIndex
+        final int prevSelectionIndex = selectionIndex;
+        // Clear it so that when collectionList.setListData is called,
+        // it doesn't try to save the selection (which has just been removed)
+        selectionIndex = -1;
+
         // - Remove from preferences
-        prefsList.remove(selectionIndex);
+        prefsList.remove(prevSelectionIndex);
 
         // - Add to end of namesList
-        namesList.remove(selectionIndex);
+        namesList.remove(prevSelectionIndex);
 
         // - Add namesList to collectionList
         collectionList.setListData(namesList.toArray());
 
         // -- Decrement selection
-        --selectionIndex;
+        selectionIndex = prevSelectionIndex - 1;
 
         // Deleted 1st element, but still items left in list
         if ( (selectionIndex < 0) && (namesList.size() > 0) ) {
@@ -435,46 +486,80 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
     private void editName() {
 
         // -- Nothing is selected
-        if (selection == null) {
+        if (selectionIndex < 0) {
             return;
         }
 
         String newName = collectionNameTextField.getText();
+        String oldName = namesList.get(selectionIndex);
 
-        // -- Edit selection
-        // - Don't edit if name is duplicated
-        // Copy namesList
-        List<String> editList = new LinkedList(namesList);
-        // Remove current selection from list
-        editList.remove(selectionIndex);
-        // If the list still contains the name, there is a duplicate
-        if (editList.contains(newName)) {
-
-            // Don't change name data
-            // But still update in list
+        // -- Check input
+        // Update namesList
+        // (need to update before isNameValid)
+        namesList.set(selectionIndex, newName);
+        
+        // Check if valid
+        if (!isNameValid(newName)) {
+            // Set old name back in list
+            namesList.set(selectionIndex, oldName);
+            flagNameError();
+        }
+        else {
+            // -- Edit selection
+            // Update namesList
             //namesList.set(selectionIndex, newName);
 
-            // Flag with error
+            // Change name data
+            // Update collectionList with nameslist
+            // Don't reload preferences
+            collectionList.setListData(namesList.toArray());
+            collectionList.setSelectedIndex(selectionIndex);
+
+            // Remove error flag
+            unFlagNameError();
+        }
+
+        return;
+    }
+
+    private boolean isNameValid(String newName) {
+        assert(newName != null);
+
+        // - Name is empty
+        if (newName.isEmpty()) {
+            return false;
+        }
+
+        // - Name is duplicated
+        int nameCount = 0;
+        Iterator<String> itr = namesList.iterator();
+        while (itr.hasNext()) {
+            String s = itr.next();
+            if (s.equals(newName)) {
+                ++nameCount;
+            }
+        }
+        if (nameCount > 1) {
+            flagNameError();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void flagNameError() {
+        if (!nameErrorLabel.isVisible()) {
             nameErrorLabel.setVisible(true);
             collectionNameTextField.setForeground(Color.red);
         }
-        else {
-            // Change name data
-            //selection.name = newName;
+        return;
+    }
 
-            // Update namesList
-            //namesList.set(selectionIndex, selection.name);
-
-            // Update collectionList with nameslist
-            // Don't reload preferences
-            //collectionList.setListData(namesList.toArray());
-            //collectionList.setSelectedIndex(selectionIndex);
-
-            // Remove error flag
+    private void unFlagNameError() {
+        if (nameErrorLabel.isVisible()) {
             nameErrorLabel.setVisible(false);
             collectionNameTextField.setForeground(Color.black);
         }
-
         return;
     }
 
@@ -482,12 +567,17 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
      * An item in collectionList has been selected or deselected.
      */
     private void updateSelection() {
+
+        // -- If something was previously selected, save it
+        if (selectionIndex >= 0) {
+            copyTextToSelection();
+        }
         
         // -- Get selected value in list box
         // Updates selectionIndex and namesList
         // so don't use them here
         if (!collectionList.isSelectionEmpty()) {
-            select(collectionList.getSelectedValue().toString());
+            select(collectionList.getSelectedIndex());
         }
         else {
             deselect();
@@ -516,7 +606,6 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
 
         // Selection data
         selectionIndex = index;
-        selection = prefsList.get(index);
 
         // List
         collectionList.setSelectedIndex(selectionIndex);
@@ -539,7 +628,6 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
 
         // Selection data
         selectionIndex = -1;
-        selection = null;
 
         // List
         collectionList.clearSelection();
@@ -560,11 +648,15 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
      */
     private void copyTextToSelection() {
 
-        if (selection == null) {
-            return;
+        ToolCollectionData selection = prefsList.get(selectionIndex);
+
+        // Only update name if it's valid
+        //selection.name = collectionNameTextField.getText();
+        String newName = collectionNameTextField.getText();
+        if (isNameValid(newName)) {
+            selection.name = collectionNameTextField.getText();
         }
 
-        selection.name = collectionNameTextField.getText();
         selection.compilerArgs = compilerArgsTextField.getText();
         selection.compilerBaseDir = compilerBasedirTextField.getText();
         selection.compilerFileName = compilerFileNameTextField.getText();
@@ -793,6 +885,12 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
 
         collectionNameTextField.setText(tc.name);
         collectionNameTextField.setEnabled(true);
+        if (!isNameValid(tc.name)) {
+            flagNameError();
+        }
+        else {
+            unFlagNameError();
+        }
 
         compilerBasedirTextField.setText(tc.compilerBaseDir);
         compilerBasedirTextField.setEnabled(true);
@@ -831,6 +929,8 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
 
         executablePathTextField.setText("");
         executablePathTextField.setEnabled(false);
+
+        unFlagNameError();
 
         return;
     }
