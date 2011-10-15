@@ -10,6 +10,7 @@
 
 package org.unrealscriptsupport.unrealmutatorproject;
 
+import org.unrealscriptsupport.unrealmutatorproject.options.ProjectCustomiser;
 import org.unrealscriptsupport.unrealmutatorproject.nodes.SrcNode;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class UnrealMutatorProject implements Project {
                 //Logical view of project implementation
                 new UnrealMutatorProjectLogicalView(this),
                 // Project properties
-                new UnrealMutatorProjectCustomiser(this)
+                new ProjectCustomiser(this)
             });
         }
         return _lookup;

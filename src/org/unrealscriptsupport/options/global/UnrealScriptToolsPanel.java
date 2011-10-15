@@ -17,10 +17,9 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
 
     public static final String NEW_ITEM_NAME = "New Collection";
     public static final String DELIM = "\\.";
-    public static final String UNKNOWN_STRING = "<unknown>";
     public static final String DUPLICATE_DELIM = " ";
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private final UnrealScriptToolsOptionsPanelController controller;
 
@@ -747,16 +746,16 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
                 if(ToolCollectionData.COMPILER_STRING.equals(propsNames[1])) {
 
                     if(ToolCollectionData.ARGS_STRING.equals(propsNames[2])) {
-                        tc.compilerArgs = prefs.get(name, UNKNOWN_STRING);
+                        tc.compilerArgs = prefs.get(name, ToolCollectionData.UNKNOWN_STRING);
                     }
                     else if(ToolCollectionData.BASE_DIR_STRING.equals(propsNames[2])) {
-                        tc.compilerBaseDir = prefs.get(name, UNKNOWN_STRING);
+                        tc.compilerBaseDir = prefs.get(name, ToolCollectionData.UNKNOWN_STRING);
                     }
                     else if(ToolCollectionData.FILE_NAME_STRING.equals(propsNames[2])) {
-                        tc.compilerFileName = prefs.get(name, UNKNOWN_STRING);
+                        tc.compilerFileName = prefs.get(name, ToolCollectionData.UNKNOWN_STRING);
                     }
                     else if(ToolCollectionData.RESULT_DIR_STRING.equals(propsNames[2])) {
-                        tc.compilerResultDir = prefs.get(name, UNKNOWN_STRING);
+                        tc.compilerResultDir = prefs.get(name, ToolCollectionData.UNKNOWN_STRING);
                     }
                 }
 
@@ -764,7 +763,7 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
                 else if(ToolCollectionData.EXECUTABLE_STRING.equals(propsNames[1])) {
 
                     if(ToolCollectionData.FILE_NAME_STRING.equals(propsNames[2])) {
-                        tc.executableFileName = prefs.get(name, UNKNOWN_STRING);
+                        tc.executableFileName = prefs.get(name, ToolCollectionData.UNKNOWN_STRING);
                     }
                 }
                 else {
@@ -933,129 +932,6 @@ public final class UnrealScriptToolsPanel extends javax.swing.JPanel {
         unFlagNameError();
 
         return;
-    }
-
-    /**
-     * Class for storing tool collection preferences.
-     * eg.
-     * KillingFloor.name=Killing Floor
-     * KillingFloor.compiler.args=make1
-     * KillingFloor.compiler.basedir=base1
-     * KillingFloor.compiler.filename=ucc1
-     * KillingFloor.compiler.resultdir=system1
-     * KillingFloor.executable.filename=kf.exe
-     */
-    private class ToolCollectionData {
-
-        public static final String COMPILER_STRING = "compiler";
-        public static final String EXECUTABLE_STRING = "executable";
-
-        public static final String ARGS_STRING = "args";
-        public static final String BASE_DIR_STRING = "basedir";
-        public static final String FILE_NAME_STRING = "filename";
-        public static final String RESULT_DIR_STRING = "resultdir";
-
-        public String name = UNKNOWN_STRING;
-        public String compilerArgs = UNKNOWN_STRING;
-        public String compilerBaseDir = UNKNOWN_STRING;
-        public String compilerFileName = UNKNOWN_STRING;
-        public String compilerResultDir = UNKNOWN_STRING;
-        public String executableFileName = UNKNOWN_STRING;
-
-        public ToolCollectionData(String name) {
-            this.name = name;
-        }
-
-        public ToolCollectionData(ToolCollectionData other) {
-            set(other);
-        }
-
-        private void set(ToolCollectionData other) {
-            this.name = other.name;
-            this.compilerArgs = other.compilerArgs;
-            this.compilerBaseDir = other.compilerBaseDir;
-            this.compilerFileName = other.compilerFileName;
-            this.compilerResultDir = other.compilerResultDir;
-            this.executableFileName = other.executableFileName;
-            return;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-
-            if (other == null) {
-                return false;
-            }
-            else if(other == this) {
-                return true;
-            }
-
-            else if(other instanceof ToolCollectionData) {
-                ToolCollectionData o = (ToolCollectionData) other;
-
-                if ( (this.name == null) &&
-                     (o.name == null) ) {
-                    return true;
-                }
-                else if(this.name.equals(o.name)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 3;
-            hash = 47 * hash + (this.name != null ? this.name.hashCode() : 0);
-            return hash;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-
-            sb.append(name);
-            sb.append("\n");
-
-            sb.append(COMPILER_STRING);
-            sb.append(".");
-            sb.append(ARGS_STRING);
-            sb.append(" = ");
-            sb.append(compilerArgs);
-            sb.append("\n");
-
-            sb.append(COMPILER_STRING);
-            sb.append(".");
-            sb.append(BASE_DIR_STRING);
-            sb.append(" = ");
-            sb.append(compilerBaseDir);
-            sb.append("\n");
-
-            sb.append(COMPILER_STRING);
-            sb.append(".");
-            sb.append(FILE_NAME_STRING);
-            sb.append(" = ");
-            sb.append(compilerFileName);
-            sb.append("\n");
-
-            sb.append(COMPILER_STRING);
-            sb.append(".");
-            sb.append(RESULT_DIR_STRING);
-            sb.append(" = ");
-            sb.append(compilerResultDir);
-            sb.append("\n");
-
-            sb.append(EXECUTABLE_STRING);
-            sb.append(".");
-            sb.append(FILE_NAME_STRING);
-            sb.append(" = ");
-            sb.append(executableFileName);
-            sb.append("\n");
-
-            return sb.toString();
-        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
