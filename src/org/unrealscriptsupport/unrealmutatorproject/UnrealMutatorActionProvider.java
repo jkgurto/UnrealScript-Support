@@ -11,7 +11,7 @@
 package org.unrealscriptsupport.unrealmutatorproject;
 
 import java.io.IOException;
-import org.apache.tools.ant.module.api.support.ActionUtils;
+//import org.apache.tools.ant.module.api.support.ActionUtils;
 import org.netbeans.spi.project.*;
 import org.netbeans.spi.project.support.ant.AntProjectHelper;
 import org.netbeans.spi.project.ui.support.DefaultProjectOperations;
@@ -55,7 +55,7 @@ public class UnrealMutatorActionProvider implements ActionProvider {
                              throws IllegalArgumentException {
         //Here we find the Ant script and call the target we need!
         if (string.equals(ActionProvider.COMMAND_BUILD)) {
-            try {
+            /*try {
                 FileObject buildImpl =
                         helper.getProjectDirectory()
                         .getFileObject("build.xml");
@@ -65,10 +65,11 @@ public class UnrealMutatorActionProvider implements ActionProvider {
             }
             catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
-            }
+            }*/
+            throw new RuntimeException("Not implemented in 6.7");
         }
         else if(string.equals(ActionProvider.COMMAND_REBUILD)) {
-            try {
+            /*try {
                 FileObject buildImpl =
                         helper.getProjectDirectory()
                         .getFileObject("build.xml");
@@ -78,10 +79,11 @@ public class UnrealMutatorActionProvider implements ActionProvider {
             }
             catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
-            }
+            }*/
+            throw new RuntimeException("Not implemented in 6.7");
         }
         else if(string.equals(ActionProvider.COMMAND_CLEAN)) {
-            try {
+            /*try {
                 FileObject buildImpl =
                         helper.getProjectDirectory()
                         .getFileObject("build.xml");
@@ -91,10 +93,11 @@ public class UnrealMutatorActionProvider implements ActionProvider {
             }
             catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
-            }
+            }*/
+            throw new RuntimeException("Not implemented in 6.7");
         }
         else if (string.equals(ActionProvider.COMMAND_RUN)) {
-            try {
+            /*try {
                 FileObject buildImpl =
                         helper.getProjectDirectory()
                         .getFileObject("build.xml");
@@ -104,7 +107,8 @@ public class UnrealMutatorActionProvider implements ActionProvider {
             }
             catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
-            }
+            }*/
+            throw new RuntimeException("Not implemented in 6.7");
         }
         else if (string.equals(ActionProvider.COMMAND_RENAME)) {
             DefaultProjectOperations.performDefaultRenameOperation(
