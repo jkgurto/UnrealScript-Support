@@ -1,7 +1,4 @@
-build.xml
 build/*
-manifest.mf
-nbproject/*
 doc/*
 NextCommitLog.txt
 Notes.txt
