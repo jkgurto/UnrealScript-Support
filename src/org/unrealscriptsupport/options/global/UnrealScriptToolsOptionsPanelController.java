@@ -11,10 +11,6 @@ import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
-@OptionsPanelController.SubRegistration(location = "Advanced",
-displayName = "#AdvancedOption_DisplayName_UnrealScriptTools",
-keywords = "#AdvancedOption_Keywords_UnrealScriptTools",
-keywordsCategory = "Advanced/UnrealScriptTools")
 public final class UnrealScriptToolsOptionsPanelController
         extends OptionsPanelController {
 

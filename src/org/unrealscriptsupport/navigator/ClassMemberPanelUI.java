@@ -104,9 +104,9 @@ public class ClassMemberPanelUI
                 public void run() {
                     manager.setRootContext(new ElementNode(description));
                     elementView.setRootVisible(true);
-                    elementView.setAutoWaitCursor(false);
+                    //elementView.setAutoWaitCursor(false);
                     elementView.expandAll();
-                    elementView.setAutoWaitCursor(true);
+                    //elementView.setAutoWaitCursor(true);
                 }
             });
 
