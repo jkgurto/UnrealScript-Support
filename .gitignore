@@ -1,4 +1,5 @@
 build/*
 doc/*
+nbproject/private/*
 NextCommitLog.txt
 Notes.txt
