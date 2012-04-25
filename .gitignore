@@ -1,7 +1,7 @@
 build.xml
 build/*
 manifest.mf
-nbproject/*
+nbproject/private/*
 doc/*
 NextCommitLog.txt
 Notes.txt
