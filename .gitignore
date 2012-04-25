@@ -1,6 +1,5 @@
 build.xml
 build/*
-manifest.mf
 nbproject/private/*
 doc/*
 NextCommitLog.txt
